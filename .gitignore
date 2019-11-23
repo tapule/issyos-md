@@ -1,0 +1,40 @@
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Binary files
+*.bin
+
+# Symbols
+symbol.txt
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Resources
+resources.s
+res/*.h
+
+# Other files
+*.zip
+*.rar
+*.bak
+*.bk
+*.log
+*.tmp
+*~
+
+# Sublime/VSCode/Eclipse project files
+*.sublime*
+*.code*
+.vscode
+.cproject
+.project
+
+# WIP data
+wip/
