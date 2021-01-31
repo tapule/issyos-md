@@ -1,78 +1,157 @@
-MARSDEV ?= ${HOME}/mddev/mars
+# SPDX-License-Identifier: MIT
+#
+# The Curse of Issyos MegaDrive port
+# Copyright: 2021 Juan Ángel Moreno Fernández (@_tapule)
+# Github: https://github.com/tapule/issyos-md
+#
+# Makefile
+# Project compiler makefile script
+#
+
+# Default paths for Marsdev
+MARSDEV ?= /opt/mars
 MARSBIN  = $(MARSDEV)/m68k-elf/bin
 TOOLSBIN = $(MARSDEV)/bin
-JAVA     = java
 
+# GCC environment
 CC   = $(MARSBIN)/m68k-elf-gcc
 AS   = $(MARSBIN)/m68k-elf-as
 LD   = $(MARSBIN)/m68k-elf-ld
 NM   = $(MARSBIN)/m68k-elf-nm
+GDB  = $(MARSBIN)/m68k-elf-gdb
 OBJC = $(MARSBIN)/m68k-elf-objcopy
 
-BINTOS   = $(TOOLSBIN)/bintos 
-RESCOMP  = $(JAVA) -jar $(TOOLSBIN)/rescomp.jar
-XGMTOOL  = $(TOOLSBIN)/xgmtool
-PCMTORAW = $(TOOLSBIN)/pcmtoraw
-WAVTORAW = $(TOOLSBIN)/wavtoraw
-SIZEBND  = $(TOOLSBIN)/sizebnd
+# Z80 Assembler to build XGM driver
+ASMZ80   = $(TOOLSBIN)/sjasm
 
+# Tools
+# TODO: Include tools to manage resources etc.
+BINTOS  = $(TOOLSBIN)/bintos
+BLASTEM = $(MARSDEV)/blastem/blastem
+
+# Some files needed are in a versioned directory
 GCC_VER := $(shell $(CC) -dumpversion)
+
+# Need the LTO plugin so NM can dump our symbol table
 PLUGIN   = $(MARSDEV)/m68k-elf/libexec/gcc/m68k-elf/$(GCC_VER)
+LTO_SO   = liblto_plugin.so
 
-INCS    = -I$(MARSDEV)/m68k-elf/include -Isrc -Ires -Iinc
-LIBS    = -L$(MARSDEV)/m68k-elf/lib -L$(MARSDEV)/m68k-elf/lib/gcc/m68k-elf/$(GCC_VER) -lmd -lgcc
-CCFLAGS = -m68000 -Wall -Wextra -O3 -std=gnu99 -c -fomit-frame-pointer -fno-builtin \
-		  -flto -fuse-linker-plugin -fno-web -fno-gcse -fno-unit-at-a-time
-ASFLAGS = -m68000 --register-prefix-optional
-LDFLAGS = -T $(MARSDEV)/ldscripts/sgdk.ld -nostdlib
+# Includes: Local + GCC (+ Newlib, uncomment to use it)
+INCS     = -Isrc -Ismd -Ires
+INCS    += -I$(MARSDEV)/m68k-elf/lib/gcc/m68k-elf/$(GCC_VER)/include
+#INCS   += -I$(MARSDEV)/m68k-elf/m68k-elf/include
 
-BOOT_SS   = $(wildcard src/boot/*.s)
-BOOT_OBJS = $(BOOT_SS:.s=.o)
+# Libraries: GCC (+ Newlib, uncomment to use it)
+LIBS     = -L$(MARSDEV)/m68k-elf/lib/gcc/m68k-elf/$(GCC_VER) -lgcc
+#LIBS    += -L$(MARSDEV)/m68k-elf/m68k-elf/lib -lnosys
 
-RESS = $(wildcard res/*.res)
-CS   = $(wildcard src/*.c)
-SS   = $(wildcard src/*.s)
+# Default base flags
+CCFLAGS  = -m68000 -Wall -Wextra -std=c99 -ffreestanding
+ASFLAGS  = -m68000 --register-prefix-optional
+LDFLAGS  = -T src/smd/smd.ld -nostdlib
+Z80FLAGS = -isrc/smd/xgm
 
-OBJS  = $(RESS:.res=.o)
-OBJS += $(CS:.c=.o)
-OBJS += $(SS:.s=.o)
+# Extra flags set by debug or release target as needed
+EXFLAGS  = 
 
-.PHONY: all clean
-.SECONDARY: bin/rom.elf
+# Sources
+CSRC  = $(wildcard src/*.c)
+CSRC += $(wildcard src/smd/*.c)
+SSRC  = $(wildcard src/*.s)
+SSRC += $(wildcard src/smd/*.s)
+SSRC += $(wildcard src/smd/boot/*.s)
+# Z80 source for XGM driver
+ZSRC  = $(wildcard src/smd/xgm/*.s80)
+# Resources
+# TODO: Include resources
+RSRC  = 
 
-all: bin/rom.bin bin/symbol.txt
+# Objets files
+OBJS    = $(RSRC:.res=.o)
+OBJS   += $(CSRC:.c=.o)
+OBJS   += $(SSRC:.s=.o)
+OBJS   += $(ZSRC:.s80=.o)
+OUTOBJS = $(addprefix obj/, $(OBJS))
 
-bin/symbol.txt: bin/rom.bin
-	$(NM) --plugin=$(PLUGIN)/liblto_plugin.so -n bin/rom.elf > bin/symbol.txt
+# ASM listings
+ASM    = $(CSRC:.c=.lst)
+OUTASM = $(addprefix obj/, $(ASM))
 
-src/boot/sega.o: src/boot/rom_head.bin
-	$(AS) $(ASFLAGS) src/boot/sega.s -o $@
+.PHONY: all release asm debug
 
-bin/%.bin: bin/%.elf
-	$(OBJC) -O binary $< bin/temp.bin
-	dd if=bin/temp.bin of=$@ bs=8K conv=sync
+all: release
 
-bin/%.elf: $(OBJS) $(BOOT_OBJS)
-	$(CC) $(LDFLAGS) $(BOOT_OBJS) $(OBJS) -o $@ $(LIBS)
+# Release target including optimizations
+release: EXFLAGS  = -O3 -fno-web -fno-gcse -fno-unit-at-a-time -fshort-enums
+release: EXFLAGS += -fomit-frame-pointer -flto -fuse-linker-plugin
+release: EXFLAGS += -fno-unwind-tables
+# release: EXFLAGS += -Wno-shift-negative-value -Wno-main -Wno-unused-parameter -fno-builtin
+release: bin/rom.bin obj/symbol.txt
 
-%.o: %.c
-	$(CC) $(CCFLAGS) $(INCS) -c $< -o $@
+# Debug target, enables GDB tracing for Blastem, GensKMod, etc.
+debug: EXFLAGS = -g -Og -DDEBUG -DKDEBUG
+debug: bin/rom.bin obj/symbol.txt
 
-%.o: %.s 
-	$(AS) $(ASFLAGS) $< -o $@
+# ASM output target. Generates asm listings
+asm: EXFLAGS  = -O3 -fno-web -fno-gcse -fno-unit-at-a-time -fomit-frame-pointer
+asm: EXFLAGS += -fshort-enums
+asm: $(OUTASM)
 
-%.s: %.res
-	$(RESCOMP) $< $@
+bin/rom.elf: $(OUTOBJS)
+	@echo "-> Building ELF..."
+	@mkdir -p $(dir $@)
+	$(CC) -o $@ $(LDFLAGS) $(OUTOBJS) $(LIBS)
 
-src/boot/rom_head.o: src/boot/rom_head.c
-	$(CC) -m68000 -Wall -Wextra -std=c99 -c -fno-builtin $(INCS) $< -o $@
+bin/rom.bin: bin/rom.elf
+	@echo "-> Stripping ELF header..."
+	@mkdir -p $(dir $@)
+	@$(OBJC) -O binary $< bin/unpad.bin
+	@echo "-> Padding rom file..."	
+	@dd if=bin/unpad.bin of=$@ bs=8192 conv=sync
+	@rm -f bin/unpad.bin
 
-src/boot/rom_head.bin: src/boot/rom_head.o
-	$(LD) $(LDFLAGS) --oformat binary -o $@ $<
+obj/%.o: %.c
+	@echo "CC $<"
+	@mkdir -p $(dir $@)
+	@$(CC) $(CCFLAGS) $(EXFLAGS) $(INCS) -c $< -o $@
 
+obj/%.o: %.s 
+	@echo "AS $<"
+	@mkdir -p $(dir $@)
+	@$(AS) $(ASFLAGS) $< -o $@
+
+obj/%.lst: %.c
+	@echo "-> Exporting ASM listings..."
+	@mkdir -p $(dir $@)
+	@$(CC) $(CCFLAGS) $(EXFLAGS) $(INCS) -S -c $< -o $@
+
+%.o80: %.s80
+	$(ASMZ80) $(Z80FLAGS) $< $@ obj/z80out.lst
+
+%.s: %.o80
+	$(BINTOS) $<
+
+# This generates a symbol table that is very helpful in debugging crashes,
+# even with an optimized release build!
+# Cross reference symbol.txt with the addresses displayed in the crash handler
+obj/symbol.txt: bin/rom.bin
+	@echo "-> Exporting symbol table..."
+	$(NM) --plugin=$(PLUGIN)/$(LTO_SO) -n bin/rom.elf > obj/symbol.txt
+
+.PHONY: run drun clean 
+
+run: release
+	@echo "-> running..."
+	@$(BLASTEM) bin/rom.bin
+
+drun: debug
+	@echo "-> running gdb"
+#	@$(GDB) -ex "target remote | $(BLASTEM) bin/rom.bin -D" bin/rom.elf
+#	@gdbgui --gdb-cmd="$(GDB) -ex \"target remote | $(BLASTEM) bin/rom.bin -D\" bin/rom.elf" bin/rom.elf
+	@mame megadriv -debug -cart bin/rom.bin
 
 clean:
-	rm -f $(OBJS)
-	rm -f bin/temp.bin bin/rom.bin bin/rom.elf bin/symbol.txt
-	rm -f src/boot/sega.o src/boot/rom_head.o src/boot/rom_head.bin
+	@echo "-> Cleaning project..."
+	@rm -rf obj
+	@rm -f bin/rom.elf bin/unpad.bin
 

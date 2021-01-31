@@ -1,14 +1,16 @@
+# Prerequisites
+*.d
+
 # Object files
 *.o
 *.ko
 *.obj
 *.elf
 
-# Binary files
-*.bin
-
-# Symbols
-symbol.txt
+# Linker output
+*.ilk
+*.map
+*.exp
 
 # Libraries
 *.lib
@@ -16,9 +18,30 @@ symbol.txt
 *.la
 *.lo
 
+# Shared objects 
+*.so
+*.so.*
+*.dylib
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# rom files
+*.bin
+
+# Symbols
+symbol.txt
+
 # Resources
-resources.s
-data/*.h
+
+# object dir
+obj/
+
+# binary dir
+bin/
 
 # Other files
 *.zip
@@ -27,14 +50,15 @@ data/*.h
 *.bk
 *.log
 *.tmp
+*.lst
 *~
 
-# Sublime/VSCode/Eclipse project files
-*.sublime*
+# VSCode project files
 *.code*
 .vscode
-.cproject
-.project
 
 # WIP data
 wip/
+
+# Mame history dir
+history/
