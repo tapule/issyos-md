@@ -21,9 +21,9 @@
 #define PSG_H
 
 /**
- * @brief Initializes the PSG sound hardware.
+ * @brief initialises the PSG sound hardware.
  * 
- * Controls the initialization process of the PSG. It reset the channels and
+ * Controls the initialisation process of the PSG. It reset the channels and
  * put them in silence.
  * 
  * @note This function is called from the boot process so maybe you don't need

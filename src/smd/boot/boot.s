@@ -31,7 +31,7 @@ _smd_boot:
 skip_ctrl3:
     bne.s   hot_boot
 
-    /* We are doing a cool boot, we must do all the initialization stuff */
+    /* We are doing a cool boot, we must do all the initialisation stuff */
 cool_boot:
 
     /* TMSS (Trademark Security System) handshake */
@@ -40,15 +40,20 @@ cool_boot:
     beq skip_tmss
     move.l  #0x53454741, 0xa14000   /* Write 'SEGA' to TMSS register */
 skip_tmss:
-  
-    /* Initialize the z80 secondary CPU */
+
+    /*
+     * One time hardware initialisation.
+     * Be careful!! Whatever variable initialised here will be erased later in
+     * the clear_loop. This section is skipped on reset too.
+     */
+    /* initialise the z80 secondary CPU */
     bsr z80_init
-    /* Initialize gamepad ports */
+    /* initialise gamepad ports */
     bsr pad_init
-    /* Initialize the PSG (Programmable Sound Generator) */
+    /* initialise the PSG (Programmable Sound Generator) */
     bsr psg_init
 
-    /* We are doing a hot boot (reset), some parts are already initialized */
+    /* We are doing a hot boot (reset), some parts are already initialised */
 hot_boot:
 
     /* Clear all work RAM (This includes bss and stack) */
@@ -59,8 +64,8 @@ clear_loop:
     move.l  d0, (a0)+
     dbra    d1, clear_loop 
 
-    /* Copy initialized global and static data from ROM to work RAM */
-    lea     _sdata, a0              /* Start of initialized data in ROM */
+    /* Copy initialised global and static data from ROM to work RAM */
+    lea     _sdata, a0              /* Start of initialised data in ROM */
     lea     0xFF0000,a1             /* First RAM address */
     move.l  #_data_size, d0         /* Size of data to copy in bytes */
     addq.l  #1, d0                  /* Adjust to use words instead of bytes */
@@ -71,6 +76,13 @@ copy_loop:
     move.w  (a0)+, (a1)+            /* Copy a word of data to RAM */
     dbra    d0, copy_loop
 skip_copy:
+
+    /*
+     * Software initialisation.
+     * Put here whatever you need before main starts
+     */
+    /* initialise the pseudo-random number generator */
+    bsr rnd_init
 
     jmp     main
     beq.s   _smd_boot               /* main returned, reset */

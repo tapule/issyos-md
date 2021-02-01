@@ -20,9 +20,9 @@
 #include <stdint.h>
 
 /**
- * @brief Initializes the z80 CPU.
+ * @brief initialises the z80 CPU.
  * 
- * Controls the initialization process of the z80 CPU. It reset the z80 and
+ * Controls the initialisation process of the z80 CPU. It reset the z80 and
  * performs an internal RAM clear.
  * 
  * @note This function is called from the boot process so maybe you don't need

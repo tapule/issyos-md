@@ -27,10 +27,10 @@
 #include <stdbool.h>
 
 /**
- * @brief Initializes the VDP
+ * @brief initialises the VDP
  * 
  * Before using the VDP, we must setup it first. This function controls the
- * initialization, registers setup and VRAM/CRAM/VSRAM cleaning process. 
+ * initialisation, registers setup and VRAM/CRAM/VSRAM cleaning process. 
  * 
  * @note This function is called from the boot process so maybe you don't need
  * to call it anymore unless you want to reset the devices.
