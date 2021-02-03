@@ -20,8 +20,15 @@
  _int_hblank:
     rte
 
+/**
+ * @brief Handler for the vertical blank interrupt
+ * 
+ * This handler is called whenever a 
+ * 
+ */
 .global _int_vblank
  _int_vblank:
+    st.b    (vid_vblank_flag)
     rte
 
 .global _int_unhandled

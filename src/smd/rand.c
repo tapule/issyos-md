@@ -21,7 +21,7 @@ void rnd_init(void)
     uint16_t rnd_var;
 
     /* Mix a random generated value with the MegaDrive HV counter */
-    rnd_var = 0xCE52 ^ (0xCE52 << 9);
+    rnd_var = (uint16_t) 0xCE52 ^ (uint16_t) (0xCE52 << 9);
     rnd_seed = *vdp_port_hv_counter ^ (*vdp_port_hv_counter >> 7);
     rnd_seed = rnd_seed ^ rnd_var ^ (rnd_var << 13);
 }

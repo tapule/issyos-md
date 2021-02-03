@@ -42,16 +42,10 @@ cool_boot:
 skip_tmss:
 
     /*
-     * One time hardware initialisation.
+     * Use this section for one time hardware initialisation.
      * Be careful!! Whatever variable initialised here will be erased later in
      * the clear_loop. This section is skipped on reset too.
      */
-    /* initialise the z80 secondary CPU */
-    bsr z80_init
-    /* initialise gamepad ports */
-    bsr pad_init
-    /* initialise the PSG (Programmable Sound Generator) */
-    bsr psg_init
 
     /* We are doing a hot boot (reset), some parts are already initialised */
 hot_boot:
@@ -78,11 +72,12 @@ copy_loop:
 skip_copy:
 
     /*
-     * Software initialisation.
+     * Use this section for software initialisation.
      * Put here whatever you need before main starts
      */
-    /* initialise the pseudo-random number generator */
-    bsr rnd_init
+    /* initialise the Sega Megadrive/Genesis hardware */
+    bsr smd_init
 
+    /* Go play with it!! */
     jmp     main
     beq.s   _smd_boot               /* main returned, reset */

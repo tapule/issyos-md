@@ -4,7 +4,7 @@
  * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021 
  * Github: https://github.com/tapule/issyos-md
  *
- * File: vdp.h
+ * File: video.h
  * Control routines for Sega Megadrive/Genesis VDP
  *
  * The VDP (Video Display Processor) is the main graphics processor, wich has
@@ -20,8 +20,8 @@
  * 
  */
 
-#ifndef VDP_H
-#define VDP_H
+#ifndef VIDEO_H
+#define VIDEO_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -35,12 +35,30 @@
  * @note This function is called from the boot process so maybe you don't need
  * to call it anymore unless you want to reset the devices.
  */
-void vdp_init(void);
+void vid_init(void);
 
-void vdp_vsync_wait(void);
+/**
+ * @brief Turns on the display
+ * 
+ */
+void vid_display_enable(void);
 
-bool vdp_is_pal(void);
+/**
+ * @brief Turns off the display
+ * 
+ */
+void vid_display_disable(void);
 
-bool vdp_is_ntsc(void);
+/**
+ * @brief Waits until the next vertical blank starts
+ * 
+ * @note Be aware that this will loop forever if interrupts are disabled
+ */
+void vid_vsync_wait(void);
 
-#endif // VDP_H
+// QUIZÁ ESTAS DEBERÍAN IR EN MD (SYS)
+// bool vid_is_pal(void);
+
+// bool vid_is_ntsc(void);
+
+#endif // VIDEO_H

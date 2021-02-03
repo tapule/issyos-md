@@ -1,25 +1,25 @@
 #include <stdint.h>
-#include "smd/rand.h"
-
-volatile uint16_t s1;
-volatile uint16_t s2;
-volatile uint16_t s3;
+#include "smd/megadrive.h"
 
 int main()
 {
-    rnd_init();
-    s1 = rnd_seed_get();
+    smd_interrupts_enable();
+    vid_display_enable();
     while (1)
     {
-        uint16_t i;
+        pad_update();
 
-        for (i = 0; i< 1000; ++i)
+        /* Check press button  */
+        if (pad_btn_pressed(PAD_1, PAD_BTN_A))
         {
-            __asm__ volatile ("\tnop\n");
-            __asm__ volatile ("\tnop\n");
-            __asm__ volatile ("\tnop\n");
-            __asm__ volatile ("\tnop\n");
+            vid_display_disable();
         }
-        s1 = rnd_get();
+        /* Check release button  */        
+        if (pad_btn_released(PAD_1, PAD_BTN_B))
+        {
+            vid_display_enable();
+        }
+
+        vid_vsync_wait();
     }
 }
