@@ -9,6 +9,7 @@
  */
 
 #include "video.h"
+#include "config.h"
 
 /*
  * There are 3 ports to talk with the VDP. These ports can be accessed as 16 or
@@ -33,7 +34,7 @@ static volatile uint16_t *const vdp_port_hv_counter = (uint16_t*) 0xC00008;
 #define VDP_REG_WINDOW_ADDR     0x8300      /* Window data table address */
 #define VDP_REG_PLANEB_ADDR     0x8400      /* Plane B data table address */
 #define VDP_REG_SPRITE_ADDR     0x8500      /* Sprite data table address */
-#define VDP_REG_BGCOLOUR        0x8700      /* Background color */
+#define VDP_REG_BGCOLOR         0x8700      /* Background color */
 #define VDP_REG_HBLANK_RATE     0x8A00      /* HBlank interrupt rate */
 #define VDP_REG_MODESET_3       0x8B00      /* Mode register #3 */
 #define VDP_REG_MODESET_4       0x8C00      /* Mode register #4 */
@@ -68,40 +69,40 @@ void vid_init(void)
     *vdp_port_ctrl_w = VDP_REG_MODESET_1 | 0x04;
     /* Display off, V interrupt on, DMA on, V30 cells mode in pal, V28 ntsc  */
     *vdp_port_ctrl_w = VDP_REG_MODESET_2 | 0x34 | (vid_pal_mode ? 8 : 0);
-    /* Plane A table address at 0xC000 (divided by 0x2000 and lshifted 3) */
-    *vdp_port_ctrl_w = VDP_REG_PLANEA_ADDR | 0x30;
-    /* Plane W table address at 0xD000 (divided by 0x800 and lshifted 1) */
-    *vdp_port_ctrl_w = VDP_REG_WINDOW_ADDR | 0x34;
-    /* Plane B table address at 0xE000 (divided by 0x2000) */
-    *vdp_port_ctrl_w = VDP_REG_PLANEA_ADDR | 0x07;
-    /* Sprite table address at 0xFC00 (divided by 0x200) */
-    *vdp_port_ctrl_w = VDP_REG_SPRITE_ADDR | 0x7E;
-    /* Background color: palette 0, colour 0 */
-    *vdp_port_ctrl_w = VDP_REG_BGCOLOUR | 0x00;
+    /* Plane A table address (divided by 0x2000 and lshifted 3 = rshift 10 ) */
+    *vdp_port_ctrl_w = VDP_REG_PLANEA_ADDR | (VID_PLANE_A_ADDR >> 10);
+    /* Plane W table address (divided by 0x800 and lshifted 1 = rsifht 10) */
+    *vdp_port_ctrl_w = VDP_REG_WINDOW_ADDR | (VID_PLANE_W_ADDR >> 10);
+    /* Plane B table address (divided by 0x2000 = rsifht 13) */
+    *vdp_port_ctrl_w = VDP_REG_PLANEA_ADDR | (VID_PLANE_B_ADDR >> 13);
+    /* Sprite table address (divided by 0x200 = rsifht 9) */
+    *vdp_port_ctrl_w = VDP_REG_SPRITE_ADDR | (VID_SPRITE_TABLE_ADDR >> 9);
+    /* Background color: palette 0, color 0 */
+    *vdp_port_ctrl_w = VDP_REG_BGCOLOR | 0x00;
     /* H interrupt frequency in raster lines (As we disabled it, set maximum) */
     *vdp_port_ctrl_w = VDP_REG_HBLANK_RATE | 0xFF;
-    /* External interrupt off, V scroll full, H scroll full */
-    *vdp_port_ctrl_w = VDP_REG_MODESET_3 | 0x00;
+    /* External interrupt off, V scroll, H scroll */
+    *vdp_port_ctrl_w = VDP_REG_MODESET_3 | VID_VSCROLL_MODE | VID_HSCROLL_MODE;
     /* H40 cells mode, shadows and highlights off, interlace mode off */
     *vdp_port_ctrl_w = VDP_REG_MODESET_4 | 0x81;
-    /* H Scroll table address at 0xF800 (divided by 0x400) */
-    *vdp_port_ctrl_w = VDP_REG_HSCROLL_ADDR | 0x3E;
+    /* H Scroll table address (divided by 0x400 = rsifht 10) */
+    *vdp_port_ctrl_w = VDP_REG_HSCROLL_ADDR | (VID_HSCROLL_TABLE_ADDR >> 10);
     /* Auto increment in bytes for the VDP's address reg after read or write */
     *vdp_port_ctrl_w = VDP_REG_AUTOINC | 0x02;
-    /* Scroll size 64x32 cells (planes A and B size) */
-    *vdp_port_ctrl_w = VDP_REG_PLANE_SIZE | 0x01;
+    /* Scroll size (planes A and B size) */
+    *vdp_port_ctrl_w = VDP_REG_PLANE_SIZE | VID_PLANE_SIZE;
     /* Window plane X position (no window) */
     *vdp_port_ctrl_w = VDP_REG_WINDOW_XPOS | 0x00;
     /* Window plane Y position (no window) */
     *vdp_port_ctrl_w = VDP_REG_WINDOW_YPOS | 0x00;
 }
 
-void vid_display_enable(void)
+inline void vid_display_enable(void)
 {
     *vdp_port_ctrl_w = VDP_REG_MODESET_2 | 0x74 | (vid_pal_mode ? 8 : 0);
 }
 
-void vid_display_disable(void)
+inline void vid_display_disable(void)
 {
     *vdp_port_ctrl_w = VDP_REG_MODESET_2 | 0x34 | (vid_pal_mode ? 8 : 0);
 }
@@ -115,4 +116,19 @@ void vid_vsync_wait(void)
         __asm__ volatile ("\tnop\n");
     }
     vid_vblank_flag = 0;
+}
+
+inline void vid_background_color_set(uint8_t index)
+{
+    *vdp_port_ctrl_w = VDP_REG_BGCOLOR | index;
+}
+
+inline void vid_scroll_mode_set(vid_hscroll_mode_t hscr, vid_vscroll_mode_t vscr)
+{
+    *vdp_port_ctrl_w = VDP_REG_MODESET_3 | vscr | hscr;
+}
+
+inline void vid_plane_size_set(vid_plane_size_t size)
+{
+    *vdp_port_ctrl_w = VDP_REG_PLANE_SIZE | size;
 }

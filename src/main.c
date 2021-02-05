@@ -3,6 +3,8 @@
 
 int main()
 {
+    uint8_t color = 1;
+
     smd_interrupts_enable();
     vid_display_enable();
     while (1)
@@ -19,6 +21,12 @@ int main()
         {
             vid_display_enable();
         }
+        if (pad_btn_released(PAD_1, PAD_BTN_C))
+        {
+            vid_background_color_set(color);
+            ++color;
+        }
+
 
         vid_vsync_wait();
     }

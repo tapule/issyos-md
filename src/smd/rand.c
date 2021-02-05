@@ -36,7 +36,7 @@ void rnd_seed_set(uint16_t seed)
     rnd_seed = seed;
 }
 
-uint16_t rnd_seed_get(void)
+inline uint16_t rnd_seed_get(void)
 {
     return rnd_seed;
 }

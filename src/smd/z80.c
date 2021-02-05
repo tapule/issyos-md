@@ -70,12 +70,12 @@ void z80_bus_request(void)
     }
 }
 
-void z80_bus_request_fast(void)
+inline void z80_bus_request_fast(void)
 {
     *z80_bus_port = 0x100;
 }
 
-void z80_bus_release(void)
+inline void z80_bus_release(void)
 {
     *z80_bus_port = 0x000;
 }
