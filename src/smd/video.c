@@ -14,8 +14,12 @@
 /*
  * There are 3 ports to talk with the VDP. These ports can be accessed as 16 or
  * 32 bits.
+ * To work with the VDP we need to write commands to the control port and if we
+ * want to write or read vram, cram or vsram we must write the address to/from
+ * the data port.
  */
-static volatile uint16_t *const vdp_port_data = (uint16_t*) 0xC00000;
+static volatile uint16_t *const vdp_port_data_w = (uint16_t*) 0xC00000;
+static volatile uint16_t *const vdp_port_data_l = (uint32_t*) 0xC00000;
 static volatile uint16_t *const vdp_port_ctrl_w = (uint16_t*) 0xC00004;
 static volatile uint32_t *const vdp_port_ctrl_l = (uint32_t*) 0xC00004;
 static volatile uint16_t *const vdp_port_hv_counter = (uint16_t*) 0xC00008;
@@ -27,6 +31,7 @@ static volatile uint16_t *const vdp_port_hv_counter = (uint16_t*) 0xC00008;
  *              | 1| 0| 0|R4|R3|R2|R1|R0|
  * R4-R0 is the register to write, so 0x81 (10000001) will write to the register
  * 0x01 wich is the Mode register 2.
+ * Registers 0x06, 0x08, 0x09, 0x0E are not used and are always 0x00
  */
 #define VDP_REG_MODESET_1       0x8000      /* Mode register #1 */
 #define VDP_REG_MODESET_2       0x8100      /* Mode register #2 */
@@ -48,6 +53,13 @@ static volatile uint16_t *const vdp_port_hv_counter = (uint16_t*) 0xC00008;
 #define VDP_REG_DMASRC_L        0x9500      /* DMA source (low) */
 #define VDP_REG_DMASRC_M        0x9600      /* DMA source (mid) */
 #define VDP_REG_DMASRC_H        0x9700      /* DMA source (high) */
+
+/*
+ * Base commands for the control port to do writes to the different VDP's rams
+ */
+#define VDP_VRAM_WRITE_CMD      0x40000000
+#define VDP_CRAM_WRITE_CMD      0xC0000000
+#define VDP_VSRAM_WRITE_CMD     0x40000010
 
 /* Stores if the console is working in PAL mode */
 static uint8_t vid_pal_mode;
@@ -95,6 +107,11 @@ void vid_init(void)
     *vdp_port_ctrl_w = VDP_REG_WINDOW_XPOS | 0x00;
     /* Window plane Y position (no window) */
     *vdp_port_ctrl_w = VDP_REG_WINDOW_YPOS | 0x00;
+
+    /* Clean the VDP's rams */
+    vid_vram_clear();
+    vid_cram_clear();
+    vid_vsram_clear();
 }
 
 inline void vid_display_enable(void)
@@ -116,6 +133,42 @@ void vid_vsync_wait(void)
         __asm__ volatile ("\tnop\n");
     }
     vid_vblank_flag = 0;
+}
+
+void vid_vram_clear(void)
+{
+    uint16_t i;
+
+    *vdp_port_ctrl_l = VDP_VRAM_WRITE_CMD;
+
+    for (i = 0; i < (65536 / 4); ++i)
+    {
+        *vdp_port_data_l = 0;
+    }
+}
+
+void vid_cram_clear(void)
+{
+    uint16_t i;
+
+    *vdp_port_ctrl_l = VDP_CRAM_WRITE_CMD;
+
+    for (i = 0; i < (128 / 4); ++i)
+    {
+        *vdp_port_data_l = 0;
+    }
+}
+
+void vid_vsram_clear(void)
+{
+    uint16_t i;
+
+    *vdp_port_ctrl_l = VDP_VSRAM_WRITE_CMD;
+
+    for (i = 0; i < (80 / 4); ++i)
+    {
+        *vdp_port_data_l = 0;
+    }
 }
 
 inline void vid_background_color_set(uint8_t index)

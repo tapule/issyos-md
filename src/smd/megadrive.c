@@ -25,12 +25,12 @@ void smd_init(void)
     vid_init();
 }
 
-void inline smd_interrupts_enable(void)
+inline void smd_interrupts_enable(void)
 {
     __asm__ volatile("\tandi.w	#0xF8FF, %sr\n");
 }
 
-void inline smd_interrupts_disable(void)
+inline void smd_interrupts_disable(void)
 {
     __asm__ volatile("\tori.w	#0x700, %sr\n");
 }

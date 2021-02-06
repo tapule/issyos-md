@@ -83,6 +83,24 @@ void vid_display_disable(void);
 void vid_vsync_wait(void);
 
 /**
+ * @brief Clears the internal VDP video ram
+ * 
+ */
+void vid_vram_clear(void);
+
+/**
+ * @brief Clears the internal VDP color ram
+ * 
+ */
+void vid_cram_clear(void);
+
+/**
+ * @brief Clears the internal VDP vertical scroll ram
+ * 
+ */
+void vid_vsram_clear(void);
+
+/**
  * @brief Sets the background color
  * 
  * Set the color index (0 - 63) wich will be used as background color
@@ -105,8 +123,6 @@ void vid_scroll_mode_set(vid_hscroll_mode_t hscr, vid_vscroll_mode_t vscr);
 void vid_plane_size_set(vid_plane_size_t size);
 
 /*
-    vid_background_color_set
-        Establece el color de fondo
     vid_vram_clear
         Esto debe borrar toda la vram lo cual incluye: 0tile, planos, sprite
         table, hscroll, etc)
