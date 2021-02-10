@@ -5,7 +5,7 @@ int main()
 {
     uint8_t color = 1;
 
-    smd_interrupts_enable();
+    smd_ints_enable();
     vid_display_enable();
     while (1)
     {

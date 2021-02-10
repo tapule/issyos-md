@@ -33,6 +33,10 @@
 /* Planes size */
 #define VID_PLANE_SIZE VID_PLANE_SIZE_64X32 
 
-
+/* 
+ * DMA configuration default values
+ */
+/* DMA internal queue size in operations */
+#define DMA_QUEUE_SIZE 64
 
 #endif // MEGADRIVE_CONFIG_H

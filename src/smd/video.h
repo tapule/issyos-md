@@ -123,15 +123,12 @@ void vid_scroll_mode_set(vid_hscroll_mode_t hscr, vid_vscroll_mode_t vscr);
 void vid_plane_size_set(vid_plane_size_t size);
 
 /*
-    vid_vram_clear
-        Esto debe borrar toda la vram lo cual incluye: 0tile, planos, sprite
-        table, hscroll, etc)
-    vid_vsram_clear
-        Borra la vsram
-    vid_ cram_clear
-        Borra la cram, aunque puede ser mejor establecer unas paletas por
-        defecto??
+    * TODO:
 
+    vid_autoinc_set
+        Set the autoincrement register value
+    vid_autoinc_get
+        Get the autoincrement register value
 
 
 */

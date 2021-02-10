@@ -14,7 +14,7 @@
 static volatile uint16_t *const vdp_port_hv_counter = (uint16_t*) 0xC00008;
 
 /* Current seed */
-static uint16_t rnd_seed;
+static uint16_t current_seed;
 
 void rnd_init(void)
 {
@@ -22,8 +22,8 @@ void rnd_init(void)
 
     /* Mix a random generated value with the MegaDrive HV counter */
     rnd_var = (uint16_t) 0xCE52 ^ (uint16_t) (0xCE52 << 9);
-    rnd_seed = *vdp_port_hv_counter ^ (*vdp_port_hv_counter >> 7);
-    rnd_seed = rnd_seed ^ rnd_var ^ (rnd_var << 13);
+    current_seed = *vdp_port_hv_counter ^ (*vdp_port_hv_counter >> 7);
+    current_seed = current_seed ^ rnd_var ^ (rnd_var << 13);
 }
 
 void rnd_seed_set(uint16_t seed)
@@ -33,20 +33,20 @@ void rnd_seed_set(uint16_t seed)
     {
         rnd_init();
     }
-    rnd_seed = seed;
+    current_seed = seed;
 }
 
 inline uint16_t rnd_seed_get(void)
 {
-    return rnd_seed;
+    return current_seed;
 }
 
 uint16_t rnd_get(void)
 {
     /* Xorshift algorithm */
-    rnd_seed ^= rnd_seed << 7;
-    rnd_seed ^= rnd_seed >> 9;
-    rnd_seed ^= rnd_seed << 8;
+    current_seed ^= current_seed << 7;
+    current_seed ^= current_seed >> 9;
+    current_seed ^= current_seed << 8;
 
-    return rnd_seed;
+    return current_seed;
 }

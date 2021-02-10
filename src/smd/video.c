@@ -17,9 +17,27 @@
  * To work with the VDP we need to write commands to the control port and if we
  * want to write or read vram, cram or vsram we must write the address to/from
  * the data port.
+ * The control port is also the VDP's status register, so it can be read to get
+ * this information:
+ *              | *| *| *| *| *| *|FE|FF|
+ *              |VI|SO|SC|OD|VB|HB|DMA|PAL|
+ *  FE: 1 = FIFO is empty.
+ *  FF: 1 = FIFO is full.
+ *  VI: 1 = Vertical interrupt occurred.
+ *  SO: 1 = Sprite limit has been hit on current scanline
+ *          17+ in 256 pixel wide mode
+ *          21+ in 320 pixel wide mode.
+ *  SC: 1 = Collision happened between non-zero pixels in two sprites. Used for
+ *          pixel-accurate collision detection.
+ *  OD: 1 = Odd frame displayed in interlaced mode
+ *  VB: 1 = Vertical blank in progress.
+ *  HB: 1 = Horizontal blank in progress.
+ *  DMA: 1 = DMA in progress.
+ *  PAL: 1 = PAL system
+ *       0 = NTSC system.
  */
 static volatile uint16_t *const vdp_port_data_w = (uint16_t*) 0xC00000;
-static volatile uint16_t *const vdp_port_data_l = (uint32_t*) 0xC00000;
+static volatile uint32_t *const vdp_port_data_l = (uint32_t*) 0xC00000;
 static volatile uint16_t *const vdp_port_ctrl_w = (uint16_t*) 0xC00004;
 static volatile uint32_t *const vdp_port_ctrl_l = (uint32_t*) 0xC00004;
 static volatile uint16_t *const vdp_port_hv_counter = (uint16_t*) 0xC00008;
@@ -62,7 +80,7 @@ static volatile uint16_t *const vdp_port_hv_counter = (uint16_t*) 0xC00008;
 #define VDP_VSRAM_WRITE_CMD     0x40000010
 
 /* Stores if the console is working in PAL mode */
-static uint8_t vid_pal_mode;
+static uint8_t pal_mode_flag;
 
 /* This flag is set when the vertical blank starts */
 volatile uint8_t vid_vblank_flag = 1;
@@ -74,13 +92,13 @@ void vid_init(void)
      * was doing and put it into a well known state.
      * At the same time, we use this read to save the PAL mode.
      */
-    vid_pal_mode = *vdp_port_ctrl_w & 0x01;
+    pal_mode_flag = *vdp_port_ctrl_w & 0x01;
 
     /* Initialise the VDP register */
     /* H interrupt off, HV counter on */
     *vdp_port_ctrl_w = VDP_REG_MODESET_1 | 0x04;
     /* Display off, V interrupt on, DMA on, V30 cells mode in pal, V28 ntsc  */
-    *vdp_port_ctrl_w = VDP_REG_MODESET_2 | 0x34 | (vid_pal_mode ? 8 : 0);
+    *vdp_port_ctrl_w = VDP_REG_MODESET_2 | 0x34 | (pal_mode_flag ? 8 : 0);
     /* Plane A table address (divided by 0x2000 and lshifted 3 = rshift 10 ) */
     *vdp_port_ctrl_w = VDP_REG_PLANEA_ADDR | (VID_PLANE_A_ADDR >> 10);
     /* Plane W table address (divided by 0x800 and lshifted 1 = rsifht 10) */
@@ -116,12 +134,12 @@ void vid_init(void)
 
 inline void vid_display_enable(void)
 {
-    *vdp_port_ctrl_w = VDP_REG_MODESET_2 | 0x74 | (vid_pal_mode ? 8 : 0);
+    *vdp_port_ctrl_w = VDP_REG_MODESET_2 | 0x74 | (pal_mode_flag ? 8 : 0);
 }
 
 inline void vid_display_disable(void)
 {
-    *vdp_port_ctrl_w = VDP_REG_MODESET_2 | 0x34 | (vid_pal_mode ? 8 : 0);
+    *vdp_port_ctrl_w = VDP_REG_MODESET_2 | 0x34 | (pal_mode_flag ? 8 : 0);
 }
 
 void vid_vsync_wait(void)

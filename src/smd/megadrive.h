@@ -28,16 +28,35 @@
 void smd_init(void);
 
 /**
- * @brief 
+ * @brief Habilita las interrupciones
  * 
  */
-void smd_interrupts_enable(void);
+void smd_ints_enable(void);
 
 /**
- * @brief 
+ * @brief deshabilita las interrupciones
  * 
  */
-void smd_interrupts_disable(void);
+void smd_ints_disable(void);
+
+/**
+ * @brief Obtiene el estado de las interrupciones
+ * 
+ */
+uint16_t smd_ints_status(void);
+
+
+
+/*
+    * TODO:
+
+    smd_ints_mask_set
+        Establecer la mascara de interrupciones
+    smd_ints_mask_get
+        Establecer la mascara de interrupciones
+
+
+*/
 
 
 #endif // MEGADRIVE_H
