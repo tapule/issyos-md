@@ -10,35 +10,8 @@
 
 #include "dma.h"
 #include "config.h"
+#include "vdp.h"
 #include "z80.h"
-
-/*
- * There are 3 ports to talk with the VDP. These ports can be accessed as 16 or
- * 32 bits.
- * To do DMA transfers, only the ctrl port is needed.
- */
-static volatile uint16_t *const vdp_port_ctrl_w = (uint16_t*) 0xC00004;
-static volatile uint32_t *const vdp_port_ctrl_l = (uint32_t*) 0xC00004;
-
-/*
- * VDP's registers used to do DMA transfers. These registers are set by writing
- * a control word to the VDP control port where the high byte is as follow:
- *              | 1| 0| 0|R4|R3|R2|R1|R0|
- * R4-R0 is the register to write.
- */
-#define VDP_REG_AUTOINC         0x8F00      /* Autoincrement data */
-#define VDP_REG_DMALEN_L        0x9300      /* DMA length (low) */
-#define VDP_REG_DMALEN_H        0x9400      /* DMA length (high) */
-#define VDP_REG_DMASRC_L        0x9500      /* DMA source (low) */
-#define VDP_REG_DMASRC_M        0x9600      /* DMA source (mid) */
-#define VDP_REG_DMASRC_H        0x9700      /* DMA source (high) */
-
-/*
- * Base commands for the control port to do DMA writes to different VDP's rams
- */
-#define VDP_DMA_VRAM_WRITE_CMD      0x40000080
-#define VDP_DMA_CRAM_WRITE_CMD      0xC0000080
-#define VDP_DMA_VSRAM_WRITE_CMD     0x40000090
 
 /* Defines a DMA queue command operation */
 typedef struct dma_command
@@ -56,7 +29,6 @@ typedef struct dma_command
 /* DMA commands queue and position index */
 static dma_command_t queue[DMA_QUEUE_SIZE];
 static uint16_t queue_index;
-
 
 /**
  * @brief Builds a VDP ctrl port write address set command
@@ -91,24 +63,24 @@ void dma_transfer_fast(uint32_t src, uint16_t dest, uint16_t len, uint16_t inc,
     dma_wait();
 
     /* Sets the autoincrement on word writes */
-    *vdp_port_ctrl_w = VDP_REG_AUTOINC | inc;
+    *VDP_PORT_CTRL_W = VDP_REG_AUTOINC | inc;
     /* Sets the DMA length in words */
-    *vdp_port_ctrl_w = VDP_REG_DMALEN_L | (len & 0xFF);
-    *vdp_port_ctrl_w = VDP_REG_DMALEN_H | ((len >> 8) & 0xFF);    
+    *VDP_PORT_CTRL_W = VDP_REG_DMALEN_L | (len & 0xFF);
+    *VDP_PORT_CTRL_W = VDP_REG_DMALEN_H | ((len >> 8) & 0xFF);    
     /*
      * Sets the DMA source address. An additional lshift is needed to convert
      * src from bytes to words
      */
-    *vdp_port_ctrl_w = VDP_REG_DMASRC_L | ((src >> 1) & 0xFF);
-    *vdp_port_ctrl_w = VDP_REG_DMASRC_M | ((src >> 9) & 0xFF);
-    *vdp_port_ctrl_w = VDP_REG_DMASRC_H | ((src >> 17) & 0x7F);
+    *VDP_PORT_CTRL_W = VDP_REG_DMASRC_L | ((src >> 1) & 0xFF);
+    *VDP_PORT_CTRL_W = VDP_REG_DMASRC_M | ((src >> 9) & 0xFF);
+    *VDP_PORT_CTRL_W = VDP_REG_DMASRC_H | ((src >> 17) & 0x7F);
     /* Builds the ctrl port write address command in a ram variable */
     cmd = dma_ctrl_addr_build(xram_addr, dest);
     /* Issues the DMA from a ram varible and in words (see SEGA notes on DMA) */ 
-    *vdp_port_ctrl_w = *cmd_p;
+    *VDP_PORT_CTRL_W = *cmd_p;
     ++cmd_p;
     z80_bus_request_fast();
-    *vdp_port_ctrl_w = *cmd_p;
+    *VDP_PORT_CTRL_W = *cmd_p;
     z80_bus_release();
 }
 
@@ -261,7 +233,7 @@ inline void dma_init(void)
 inline void dma_wait(void)
 {
     /* Checks the DMA in progress flag in status register */
-    while (*vdp_port_ctrl_l & 0x10)
+    while (*VDP_PORT_CTRL_L & 0x10)
     {
         __asm__ volatile ("\tnop\n");
     }
@@ -307,17 +279,17 @@ void dma_queue_flush(void)
          * Sets the autoincrement on word writes and the high part of the DMA
          * length in words
          */
-        *vdp_port_ctrl_l = *queue_p++;
+        *VDP_PORT_CTRL_L = *queue_p++;
         /*
          * Sets the low part of the DMA length in words and the high part of
          * source address
          */
-        *vdp_port_ctrl_l = *queue_p++;
+        *VDP_PORT_CTRL_L = *queue_p++;
         /* Sets the middle and low part of the DMA source address */
-        *vdp_port_ctrl_l = *queue_p++;
+        *VDP_PORT_CTRL_L = *queue_p++;
         /* Issues the DMA from a ram space and in words (see SEGA notes on DMA) */ 
-        *vdp_port_ctrl_w = *queue_p >> 16;
-        *vdp_port_ctrl_w = *queue_p++;
+        *VDP_PORT_CTRL_W = *queue_p >> 16;
+        *VDP_PORT_CTRL_W = *queue_p++;
     }
     z80_bus_release();
     dma_queue_clear();

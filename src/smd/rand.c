@@ -9,9 +9,7 @@
  */
 
 #include "rand.h"
-
-/* Sega MegaDrive/Genesis VDP HV counter port */
-static volatile uint16_t *const vdp_port_hv_counter = (uint16_t *) 0xC00008;
+#include "vdp.h"
 
 /* Current seed */
 static uint16_t current_seed;
@@ -22,7 +20,7 @@ void rnd_init(void)
 
     /* Mix a random generated value with the MegaDrive HV counter */
     rnd_var = (uint16_t) 0xCE52 ^ (uint16_t) (0xCE52 << 9);
-    current_seed = *vdp_port_hv_counter ^ (*vdp_port_hv_counter >> 7);
+    current_seed = *VDP_PORT_HV_COUNTER ^ (*VDP_PORT_HV_COUNTER >> 7);
     current_seed = current_seed ^ rnd_var ^ (rnd_var << 13);
 }
 
