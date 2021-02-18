@@ -14,12 +14,15 @@
 #ifndef MEGADRIVE_H
 #define MEGADRIVE_H
 
+#include "config.h"
+
 #include "pad.h"
 #include "pal.h"
 #include "psg.h"
 #include "rand.h"
 #include "video.h"
 #include "z80.h"
+#include "dma.h"
 
 /**
  * @brief 

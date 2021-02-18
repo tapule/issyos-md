@@ -11,7 +11,7 @@
 #include "rand.h"
 
 /* Sega MegaDrive/Genesis VDP HV counter port */
-static volatile uint16_t *const vdp_port_hv_counter = (uint16_t*) 0xC00008;
+static volatile uint16_t *const vdp_port_hv_counter = (uint16_t *) 0xC00008;
 
 /* Current seed */
 static uint16_t current_seed;

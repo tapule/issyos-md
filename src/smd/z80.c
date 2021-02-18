@@ -15,7 +15,7 @@ static volatile uint16_t *const z80_bus_port = (uint16_t *) 0xA11100;
 static volatile uint16_t *const z80_reset_port = (uint16_t *) 0xA11200;
 
 /* Z80 memory pointer and size (8KB) */
-static const uint8_t *const z80_ram_address = (uint8_t*) 0xA00000;
+static const uint8_t *const z80_ram_address = (uint8_t *) 0xA00000;
 static const uint16_t z80_ram_size = 0x2000;
 
 static void z80_ram_clear(void)

@@ -36,11 +36,11 @@
  *  PAL: 1 = PAL system
  *       0 = NTSC system.
  */
-static volatile uint16_t *const vdp_port_data_w = (uint16_t*) 0xC00000;
-static volatile uint32_t *const vdp_port_data_l = (uint32_t*) 0xC00000;
-static volatile uint16_t *const vdp_port_ctrl_w = (uint16_t*) 0xC00004;
-static volatile uint32_t *const vdp_port_ctrl_l = (uint32_t*) 0xC00004;
-static volatile uint16_t *const vdp_port_hv_counter = (uint16_t*) 0xC00008;
+static volatile uint16_t *const vdp_port_data_w = (uint16_t *) 0xC00000;
+static volatile uint32_t *const vdp_port_data_l = (uint32_t *) 0xC00000;
+static volatile uint16_t *const vdp_port_ctrl_w = (uint16_t *) 0xC00004;
+static volatile uint32_t *const vdp_port_ctrl_l = (uint32_t *) 0xC00004;
+static volatile uint16_t *const vdp_port_hv_counter = (uint16_t *) 0xC00008;
 
 /*
  * The VDP has 24 registers (some of them not used) which control how video
@@ -104,7 +104,7 @@ void vid_init(void)
     /* Plane W table address (divided by 0x800 and lshifted 1 = rsifht 10) */
     *vdp_port_ctrl_w = VDP_REG_WINDOW_ADDR | (VID_PLANE_W_ADDR >> 10);
     /* Plane B table address (divided by 0x2000 = rsifht 13) */
-    *vdp_port_ctrl_w = VDP_REG_PLANEA_ADDR | (VID_PLANE_B_ADDR >> 13);
+    *vdp_port_ctrl_w = VDP_REG_PLANEB_ADDR | (VID_PLANE_B_ADDR >> 13);
     /* Sprite table address (divided by 0x200 = rsifht 9) */
     *vdp_port_ctrl_w = VDP_REG_SPRITE_ADDR | (VID_SPRITE_TABLE_ADDR >> 9);
     /* Background color: palette 0, color 0 */
@@ -161,7 +161,7 @@ void vid_vram_clear(void)
 
     for (i = 0; i < (65536 / 4); ++i)
     {
-        *vdp_port_data_l = 0;
+        *vdp_port_data_l = 0x00;
     }
 }
 

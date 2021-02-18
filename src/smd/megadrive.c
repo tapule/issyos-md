@@ -24,6 +24,9 @@ void smd_init(void)
     psg_init();
     /* Initialise the graphics  */
     vid_init();
+    /* Initialise the DMA system  */
+    dma_init();
+
 }
 
 inline void smd_ints_enable(void)

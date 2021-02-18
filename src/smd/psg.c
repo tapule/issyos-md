@@ -12,7 +12,7 @@
 #include "psg.h"
 
 /* PSG port from the m68k side */
-static volatile uint8_t *const psg_port = (uint8_t*) 0xC00011;
+static volatile uint8_t *const psg_port = (uint8_t *) 0xC00011;
 
 void psg_init(void)
 {

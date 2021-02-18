@@ -13,16 +13,16 @@
 
 /* Gamepads data ports (DATAx) */
 static volatile uint8_t *const pad_data_port[3] = {
-    (uint8_t*) 0xA10003,
-    (uint8_t*) 0xA10005,
-    (uint8_t*) 0xA10007
+    (uint8_t *) 0xA10003,
+    (uint8_t *) 0xA10005,
+    (uint8_t *) 0xA10007
  };
 
 /* Gamepads control ports (CTRLx) */
 static volatile uint8_t *const pad_ctrl_port[3] = {
-    (uint8_t*) 0xA10009,
-    (uint8_t*) 0xA1000B,
-    (uint8_t*) 0xA1000D
+    (uint8_t *) 0xA10009,
+    (uint8_t *) 0xA1000B,
+    (uint8_t *) 0xA1000D
  };
 
 /* Gamepads types for later accesses */

@@ -15,6 +15,7 @@
  *
  * More info:
  * https://www.plutiedev.com/dma-transfer
+ * https://github.com/Stephane-D/SGDK/blob/master/inc/dma.h
  */
 
 #ifndef DMA_H
@@ -23,43 +24,103 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+/**
+ * @brief Initialises the DMA system
+ * 
+ * @note This function is called from the boot process so maybe you don't need
+ * to call it anymore unless you want to reset the DMA system.
+ */
 void dma_init(void);
 
+/**
+ * @brief Wait for a running DMA copy/fill operation to finish
+ * 
+ */
 void dma_wait(void);
 
-void dma_vram_transfer(uint32_t from, uint16_t to, uint16_t len, int16_t step);
+/**
+ * @brief Executes a DMA transfer from RAM/ROM to VRAM
+ * 
+ * @param src Source address on RAM/ROM space
+ * @param dest Destination address on VRAM
+ * @param len Transfer length in words
+ * @param inc Write position increment after each write (normally 2)
+ * @return True on success, false otherwise
+ */
+bool dma_vram_transfer(void *src, uint16_t dest, uint16_t len, uint16_t inc);
 
-void dma_cram_transfer(uint32_t from, uint16_t to, uint16_t len, int16_t step);
+/**
+ * @brief Executes a DMA transfer from RAM/ROM to CRAM
+ * 
+ * @param src Source address on RAM/ROM space
+ * @param dest Destination address on CRAM
+ * @param len Transfer length in words
+ * @param inc Write position increment after each write (normally 2)
+ * @return True on success, false otherwise
+ */
+bool dma_cram_transfer(void *src, uint16_t dest, uint16_t len, uint16_t inc);
 
-void dma_vsram_transfer(uint32_t from, uint16_t to, uint16_t len, int16_t step);
+/**
+ * @brief Executes a DMA transfer from RAM/ROM to VSRAM
+ * 
+ * @param src Source address on RAM/ROM space
+ * @param dest Destination address on VSRAM
+ * @param len Transfer length in words
+ * @param inc Write position increment after each write (normally 2)
+ * @return True on success, false otherwise
+ */
+bool dma_vsram_transfer(void *src, uint16_t dest, uint16_t len, uint16_t inc);
 
-void dma_vram_fill(uint16_t to, uint16_t len, int16_t step, uint8_t val);
-
-void dma_vram_copy(uint16_t from, uint16_t to, uint16_t len, int16_t step);
-
-
+/**
+ * @brief Returns the current DMA's queue command size
+ * 
+ * @return uint16_t Total DMA commands in the queue
+ */
 uint16_t dma_queue_size(void);
 
+/**
+ * @brief Resets the DMA's queue command
+ * 
+ */
 void dma_queue_clear(void);
 
+/**
+ * @brief Executes all the pending DMA's commands in the queue and resets it
+ * 
+ */
 void dma_queue_flush(void);
 
-// True if queue is full
-bool dma_queue_vram_transfer(uint32_t from, uint16_t to, uint16_t len, int16_t step);
+/**
+ * @brief Adds a new DMA transfer from RAM/ROM to VRAM in the queue
+ * 
+ * @param src Source address on RAM/ROM space
+ * @param dest Destination address on VRAM
+ * @param len Transfer length in words
+ * @param inc Write position increment after each write (normally 2)
+ * @return True on success, false if the queue is full
+ */
+bool dma_queue_vram_transfer(void *src, uint16_t dest, uint16_t len, uint16_t inc);
 
-bool dma_queue_cram_transfer(uint32_t from, uint16_t to, uint16_t len, int16_t step);
+/**
+ * @brief Adds a new DMA transfer from RAM/ROM to CRAM in the queue
+ * 
+ * @param src Source address on RAM/ROM space
+ * @param dest Destination address on CRAM
+ * @param len Transfer length in words
+ * @param inc Write position increment after each write (normally 2)
+ * @return True on success, false if the queue is full
+ */
+bool dma_queue_cram_transfer(void *src, uint16_t dest, uint16_t len, uint16_t inc);
 
-bool dma_queue_vsram_transfer(uint32_t from, uint16_t to, uint16_t len, int16_t step);
-
-/*
-    * TODO:
- 
-    dma_queue_command
-        interna. Encola un comando. Genérica para operaciones internas
-
-    dma_command
-        interna. realiza una operacion dma directamente sin cola
-
-*/
+/**
+ * @brief Adds a new DMA transfer from RAM/ROM to VSRAM in the queue
+ * 
+ * @param src Source address on RAM/ROM space
+ * @param dest Destination address on VSRAM
+ * @param len Transfer length in words
+ * @param inc Write position increment after each write (normally 2)
+ * @return True on success, false if the queue is full
+ */
+bool dma_queue_vsram_transfer(void *src, uint16_t dest, uint16_t len, uint16_t inc);
 
 #endif // DMA_H

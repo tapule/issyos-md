@@ -53,7 +53,7 @@ typedef enum vid_plane_size
 
 
 /**
- * @brief initialises the VDP
+ * @brief Initialises the VDP
  * 
  * Before using the VDP, we must setup it first. This function controls the
  * initialisation, registers setup and VRAM/CRAM/VSRAM cleaning process. 
@@ -125,6 +125,8 @@ void vid_plane_size_set(vid_plane_size_t size);
 /*
     * TODO:
 
+    Estas dos posiblemente no las ponga. Cuando se hagan las operaciones que se
+    especifique el incremento y que controle los valores mínimos.
     vid_autoinc_set
         Set the autoincrement register value
     vid_autoinc_get
