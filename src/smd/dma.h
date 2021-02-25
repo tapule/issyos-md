@@ -43,33 +43,81 @@ void dma_wait(void);
  * 
  * @param src Source address on RAM/ROM space
  * @param dest Destination address on VRAM
- * @param len Transfer length in words
- * @param inc Write position increment after each write (normally 2)
+ * @param length Transfer length in words
+ * @param increment Write position increment after each write (normally 2)
  * @return True on success, false otherwise
  */
-bool dma_vram_transfer(void *src, uint16_t dest, uint16_t len, uint16_t inc);
+bool dma_vram_transfer(void *src, uint16_t dest, uint16_t length,
+                       uint16_t increment);
 
 /**
  * @brief Executes a DMA transfer from RAM/ROM to CRAM
  * 
  * @param src Source address on RAM/ROM space
  * @param dest Destination address on CRAM
- * @param len Transfer length in words
- * @param inc Write position increment after each write (normally 2)
+ * @param length Transfer length in words
+ * @param increment Write position increment after each write (normally 2)
  * @return True on success, false otherwise
  */
-bool dma_cram_transfer(void *src, uint16_t dest, uint16_t len, uint16_t inc);
+bool dma_cram_transfer(void *src, uint16_t dest, uint16_t length,
+                       uint16_t increment);
 
 /**
  * @brief Executes a DMA transfer from RAM/ROM to VSRAM
  * 
  * @param src Source address on RAM/ROM space
  * @param dest Destination address on VSRAM
- * @param len Transfer length in words
- * @param inc Write position increment after each write (normally 2)
+ * @param length Transfer length in words
+ * @param increment Write position increment after each write (normally 2)
  * @return True on success, false otherwise
  */
-bool dma_vsram_transfer(void *src, uint16_t dest, uint16_t len, uint16_t inc);
+bool dma_vsram_transfer(void *src, uint16_t dest, uint16_t length,
+                        uint16_t increment);
+
+/**
+ * @brief Executes a fast DMA transfer from RAM/ROM to VRAM
+ * 
+ * @param src Source address on RAM/ROM space
+ * @param dest Destination address on VRAM
+ * @param length Transfer length in words
+ * @param increment Write position increment after each write (normally 2)
+ * @return True on success, false otherwise
+ * 
+ * @note Parameters or 128kB boundaries are not checked, so be aware that it is
+ * a bit unsafe if you don't know what you are doing.
+ */
+void dma_vram_transfer_fast(void *src, uint16_t dest, uint16_t length,
+                            uint16_t increment);
+
+/**
+ * @brief Executes a fast DMA transfer from RAM/ROM to CRAM
+ * 
+ * @param src Source address on RAM/ROM space
+ * @param dest Destination address on CRAM
+ * @param length Transfer length in words
+ * @param increment Write position increment after each write (normally 2)
+ * @return True on success, false otherwise
+ * 
+ * @note Parameters or 128kB boundaries are not checked, so be aware that it is
+ * a bit unsafe if you don't know what you are doing.
+ */
+void dma_cram_transfer_fast(void *src, uint16_t dest, uint16_t length,
+                            uint16_t increment);
+
+/**
+ * @brief Executes a fast DMA transfer from RAM/ROM to VSRAM
+ * 
+ * @param src Source address on RAM/ROM space
+ * @param dest Destination address on VSRAM
+ * @param length Transfer length in words
+ * @param increment Write position increment after each write (normally 2)
+ * @return True on success, false otherwise
+ * 
+ * @note Parameters or 128kB boundaries are not checked, so be aware that it is
+ * a bit unsafe if you don't know what you are doing.
+ */
+void dma_vsram_transfer_fast(void *src, uint16_t dest, uint16_t length,
+                             uint16_t increment);
 
 /**
  * @brief Returns the current DMA's queue command size
@@ -95,32 +143,35 @@ void dma_queue_flush(void);
  * 
  * @param src Source address on RAM/ROM space
  * @param dest Destination address on VRAM
- * @param len Transfer length in words
- * @param inc Write position increment after each write (normally 2)
+ * @param length Transfer length in words
+ * @param increment Write position increment after each write (normally 2)
  * @return True on success, false if the queue is full
  */
-bool dma_queue_vram_transfer(void *src, uint16_t dest, uint16_t len, uint16_t inc);
+bool dma_queue_vram_transfer(void *src, uint16_t dest, uint16_t length,
+                             uint16_t increment);
 
 /**
  * @brief Adds a new DMA transfer from RAM/ROM to CRAM in the queue
  * 
  * @param src Source address on RAM/ROM space
  * @param dest Destination address on CRAM
- * @param len Transfer length in words
- * @param inc Write position increment after each write (normally 2)
+ * @param length Transfer length in words
+ * @param increment Write position increment after each write (normally 2)
  * @return True on success, false if the queue is full
  */
-bool dma_queue_cram_transfer(void *src, uint16_t dest, uint16_t len, uint16_t inc);
+bool dma_queue_cram_transfer(void *src, uint16_t dest, uint16_t length,
+                             uint16_t increment);
 
 /**
  * @brief Adds a new DMA transfer from RAM/ROM to VSRAM in the queue
  * 
  * @param src Source address on RAM/ROM space
  * @param dest Destination address on VSRAM
- * @param len Transfer length in words
- * @param inc Write position increment after each write (normally 2)
+ * @param length Transfer length in words
+ * @param increment Write position increment after each write (normally 2)
  * @return True on success, false if the queue is full
  */
-bool dma_queue_vsram_transfer(void *src, uint16_t dest, uint16_t len, uint16_t inc);
+bool dma_queue_vsram_transfer(void *src, uint16_t dest, uint16_t length,
+                              uint16_t increment);
 
 #endif // DMA_H

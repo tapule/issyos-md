@@ -5,7 +5,7 @@
  * Github: https://github.com/tapule/issyos-md
  *
  * File: pal.c
- * ??
+ * Palette routines
  */
 
 #include "pal.h"

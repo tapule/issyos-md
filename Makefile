@@ -64,10 +64,10 @@ SSRC += $(wildcard src/smd/boot/*.s)
 ZSRC  = $(wildcard src/smd/xgm/*.s80)
 # Resources
 # TODO: Include resources
-RSRC  = 
+RSRC  = $(wildcard res/*.c)
 
 # Objets files
-OBJS    = $(RSRC:.res=.o)
+OBJS    = $(RSRC:.c=.o)
 OBJS   += $(CSRC:.c=.o)
 OBJS   += $(SSRC:.s=.o)
 OBJS   += $(ZSRC:.s80=.o)

@@ -164,7 +164,7 @@ bool pad_btn_state(const uint16_t pad, const uint16_t buttons)
     {
         return false;
     }
-    return(pad_state[pad] & buttons);
+    return (pad_state[pad] & buttons);
 }
 
 bool pad_btn_pressed(const uint16_t pad, const uint16_t buttons)
@@ -174,7 +174,7 @@ bool pad_btn_pressed(const uint16_t pad, const uint16_t buttons)
         return false;
     }
     /* Pressed this frame and not pressed last frame */
-    return ( (pad_state[pad] & buttons) && !(pad_state_old[pad] & buttons));
+    return ((pad_state[pad] & buttons) && !(pad_state_old[pad] & buttons));
  }
 
 bool pad_btn_released(const uint16_t pad, const uint16_t buttons)

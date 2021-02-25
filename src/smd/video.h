@@ -110,10 +110,11 @@ void vid_background_color_set(uint8_t index);
 /**
  * @brief Sets the plane scroll mode for planes A and B
  * 
- * @param hscr New horizontal scroll mode
- * @param vscr New vertical scroll mode
+ * @param hscroll_mode New horizontal scroll mode
+ * @param vscroll_mode New vertical scroll mode
  */
-void vid_scroll_mode_set(vid_hscroll_mode_t hscr, vid_vscroll_mode_t vscr);
+void vid_scroll_mode_set(vid_hscroll_mode_t hscroll_mode,
+                         vid_vscroll_mode_t vscroll_mode);
 
 /**
  * @brief Set the plane size for planes A and B

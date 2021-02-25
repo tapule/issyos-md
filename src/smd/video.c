@@ -127,9 +127,10 @@ inline void vid_background_color_set(uint8_t index)
     *VDP_PORT_CTRL_W = VDP_REG_BGCOLOR | index;
 }
 
-inline void vid_scroll_mode_set(vid_hscroll_mode_t hscr, vid_vscroll_mode_t vscr)
+inline void vid_scroll_mode_set(vid_hscroll_mode_t hscroll_mode,
+                                vid_vscroll_mode_t vscroll_mode)
 {
-    *VDP_PORT_CTRL_W = VDP_REG_MODESET_3 | vscr | hscr;
+    *VDP_PORT_CTRL_W = VDP_REG_MODESET_3 | vscroll_mode | hscroll_mode;
 }
 
 inline void vid_plane_size_set(vid_plane_size_t size)

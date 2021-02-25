@@ -19,6 +19,19 @@
 
 /* 
  * Video configuration default values
+ * 
+ *  VDP memory layout:
+ *  #0000..#BFFF - 1536 tiles
+ *  #C000..#CFFF - Plane A (64x32, 4096 Bytes)
+ *  #D000..#D000 - Plane W (0x0)
+ *  #D000..#DFFF - 128 tiles
+ *  #E000..#EFFF - Plane B (64x32, 4096 Bytes)
+ *  #F000..#F7FF - 64 Tiles
+ *  #F800..#FBBF - HScroll table (960 Bytes)
+ *  #FBC0..#FBFF - 2 tiles
+ *  #FC00..#FE7F - Sprite table (640 Bytes)
+ *  #FE80..#FFFF - 12 tiles
+ *  -> 1742 free tiles
  */
 /* Plane start address in VRAM */
 #define VID_PLANE_A_ADDR 0xC000

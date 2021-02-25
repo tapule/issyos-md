@@ -27,8 +27,8 @@ typedef struct dma_command
 } dma_command_t;
 
 /* DMA commands queue and position index */
-static dma_command_t queue[DMA_QUEUE_SIZE];
-static uint16_t queue_index;
+static dma_command_t dma_queue[DMA_QUEUE_SIZE];
+static uint16_t dma_queue_index;
 
 /**
  * @brief Builds a VDP ctrl port write address set command
@@ -48,12 +48,12 @@ static inline uint32_t dma_ctrl_addr_build(uint32_t xram_addr, uint32_t dest)
  * 
  * @param src Source address on RAM/ROM space
  * @param dest Destination address on VRAM/CRAM/VSRAM
- * @param len Transfer length in words
- * @param inc Write position increment after each write (normally 2)
+ * @param length Transfer length in words
+ * @param increment Write position increment after each write (normally 2)
  * @param xram_addr VRAM/CRAM/VSRAM DMA address base command
  */
-void dma_transfer_fast(uint32_t src, uint16_t dest, uint16_t len, uint16_t inc,
-                       uint32_t xram_addr)
+void dma_transfer_fast(uint32_t src, uint16_t dest, uint16_t length,
+                       uint16_t increment, uint32_t xram_addr)
 {
     /* Used to issue the dma from a ram space */
     volatile uint32_t cmd;
@@ -63,10 +63,10 @@ void dma_transfer_fast(uint32_t src, uint16_t dest, uint16_t len, uint16_t inc,
     dma_wait();
 
     /* Sets the autoincrement on word writes */
-    *VDP_PORT_CTRL_W = VDP_REG_AUTOINC | inc;
+    *VDP_PORT_CTRL_W = VDP_REG_AUTOINC | increment;
     /* Sets the DMA length in words */
-    *VDP_PORT_CTRL_W = VDP_REG_DMALEN_L | (len & 0xFF);
-    *VDP_PORT_CTRL_W = VDP_REG_DMALEN_H | ((len >> 8) & 0xFF);    
+    *VDP_PORT_CTRL_W = VDP_REG_DMALEN_L | (length & 0xFF);
+    *VDP_PORT_CTRL_W = VDP_REG_DMALEN_H | ((length >> 8) & 0xFF);    
     /*
      * Sets the DMA source address. An additional lshift is needed to convert
      * src from bytes to words
@@ -93,18 +93,18 @@ void dma_transfer_fast(uint32_t src, uint16_t dest, uint16_t len, uint16_t inc,
  * 
  * @param src Source address on RAM/ROM space
  * @param dest Destination address on VRAM/CRAM/VSRAM
- * @param len Transfer length in words
- * @param inc Write position increment after each write (normally 2)
+ * @param length Transfer length in words
+ * @param increment Write position increment after each write (normally 2)
  * @param xram_addr VRAM/CRAM/VSRAM DMA address base command
  * @return true On success, false otherwise
  */
-bool dma_transfer(uint32_t src, uint16_t dest, uint16_t len, uint16_t inc,
-                  uint32_t xram_addr)
+bool dma_transfer(uint32_t src, uint16_t dest, uint16_t length,
+                  uint16_t increment, uint32_t xram_addr)
 {
     uint32_t bytes_to_128k;
     uint32_t words_to_128k;
 
-    if (inc < 2 || len == 0)
+    if (increment < 2 || length == 0)
     {
         return false;
     }
@@ -113,7 +113,7 @@ bool dma_transfer(uint32_t src, uint16_t dest, uint16_t len, uint16_t inc,
      * We need to control transfers which cross 128kB boundaries due to a bug in
      * the VDP's DMA. If a transfer crosses a 128kB boundary, the data that
      * crosses the limit will be random, that is, garbage data.
-     * If the data crosses de limit, we need to split the transfer in two
+     * If the data crosses the limit, we need to split the transfer in two
      * halves.There is no need to do more than two transfers as the VDPS's
      * maximum ram (vram, cram, vsram) size is 64kB.
      */
@@ -121,15 +121,15 @@ bool dma_transfer(uint32_t src, uint16_t dest, uint16_t len, uint16_t inc,
     bytes_to_128k = 0x20000 - (src & 0x1FFFF);
     /* How many words there are until the next 128k jump */
     words_to_128k = 0x20000 - (src & 0x1FFFF);
-    if (len > words_to_128k)
+    if (length > words_to_128k)
     {
         /* Does a fast transfer of second half */
         dma_transfer_fast(src + bytes_to_128k, dest + bytes_to_128k,
-                          len - words_to_128k, inc, xram_addr);
-        len = words_to_128k;
+                          length - words_to_128k, increment, xram_addr);
+        length = words_to_128k;
     }
     /* Does a fast transfer here (first half if we splited) */
-    dma_transfer_fast(src, dest, len, inc, xram_addr);
+    dma_transfer_fast(src, dest, length, increment, xram_addr);
     return true;
 }
 
@@ -139,24 +139,24 @@ bool dma_transfer(uint32_t src, uint16_t dest, uint16_t len, uint16_t inc,
  * 
  * @param src Source address on RAM/ROM space
  * @param dest Destination address on VRAM/CRAM/VSRAM
- * @param len Transfer length in words
- * @param inc Write position increment after each write (normally 2)
+ * @param length Transfer length in words
+ * @param increment Write position increment after each write (normally 2)
  * @param xram_addr VRAM/CRAM/VSRAM DMA address base command
  */
-void dma_queue_push_fast(uint32_t src, uint16_t dest, uint16_t len, uint16_t inc,
-                         uint32_t xram_addr)
+void dma_queue_push_fast(uint32_t src, uint16_t dest, uint16_t length,
+                         uint16_t increment, uint32_t xram_addr)
 {
     dma_command_t *cmd;
     uint32_t *ctrl_addr_p;
 
-    cmd = &queue[queue_index];
+    cmd = &dma_queue[dma_queue_index];
     ctrl_addr_p = (uint32_t *) &(cmd->ctrl_addr_h);
 
     /* Sets the autoincrement on word writes */
-    cmd->autoinc = VDP_REG_AUTOINC | inc;
+    cmd->autoinc = VDP_REG_AUTOINC | increment;
     /* Sets the DMA length in words */
-    cmd->length_l = VDP_REG_DMALEN_L | (len & 0xFF);
-    cmd->length_h = VDP_REG_DMALEN_H | ((len >> 8) & 0xFF);    
+    cmd->length_l = VDP_REG_DMALEN_L | (length & 0xFF);
+    cmd->length_h = VDP_REG_DMALEN_H | ((length >> 8) & 0xFF);    
     /*
      * Sets the DMA source address. An additional lshift is needed to convert
      * src from bytes to words
@@ -167,7 +167,7 @@ void dma_queue_push_fast(uint32_t src, uint16_t dest, uint16_t len, uint16_t inc
     /* Builds the ctrl port write address command in a ram variable */
     *ctrl_addr_p = dma_ctrl_addr_build(xram_addr, dest);
     /* Advances the queue slot index */
-    ++queue_index;
+    ++dma_queue_index;
 }
 
 /**
@@ -180,18 +180,18 @@ void dma_queue_push_fast(uint32_t src, uint16_t dest, uint16_t len, uint16_t inc
  * 
  * @param src Source address on RAM/ROM space
  * @param dest Destination address on VRAM/CRAM/VSRAM
- * @param len Transfer length in words
- * @param inc Write position increment after each write (normally 2)
+ * @param length Transfer length in words
+ * @param increment Write position increment after each write (normally 2)
  * @param xram_addr VRAM/CRAM/VSRAM DMA address base command
  * @return true On success, false otherwise
  */
-bool dma_queue_push(uint32_t src, uint16_t dest, uint16_t len, uint16_t inc,
-                    uint32_t xram_addr)
+bool dma_queue_push(uint32_t src, uint16_t dest, uint16_t length,
+                    uint16_t increment, uint32_t xram_addr)
 {
     uint32_t bytes_to_128k;
     uint32_t words_to_128k;
 
-    if (inc < 2 || len == 0 || (queue_index >= DMA_QUEUE_SIZE))
+    if (increment < 2 || length == 0 || (dma_queue_index >= DMA_QUEUE_SIZE))
     {
         return false;
     }
@@ -208,26 +208,26 @@ bool dma_queue_push(uint32_t src, uint16_t dest, uint16_t len, uint16_t inc,
     bytes_to_128k = 0x20000 - (src & 0x1FFFF);
     /* How many words there are until the next 128k jump */
     words_to_128k = 0x20000 - (src & 0x1FFFF);
-    if (len > words_to_128k)
+    if (length > words_to_128k)
     {
         /* There is at least space for one commad, but we need two */
-        if ((queue_index + 1) >= DMA_QUEUE_SIZE)
+        if ((dma_queue_index + 1) >= DMA_QUEUE_SIZE)
         {
             return false;
         }
         /* Pushes a transfer command of second half */
         dma_queue_push_fast(src + bytes_to_128k, dest + bytes_to_128k,
-                            len - words_to_128k, inc, xram_addr);
-        len = words_to_128k;
+                            length - words_to_128k, increment, xram_addr);
+        length = words_to_128k;
     }
     /* Pushes transfer command here (first half if we splited) */
-    dma_queue_push_fast(src, dest, len, inc, xram_addr);
+    dma_queue_push_fast(src, dest, length, increment, xram_addr);
     return true;
 }
 
 inline void dma_init(void)
 {
-    queue_index = 0;
+    dma_queue_index = 0;
 }
 
 inline void dma_wait(void)
@@ -239,41 +239,65 @@ inline void dma_wait(void)
     }
 }
 
-inline bool dma_vram_transfer(void *src, uint16_t dest, uint16_t len, uint16_t inc)
+inline bool dma_vram_transfer(void *src, uint16_t dest, uint16_t length,
+                              uint16_t increment)
 {
-    return dma_transfer((uint32_t) src, dest, len, inc, VDP_DMA_VRAM_WRITE_CMD);
+    return dma_transfer((uint32_t) src, dest, length, increment,
+                        VDP_DMA_VRAM_WRITE_CMD);
 }
 
-inline bool dma_cram_transfer(void *src, uint16_t dest, uint16_t len, uint16_t inc)
+inline bool dma_cram_transfer(void *src, uint16_t dest, uint16_t length,
+                              uint16_t increment)
 {
-    return dma_transfer((uint32_t) src, dest, len, inc, VDP_DMA_CRAM_WRITE_CMD);
+    return dma_transfer((uint32_t) src, dest, length, increment,
+                        VDP_DMA_CRAM_WRITE_CMD);
 }
 
-inline bool dma_vsram_transfer(void *src, uint16_t dest, uint16_t len, uint16_t inc)
+inline bool dma_vsram_transfer(void *src, uint16_t dest, uint16_t length,
+                               uint16_t increment)
 {
-    return dma_transfer((uint32_t) src, dest, len, inc, VDP_DMA_VSRAM_WRITE_CMD);
+    return dma_transfer((uint32_t) src, dest, length, increment,
+                        VDP_DMA_VSRAM_WRITE_CMD);
+}
+
+inline void dma_vram_transfer_fast(void *src, uint16_t dest, uint16_t length,
+                                   uint16_t increment)
+{
+    return dma_transfer_fast((uint32_t) src, dest, length, increment,
+                             VDP_DMA_VRAM_WRITE_CMD);
+}
+
+inline void dma_cram_transfer_fast(void *src, uint16_t dest, uint16_t length,
+                                   uint16_t increment)
+{
+    return dma_transfer_fast((uint32_t) src, dest, length, increment,
+                             VDP_DMA_CRAM_WRITE_CMD);
+}
+
+inline void dma_vsram_transfer_fast(void *src, uint16_t dest, uint16_t length,
+                                    uint16_t increment)
+{
+    return dma_transfer_fast((uint32_t) src, dest, length, increment,
+                             VDP_DMA_VSRAM_WRITE_CMD);
 }
 
 inline uint16_t dma_queue_size(void)
 {
-    return queue_index;
+    return dma_queue_index;
 }
 
 inline void dma_queue_clear(void)
 {
-    queue_index = 0;
+    dma_queue_index = 0;
 }
 
 void dma_queue_flush(void)
 {
-    uint32_t *queue_p = (uint32_t *) queue;
+    uint32_t *queue_p = (uint32_t *) dma_queue;
     uint16_t i;
 
-    /* Prevent VDP corruption waiting for a running DMA copy/fill operation */
-    dma_wait();
-
     z80_bus_request_fast();
-    for (i = 0; i < queue_index; ++i)
+    for (i = 0; i < dma_queue_index; ++i)
     {
         /*
          * Sets the autoincrement on word writes and the high part of the DMA
@@ -287,7 +311,7 @@ void dma_queue_flush(void)
         *VDP_PORT_CTRL_L = *queue_p++;
         /* Sets the middle and low part of the DMA source address */
         *VDP_PORT_CTRL_L = *queue_p++;
-        /* Issues the DMA from a ram space and in words (see SEGA notes on DMA) */ 
+        /* Issues the DMA from ram space and in words (see SEGA notes on DMA) */ 
         *VDP_PORT_CTRL_W = *queue_p >> 16;
         *VDP_PORT_CTRL_W = *queue_p++;
     }
@@ -295,17 +319,23 @@ void dma_queue_flush(void)
     dma_queue_clear();
 }
 
-bool dma_queue_vram_transfer(void *src, uint16_t dest, uint16_t len, uint16_t inc)
+bool dma_queue_vram_transfer(void *src, uint16_t dest, uint16_t length,
+                             uint16_t increment)
 {
-    return dma_queue_push((uint32_t) src, dest, len, inc, VDP_DMA_VRAM_WRITE_CMD);
+    return dma_queue_push((uint32_t) src, dest, length, increment,
+                          VDP_DMA_VRAM_WRITE_CMD);
 }
 
-bool dma_queue_cram_transfer(void *src, uint16_t dest, uint16_t len, uint16_t inc)
+bool dma_queue_cram_transfer(void *src, uint16_t dest, uint16_t length,
+                             uint16_t increment)
 {
-    return dma_queue_push((uint32_t) src, dest, len, inc, VDP_DMA_CRAM_WRITE_CMD);
+    return dma_queue_push((uint32_t) src, dest, length, increment,
+                          VDP_DMA_CRAM_WRITE_CMD);
 }
 
-bool dma_queue_vsram_transfer(void *src, uint16_t dest, uint16_t len, uint16_t inc)
+bool dma_queue_vsram_transfer(void *src, uint16_t dest, uint16_t length,
+                              uint16_t increment)
 {
-    return dma_queue_push((uint32_t) src, dest, len, inc, VDP_DMA_VSRAM_WRITE_CMD);
+    return dma_queue_push((uint32_t) src, dest, length, increment,
+                          VDP_DMA_VSRAM_WRITE_CMD);
 }
