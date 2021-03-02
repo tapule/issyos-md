@@ -50,7 +50,7 @@
 #define PAD_BTN_MODE    0x0800
 
 /**
- * @brief initialises the gamepad ports
+ * @brief Initialises the gamepad ports
  * 
  * Before using the gamepads, we must setup them first. This function controls
  * the detection and initialisation process of gamepads.

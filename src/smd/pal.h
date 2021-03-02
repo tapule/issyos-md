@@ -30,56 +30,106 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-/*
-    pal_load
-        Carga una paleta en un slot, 16 colores
-        -> usa dma (con o sin cola??)
+/* Palette identifiers (also palette color start indexes) */
+#define PAL_0   0       /* Colors 0..15 */
+#define PAL_1   16      /* Colors 16..31 */
+#define PAL_2   32      /* Colors 32..47 */
+#define PAL_3   48      /* Colors 48..64 */
 
-    pal_color_set
-        establece uno de los 64 colores??
-        establece un color de una paleta??
-        -> es directa, no dma
+/**
+ * @brief Initialises the palette system
+ * 
+ * We use two internal palete buffers (primary and alternate) to store color
+ * values and to do operations (fades, palette swap). This function initialises
+ * the needed data to manage the buffers.
+ * 
+ * @note This function is called from the boot process so maybe you don't need
+ * to call it anymore.
+ */
+void pal_init(void);
 
-    pal_colors_set
-        Establece varios colores de la cram de golpe
-        -> usa dma (con o sin cola?)
-        -> debería ser interna??
+/**
+ * @brief Sets colors in the primary internal color buffer
+ * 
+ * @param index Position in the buffer were the color copy starts (0..63)
+ * @param count Number of colors to copy (1..64)
+ * @param colors Source color data
+ * 
+ * @note No boundary checks are done in the input parameters, keep them safe.
+ */
+void pal_primary_set(const uint16_t index, uint16_t count,
+                     const uint16_t *restrict colors);
 
-  
-    
-    pal_fade_in
-    pal_fade_out
+/**
+ * @brief Sets colors in the alternate internal color buffer
+ * 
+ * @param index Position in the buffer were the color copy starts (0..63)
+ * @param count Number of colors to copy (1..64)
+ * @param colors Source color dapal_primary_set(16, 16, font00_pal);
+ * 
+ * @note No boundary checks are done in the input parameters, keep them safe.
+ */
+void pal_alternate_set(const uint16_t index, uint16_t count,
+                       const uint16_t *restrict colors);
 
-    pal_fade_update
-        esta hace realmente el fade. Se debe llamar en el update del principal
-        Quizá sería mejor un pal_fade_step y un pal_update que se tenga que
-        llamar desde el principal no?
-    pal_is_fading
+/**
+ * @brief Sets colors directly in CRAM using DMA, bypassing the internal buffers
+ * 
+ * @param index Position in the buffer were the color copy starts (0..63)
+ * @param count Number of colors to copy (1..64)
+ * @param colors Source color data
+ * 
+ * @note No boundary checks are done in the input parameters, keep them safe.
+ */
+void pal_cram_set(uint16_t index, const uint16_t count,
+                  const uint16_t *restrict colors);
 
+/**
+ * @brief Swaps the internal color buffers
+ * 
+ */
+void pal_swap(void);
 
-La idea es mantener un buffer de paletas y que el pal_update las suba al vdp si
-es necesario. Por ejemplo, cuando se esta haciendo fade, puede que cada frame
-sea necesario actualizar la cram... o algo así
-Sería como si las operaciones de las paletas se hicieran internamente en el buff
-y una vez completado el trabajo se subiera el buffer a la cram. pal_update
-debería controlar cuando hay que ejecutar un paso de fade o cuando hay que
-cambiar un color.
-Por ejemplo, para hacer un fade_in se podría hacer
-    pal_load pal1, &palette2    // Carga pal1 del buffer interno
-    pal_load pal2, &palette2    // Carga pal2 del buffer interno
-    pal_load pal3, &palette3    ...
-    pal_load pal4, &palette4    ...
-    pal_fade_in speed           // Inicia un fade de negro a las paletas del buff
-    pal_update                  // Prepara las paletas, el buff y upload a cram
+/**
+ * @brief Starts a fade operation from the primary to alternate color buffers
+ * 
+ * @param speed Speed in frames between color fade updates
+ */
+void pal_fade(const uint16_t speed);
 
+/**
+ * @brief Advances the current color fade operation one step
+ * 
+ * @return True if fade operation still running, false if it ended
+ */
+bool pal_fade_step(void);
 
-Puede que se quiera hacer un fade a una paleta determinada o un color, por
-ejemplo a blanco para hacer un efecto de flash, o a rojo, etc. Esto implica que
-hay que hacer una interpolación (más o menos) de un color a otro y se necesitan
-dos sets de paletas: origen, destino
+/**
+ * @brief Stops the current running fade operation 
+ * 
+ */
+void pal_fade_stop(void);
 
+/**
+ * @brief Waits for a runnig fade operation to finish
+ * 
+ */
+void pal_fade_wait(void);
 
+/**
+ * @brief Tells if there is a color fade operation running
+ * 
+ * @return true if there is a color fade operation running, false otherwhise
+ */
+bool pal_is_fading(void);
 
-*/
+/**
+ * @brief Updates internal status and upload the primary buffer to CRAM
+ * 
+ * @note This function updates CRAM, so you should call it every frame after
+ * waiting for the vertical blank (see vid_vsync_wait) or whenever you need to
+ * upload your palettes to CRAM.
+ */
+void pal_update(void);
 
 #endif // PAL_H

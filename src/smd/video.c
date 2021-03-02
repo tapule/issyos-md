@@ -60,7 +60,7 @@ void vid_init(void)
     *VDP_PORT_CTRL_W = VDP_REG_WINDOW_YPOS | 0x00;
 
     /* Clean the VDP's rams */
-    vid_vram_clear();
+    //vid_vram_clear();
     vid_cram_clear();
     vid_vsram_clear();
 }
@@ -122,18 +122,18 @@ void vid_vsram_clear(void)
     }
 }
 
-inline void vid_background_color_set(uint8_t index)
+inline void vid_background_color_set(const uint8_t index)
 {
     *VDP_PORT_CTRL_W = VDP_REG_BGCOLOR | index;
 }
 
-inline void vid_scroll_mode_set(vid_hscroll_mode_t hscroll_mode,
-                                vid_vscroll_mode_t vscroll_mode)
+inline void vid_scroll_mode_set(const vid_hscroll_mode_t hscroll_mode,
+                                const vid_vscroll_mode_t vscroll_mode)
 {
     *VDP_PORT_CTRL_W = VDP_REG_MODESET_3 | vscroll_mode | hscroll_mode;
 }
 
-inline void vid_plane_size_set(vid_plane_size_t size)
+inline void vid_plane_size_set(const vid_plane_size_t size)
 {
     *VDP_PORT_CTRL_W = VDP_REG_PLANE_SIZE | size;
 }

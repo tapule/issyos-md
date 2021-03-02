@@ -37,9 +37,11 @@ static uint16_t dma_queue_index;
  * @param dest Destination ram address
  * @return uint32_t Ctrl port write address command
  */
-static inline uint32_t dma_ctrl_addr_build(uint32_t xram_addr, uint32_t dest)
+static inline uint32_t dma_ctrl_addr_build(const uint32_t xram_addr,
+                                           const uint32_t dest)
 {
-    return (((uint32_t)(xram_addr)) | (((uint32_t)(dest) & 0x3FFF) << 16) | ((uint32_t)(dest) >> 14));
+    return (((uint32_t)(xram_addr)) | (((uint32_t)(dest) & 0x3FFF) << 16) |
+            ((uint32_t)(dest) >> 14));
 }
 
 /**
@@ -52,8 +54,9 @@ static inline uint32_t dma_ctrl_addr_build(uint32_t xram_addr, uint32_t dest)
  * @param increment Write position increment after each write (normally 2)
  * @param xram_addr VRAM/CRAM/VSRAM DMA address base command
  */
-void dma_transfer_fast(uint32_t src, uint16_t dest, uint16_t length,
-                       uint16_t increment, uint32_t xram_addr)
+void dma_transfer_fast(const uint32_t src, const uint16_t dest,
+                       const uint16_t length, const uint16_t increment,
+                       const uint32_t xram_addr)
 {
     /* Used to issue the dma from a ram space */
     volatile uint32_t cmd;
@@ -98,8 +101,8 @@ void dma_transfer_fast(uint32_t src, uint16_t dest, uint16_t length,
  * @param xram_addr VRAM/CRAM/VSRAM DMA address base command
  * @return true On success, false otherwise
  */
-bool dma_transfer(uint32_t src, uint16_t dest, uint16_t length,
-                  uint16_t increment, uint32_t xram_addr)
+bool dma_transfer(const uint32_t src, const uint16_t dest, uint16_t length,
+                  const uint16_t increment, const uint32_t xram_addr)
 {
     uint32_t bytes_to_128k;
     uint32_t words_to_128k;
@@ -143,8 +146,9 @@ bool dma_transfer(uint32_t src, uint16_t dest, uint16_t length,
  * @param increment Write position increment after each write (normally 2)
  * @param xram_addr VRAM/CRAM/VSRAM DMA address base command
  */
-void dma_queue_push_fast(uint32_t src, uint16_t dest, uint16_t length,
-                         uint16_t increment, uint32_t xram_addr)
+void dma_queue_push_fast(const uint32_t src, const uint16_t dest,
+                         const uint16_t length, const uint16_t increment,
+                         const uint32_t xram_addr)
 {
     dma_command_t *cmd;
     uint32_t *ctrl_addr_p;
@@ -185,8 +189,8 @@ void dma_queue_push_fast(uint32_t src, uint16_t dest, uint16_t length,
  * @param xram_addr VRAM/CRAM/VSRAM DMA address base command
  * @return true On success, false otherwise
  */
-bool dma_queue_push(uint32_t src, uint16_t dest, uint16_t length,
-                    uint16_t increment, uint32_t xram_addr)
+bool dma_queue_push(const uint32_t src, const uint16_t dest, uint16_t length,
+                    const uint16_t increment, const uint32_t xram_addr)
 {
     uint32_t bytes_to_128k;
     uint32_t words_to_128k;
@@ -239,43 +243,46 @@ inline void dma_wait(void)
     }
 }
 
-inline bool dma_vram_transfer(void *src, uint16_t dest, uint16_t length,
-                              uint16_t increment)
+inline bool dma_vram_transfer(const void *restrict src, const uint16_t dest,
+                              const uint16_t length, const uint16_t increment)
 {
     return dma_transfer((uint32_t) src, dest, length, increment,
                         VDP_DMA_VRAM_WRITE_CMD);
 }
 
-inline bool dma_cram_transfer(void *src, uint16_t dest, uint16_t length,
-                              uint16_t increment)
+inline bool dma_cram_transfer(const void *restrict src, const uint16_t dest,
+                              const uint16_t length, const uint16_t increment)
 {
     return dma_transfer((uint32_t) src, dest, length, increment,
                         VDP_DMA_CRAM_WRITE_CMD);
 }
 
-inline bool dma_vsram_transfer(void *src, uint16_t dest, uint16_t length,
-                               uint16_t increment)
+inline bool dma_vsram_transfer(const void *restrict src, const uint16_t dest,
+                               const uint16_t length, const uint16_t increment)
 {
     return dma_transfer((uint32_t) src, dest, length, increment,
                         VDP_DMA_VSRAM_WRITE_CMD);
 }
 
-inline void dma_vram_transfer_fast(void *src, uint16_t dest, uint16_t length,
-                                   uint16_t increment)
+inline void dma_vram_transfer_fast(const void *restrict src,
+                                   const uint16_t dest, const uint16_t length,
+                                   const uint16_t increment)
 {
     return dma_transfer_fast((uint32_t) src, dest, length, increment,
                              VDP_DMA_VRAM_WRITE_CMD);
 }
 
-inline void dma_cram_transfer_fast(void *src, uint16_t dest, uint16_t length,
-                                   uint16_t increment)
+inline void dma_cram_transfer_fast(const void *restrict src,
+                                   const uint16_t dest, const uint16_t length,
+                                   const uint16_t increment)
 {
     return dma_transfer_fast((uint32_t) src, dest, length, increment,
                              VDP_DMA_CRAM_WRITE_CMD);
 }
 
-inline void dma_vsram_transfer_fast(void *src, uint16_t dest, uint16_t length,
-                                    uint16_t increment)
+inline void dma_vsram_transfer_fast(const void *restrict src,
+                                    const uint16_t dest, const uint16_t length,
+                                    const uint16_t increment)
 {
     return dma_transfer_fast((uint32_t) src, dest, length, increment,
                              VDP_DMA_VSRAM_WRITE_CMD);
@@ -319,22 +326,22 @@ void dma_queue_flush(void)
     dma_queue_clear();
 }
 
-bool dma_queue_vram_transfer(void *src, uint16_t dest, uint16_t length,
-                             uint16_t increment)
+bool dma_queue_vram_transfer(const void *restrict src, const uint16_t dest,
+                             const uint16_t length, const uint16_t increment)
 {
     return dma_queue_push((uint32_t) src, dest, length, increment,
                           VDP_DMA_VRAM_WRITE_CMD);
 }
 
-bool dma_queue_cram_transfer(void *src, uint16_t dest, uint16_t length,
-                             uint16_t increment)
+bool dma_queue_cram_transfer(const void *restrict src, const uint16_t dest,
+                             const uint16_t length, const uint16_t increment)
 {
     return dma_queue_push((uint32_t) src, dest, length, increment,
                           VDP_DMA_CRAM_WRITE_CMD);
 }
 
-bool dma_queue_vsram_transfer(void *src, uint16_t dest, uint16_t length,
-                              uint16_t increment)
+bool dma_queue_vsram_transfer(const void *restrict src, const uint16_t dest,
+                              const uint16_t length, const uint16_t increment)
 {
     return dma_queue_push((uint32_t) src, dest, length, increment,
                           VDP_DMA_VSRAM_WRITE_CMD);

@@ -37,7 +37,7 @@ void rnd_init(void);
  * 
  * @param seed  New seed
  */
-void rnd_seed_set(uint16_t seed);
+void rnd_seed_set(const uint16_t seed);
 
 /**
  * @brief Gets the current seed

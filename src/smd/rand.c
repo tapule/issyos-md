@@ -24,7 +24,7 @@ void rnd_init(void)
     rnd_seed = rnd_seed ^ rnd_var ^ (rnd_var << 13);
 }
 
-void rnd_seed_set(uint16_t seed)
+void rnd_seed_set(const uint16_t seed)
 {
     /* seed must be a non-zero value */
     if (seed == 0)

@@ -16,13 +16,14 @@
 
 #include "config.h"
 
-#include "pad.h"
-#include "pal.h"
-#include "psg.h"
-#include "rand.h"
-#include "video.h"
 #include "z80.h"
+#include "pad.h"
+#include "psg.h"
+#include "video.h"
+#include "rand.h"
 #include "dma.h"
+#include "pal.h"
+
 
 /**
  * @brief 

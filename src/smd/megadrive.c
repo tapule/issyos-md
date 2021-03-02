@@ -14,19 +14,20 @@ static uint16_t ints_status_flag;
 
 void smd_init(void)
 {
-    /* Initialise the pseudo-random number generator */
-    rnd_init();
-    /* Initialise the z80 secondary CPU */
+    /* Initialises the z80 secondary CPU */
     z80_init();
-    /* Initialise gamepad ports */
+    /* Initialises gamepad ports */
     pad_init();
-    /* Initialise the PSG (Programmable Sound Generator) */
+    /* Initialises the PSG (Programmable Sound Generator) */
     psg_init();
-    /* Initialise the graphics  */
+    /* Initialises the graphics  */
     vid_init();
-    /* Initialise the DMA system  */
+    /* Initialises the pseudo-random number generator */
+    rnd_init();
+    /* Initialises the DMA system  */
     dma_init();
-
+    /* Initialises the palette system  */
+    pal_init();
 }
 
 inline void smd_ints_enable(void)

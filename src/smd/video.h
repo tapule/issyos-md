@@ -105,7 +105,7 @@ void vid_vsram_clear(void);
  * 
  * Set the color index (0 - 63) wich will be used as background color
  */
-void vid_background_color_set(uint8_t index);
+void vid_background_color_set(const uint8_t index);
 
 /**
  * @brief Sets the plane scroll mode for planes A and B
@@ -113,15 +113,15 @@ void vid_background_color_set(uint8_t index);
  * @param hscroll_mode New horizontal scroll mode
  * @param vscroll_mode New vertical scroll mode
  */
-void vid_scroll_mode_set(vid_hscroll_mode_t hscroll_mode,
-                         vid_vscroll_mode_t vscroll_mode);
+void vid_scroll_mode_set(const vid_hscroll_mode_t hscroll_mode,
+                         const vid_vscroll_mode_t vscroll_mode);
 
 /**
  * @brief Set the plane size for planes A and B
  * 
  * @param size New plane size
  */
-void vid_plane_size_set(vid_plane_size_t size);
+void vid_plane_size_set(const vid_plane_size_t size);
 
 /*
     * TODO:

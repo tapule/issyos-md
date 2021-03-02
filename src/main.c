@@ -12,8 +12,10 @@ int main()
 
 
     smd_ints_enable();
-    dma_vram_transfer(font00_tiles, 0, 96 * 8 * 2, 2);
-    dma_cram_transfer(font00_pal, 0, 16*2, 2);
+    pal_primary_set(PAL_0, 16, font00_pal);
+    pal_primary_set(PAL_1, 16, font00_pal);            
+    pal_primary_set(PAL_2, 16, font00_pal);
+    pal_primary_set(PAL_3, 16, font00_pal);            
     vid_display_enable();
     while (1)
     {
@@ -22,19 +24,42 @@ int main()
         /* Check press button  */
         if (pad_btn_pressed(PAD_1, PAD_BTN_A))
         {
-            vid_display_disable();
+            //vid_display_disable();
+            vid_cram_clear();
+            pal_primary_set(PAL_0, 16, font00_pal);
+            pal_primary_set(PAL_1, 16, font00_pal);            
+            pal_primary_set(PAL_2, 16, font00_pal);
+            pal_primary_set(PAL_3, 16, font00_pal);
+            pal_alternate_set(PAL_0, 16, bgB_pal);
+            pal_alternate_set(PAL_1, 16, bgB_pal);            
+            pal_alternate_set(PAL_2, 16, bgB_pal);
+            pal_alternate_set(PAL_3, 16, bgB_pal);
         }
         /* Check release button  */        
         if (pad_btn_pressed(PAD_1, PAD_BTN_B))
         {
-            vid_display_enable();
+            if (!pal_is_fading())
+            {
+                pal_fade(2);
+            }
+            pal_fade_step();
+            //vid_display_enable();
         }
         if (pad_btn_pressed(PAD_1, PAD_BTN_C))
         {
             vid_background_color_set(color);
-            dma_queue_vram_transfer(bgB_tiles, 0, 352 * 8 * 4, 2);
-            dma_queue_cram_transfer(bgB_pal, 32, 16*2, 2);
             ++color;
+            //if (!pal_is_fading())
+            {
+                pal_fade(3);
+                pal_fade_wait();
+            pal_primary_set(PAL_0, 16, font00_pal);
+            pal_primary_set(PAL_1, 16, font00_pal);            
+            pal_primary_set(PAL_2, 16, font00_pal);
+            pal_primary_set(PAL_3, 16, font00_pal);  
+            pal_swap();                
+            }
+                        
         }
 
         //dma_queue_vram_transfer(font00_tiles, 100 * 16, 96 * 8 * 2, 2);
@@ -42,6 +67,8 @@ int main()
         //dma_queue_vsram_transfer(data, 0, 2, 2);
 
         vid_vsync_wait();
+        pal_update();
         dma_queue_flush();
+
     }
 }

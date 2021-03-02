@@ -47,8 +47,8 @@ void dma_wait(void);
  * @param increment Write position increment after each write (normally 2)
  * @return True on success, false otherwise
  */
-bool dma_vram_transfer(void *src, uint16_t dest, uint16_t length,
-                       uint16_t increment);
+bool dma_vram_transfer(const void *restrict src, const uint16_t dest,
+                       const uint16_t length, const uint16_t increment);
 
 /**
  * @brief Executes a DMA transfer from RAM/ROM to CRAM
@@ -59,8 +59,8 @@ bool dma_vram_transfer(void *src, uint16_t dest, uint16_t length,
  * @param increment Write position increment after each write (normally 2)
  * @return True on success, false otherwise
  */
-bool dma_cram_transfer(void *src, uint16_t dest, uint16_t length,
-                       uint16_t increment);
+bool dma_cram_transfer(const void *restrict src, const uint16_t dest,
+                       const uint16_t length, const uint16_t increment);
 
 /**
  * @brief Executes a DMA transfer from RAM/ROM to VSRAM
@@ -71,8 +71,8 @@ bool dma_cram_transfer(void *src, uint16_t dest, uint16_t length,
  * @param increment Write position increment after each write (normally 2)
  * @return True on success, false otherwise
  */
-bool dma_vsram_transfer(void *src, uint16_t dest, uint16_t length,
-                        uint16_t increment);
+bool dma_vsram_transfer(const void *restrict src, const uint16_t dest,
+                        const uint16_t length, const uint16_t increment);
 
 /**
  * @brief Executes a fast DMA transfer from RAM/ROM to VRAM
@@ -86,8 +86,8 @@ bool dma_vsram_transfer(void *src, uint16_t dest, uint16_t length,
  * @note Parameters or 128kB boundaries are not checked, so be aware that it is
  * a bit unsafe if you don't know what you are doing.
  */
-void dma_vram_transfer_fast(void *src, uint16_t dest, uint16_t length,
-                            uint16_t increment);
+void dma_vram_transfer_fast(const void *restrict src, const uint16_t dest,
+                            const uint16_t length, const uint16_t increment);
 
 /**
  * @brief Executes a fast DMA transfer from RAM/ROM to CRAM
@@ -101,8 +101,8 @@ void dma_vram_transfer_fast(void *src, uint16_t dest, uint16_t length,
  * @note Parameters or 128kB boundaries are not checked, so be aware that it is
  * a bit unsafe if you don't know what you are doing.
  */
-void dma_cram_transfer_fast(void *src, uint16_t dest, uint16_t length,
-                            uint16_t increment);
+void dma_cram_transfer_fast(const void *restrict src, const uint16_t dest,
+                            const uint16_t length, const uint16_t increment);
 
 /**
  * @brief Executes a fast DMA transfer from RAM/ROM to VSRAM
@@ -116,8 +116,8 @@ void dma_cram_transfer_fast(void *src, uint16_t dest, uint16_t length,
  * @note Parameters or 128kB boundaries are not checked, so be aware that it is
  * a bit unsafe if you don't know what you are doing.
  */
-void dma_vsram_transfer_fast(void *src, uint16_t dest, uint16_t length,
-                             uint16_t increment);
+void dma_vsram_transfer_fast(const void *restrict src, const uint16_t dest,
+                             const uint16_t length, const uint16_t increment);
 
 /**
  * @brief Returns the current DMA's queue command size
@@ -147,8 +147,8 @@ void dma_queue_flush(void);
  * @param increment Write position increment after each write (normally 2)
  * @return True on success, false if the queue is full
  */
-bool dma_queue_vram_transfer(void *src, uint16_t dest, uint16_t length,
-                             uint16_t increment);
+bool dma_queue_vram_transfer(const void *restrict src, const uint16_t dest,
+                             const uint16_t length, const uint16_t increment);
 
 /**
  * @brief Adds a new DMA transfer from RAM/ROM to CRAM in the queue
@@ -159,8 +159,8 @@ bool dma_queue_vram_transfer(void *src, uint16_t dest, uint16_t length,
  * @param increment Write position increment after each write (normally 2)
  * @return True on success, false if the queue is full
  */
-bool dma_queue_cram_transfer(void *src, uint16_t dest, uint16_t length,
-                             uint16_t increment);
+bool dma_queue_cram_transfer(const void *restrict src, const uint16_t dest,
+                             const uint16_t length, const uint16_t increment);
 
 /**
  * @brief Adds a new DMA transfer from RAM/ROM to VSRAM in the queue
@@ -171,7 +171,7 @@ bool dma_queue_cram_transfer(void *src, uint16_t dest, uint16_t length,
  * @param increment Write position increment after each write (normally 2)
  * @return True on success, false if the queue is full
  */
-bool dma_queue_vsram_transfer(void *src, uint16_t dest, uint16_t length,
-                              uint16_t increment);
+bool dma_queue_vsram_transfer(const void *restrict src, const uint16_t dest,
+                              const uint16_t length, const uint16_t increment);
 
 #endif // DMA_H
