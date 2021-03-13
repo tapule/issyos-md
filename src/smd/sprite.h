@@ -18,4 +18,4 @@
 
 
 
-#endif // SPRITE_H
+#endif /* SPRITE_H */

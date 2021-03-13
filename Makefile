@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 #
 # The Curse of Issyos MegaDrive port
-# Copyright: 2021 Juan Ángel Moreno Fernández (@_tapule)
+# Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
 # Github: https://github.com/tapule/issyos-md
 #
 # Makefile

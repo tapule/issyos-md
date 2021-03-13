@@ -23,6 +23,8 @@
 #include "rand.h"
 #include "dma.h"
 #include "pal.h"
+#include "tiles.h"
+
 
 
 /**
@@ -63,4 +65,4 @@ uint16_t smd_ints_status(void);
 */
 
 
-#endif // MEGADRIVE_H
+#endif /* MEGADRIVE_H */

@@ -19,8 +19,10 @@
 _smd_header:
     .ascii  "SEGA MEGA DRIVE "      /* 16B - Console name (Must start with "SEGA") */
     .ascii  "TAPULE  2021.DEC"      /* 16B - Copyright and release date */
-    .ascii  "The Curse of Issyos for Sega MegaDrive/Genesis  " /* 48B - Domestic name */    
-    .ascii  "The Curse of Issyos for Sega MegaDrive/Genesis  " /* 48B - International name */
+    /*.ascii  "The Curse of Issyos for Sega MegaDrive/Genesis  "*/ /* 48B - Domestic name */    
+    /*.ascii  "The Curse of Issyos for Sega MegaDrive/Genesis  "*/ /* 48B - International name */
+    .ascii  "The Is for Sega MegaDrive/Genesis               " /* 48B - Domestic name */    
+    .ascii  "The Is for Sega MegaDrive/Genesis               " /* 48B - International name */
     .ascii  "GM TAPULE00-00"        /* 14B - Game type and product code */    
     .word   0                       /* 02B - Checksum */
     .ascii  "J               "      /* 16B - I/O device support */

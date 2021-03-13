@@ -174,4 +174,4 @@ bool dma_queue_cram_transfer(const void *restrict src, const uint16_t dest,
 bool dma_queue_vsram_transfer(const void *restrict src, const uint16_t dest,
                               const uint16_t length, const uint16_t increment);
 
-#endif // DMA_H
+#endif /* DMA_H */

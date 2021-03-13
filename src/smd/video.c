@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: MIT */
 /**
- * The Curse of Issyos MegaDrive port
+ * The Curse of Issyos MegaDrive portvoid vdp_set_autoinc(uint8_t val) {
+	*vdp_ctrl_port = 0x8F00 | val;
+}
  * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021 
  * Github: https://github.com/tapule/issyos-md
  *
@@ -60,7 +62,7 @@ void vid_init(void)
     *VDP_PORT_CTRL_W = VDP_REG_WINDOW_YPOS | 0x00;
 
     /* Clean the VDP's rams */
-    //vid_vram_clear();
+    vid_vram_clear();
     vid_cram_clear();
     vid_vsram_clear();
 }
@@ -136,4 +138,9 @@ inline void vid_scroll_mode_set(const vid_hscroll_mode_t hscroll_mode,
 inline void vid_plane_size_set(const vid_plane_size_t size)
 {
     *VDP_PORT_CTRL_W = VDP_REG_PLANE_SIZE | size;
+}
+
+inline void vid_autoinc_set(const uint8_t increment)
+{
+    *VDP_PORT_CTRL_W = VDP_REG_AUTOINC | increment;
 }

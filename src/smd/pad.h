@@ -114,4 +114,4 @@ bool pad_btn_pressed(const uint16_t pad, const uint16_t buttons);
  */
 bool pad_btn_released(const uint16_t pad, const uint16_t buttons);
 
-#endif // PAD_H
+#endif /* PAD_H */

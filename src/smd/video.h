@@ -123,22 +123,27 @@ void vid_scroll_mode_set(const vid_hscroll_mode_t hscroll_mode,
  */
 void vid_plane_size_set(const vid_plane_size_t size);
 
+/**
+ * @brief Sets the automatic number of bytes to add after read/write operations
+ * 
+ * The VDP has a register where we can set an autoincrement value to add after
+ * ram accesses. 
+ * 
+ * @param increment Number of bytes to add
+ */
+void vid_autoinc_set(const uint8_t increment);
+
 /*
     * TODO:
+    vid_hilightshadow_set
 
-    Estas dos posiblemente no las ponga. Cuando se hagan las operaciones que se
-    especifique el incremento y que controle los valores mínimos.
-    vid_autoinc_set
-        Set the autoincrement register value
-    vid_autoinc_get
-        Get the autoincrement register value
+    *QUIZÁ ESTAS DEBERÍAN IR EN MD (SYS)
+    bool vid_is_pal(void);
+    bool vid_is_ntsc(void);
 
 
 */
 
-// QUIZÁ ESTAS DEBERÍAN IR EN MD (SYS)
-// bool vid_is_pal(void);
 
-// bool vid_is_ntsc(void);
 
-#endif // VIDEO_H
+#endif /* VIDEO_H */

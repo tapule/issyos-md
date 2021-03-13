@@ -31,4 +31,4 @@
  */
 void psg_init(void);
 
-#endif // PSG_H
+#endif /* PSG_H */

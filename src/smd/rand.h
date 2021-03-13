@@ -57,4 +57,4 @@ uint16_t rnd_seed_get(void);
  */
 uint16_t rnd_get(void);
 
-#endif // RAND_H
+#endif /* RAND_H */

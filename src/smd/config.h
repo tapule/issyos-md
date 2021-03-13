@@ -52,4 +52,4 @@
 /* DMA internal queue size in operations */
 #define DMA_QUEUE_SIZE 64
 
-#endif // MEGADRIVE_CONFIG_H
+#endif /* MEGADRIVE_CONFIG_H */

@@ -60,5 +60,8 @@ bin/
 # WIP data
 wip/
 
+# mdtools repo
+mdtools/
+
 # Mame history dir
 history/

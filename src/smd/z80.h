@@ -74,4 +74,4 @@ void z80_bus_release(void);
  */
 void z80_program_load(const uint8_t *src, uint16_t size);
 
-#endif // Z80_H
+#endif /* Z80_H */

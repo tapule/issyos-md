@@ -132,4 +132,4 @@ bool pal_is_fading(void);
  */
 void pal_update(void);
 
-#endif // PAL_H
+#endif /* PAL_H */

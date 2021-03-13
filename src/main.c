@@ -1,10 +1,7 @@
 #include <stdint.h>
 #include "smd/megadrive.h"
-#include "../res/res.h"
-
-static const uint16_t data[10] = {0x1111, 0x2222, 0x3333, 0x4444, 0x5555,
-                                  0x6666, 0x7777, 0x8888, 0x9999, 0xAAAA};
-
+#include "../res/res_pal.h"
+#include "../res/res_til.h"
 
 int main()
 {
@@ -12,10 +9,18 @@ int main()
 
 
     smd_ints_enable();
-    pal_primary_set(PAL_0, 16, font00_pal);
-    pal_primary_set(PAL_1, 16, font00_pal);            
-    pal_primary_set(PAL_2, 16, font00_pal);
-    pal_primary_set(PAL_3, 16, font00_pal);            
+    
+    tiles_load_fast(res_til_1tile, 1, RES_TIL_1TILE_SIZE);
+    tiles_load_fast(res_til_4tiles, 1 + RES_TIL_1TILE_SIZE, RES_TIL_4TILES_SIZE);
+    tiles_load(res_til_tiles8xbig, 1 + RES_TIL_1TILE_SIZE + RES_TIL_4TILES_SIZE,
+               RES_TIL_TILES8XBIG_SIZE);
+    tiles_load(res_til_back8xbig, 1 + RES_TIL_1TILE_SIZE + RES_TIL_4TILES_SIZE +
+               RES_TIL_TILES8XBIG_SIZE, RES_TIL_BACK8XBIG_SIZE);
+
+    pal_primary_set(PAL_0, RES_PAL_PLAYER_SIZE, res_pal_player);
+    pal_primary_set(PAL_1, RES_PAL_COLLECTIBLES_SIZE, res_pal_collectibles);            
+    pal_primary_set(PAL_2, RES_PAL_ENEMY00_SIZE, res_pal_enemy00);
+    pal_primary_set(PAL_3, RES_PAL_ENEMY01_SIZE, res_pal_enemy01);            
     vid_display_enable();
     while (1)
     {
@@ -25,15 +30,14 @@ int main()
         if (pad_btn_pressed(PAD_1, PAD_BTN_A))
         {
             //vid_display_disable();
-            vid_cram_clear();
-            pal_primary_set(PAL_0, 16, font00_pal);
-            pal_primary_set(PAL_1, 16, font00_pal);            
-            pal_primary_set(PAL_2, 16, font00_pal);
-            pal_primary_set(PAL_3, 16, font00_pal);
-            pal_alternate_set(PAL_0, 16, bgB_pal);
-            pal_alternate_set(PAL_1, 16, bgB_pal);            
-            pal_alternate_set(PAL_2, 16, bgB_pal);
-            pal_alternate_set(PAL_3, 16, bgB_pal);
+            pal_primary_set(PAL_0, RES_PAL_PLAYER_SIZE, res_pal_player);
+            pal_primary_set(PAL_1, RES_PAL_COLLECTIBLES_SIZE, res_pal_collectibles);            
+            pal_primary_set(PAL_2, RES_PAL_ENEMY00_SIZE, res_pal_enemy00);
+            pal_primary_set(PAL_3, RES_PAL_ENEMY01_SIZE, res_pal_enemy01);   
+            pal_alternate_set(PAL_0, RES_PAL_COLLECTIBLES2_SIZE, res_pal_collectibles2);
+            pal_alternate_set(PAL_1, RES_PAL_COLLECTIBLES2_SIZE, res_pal_collectibles2);          
+            pal_alternate_set(PAL_2, RES_PAL_COLLECTIBLES2_SIZE, res_pal_collectibles2);
+            pal_alternate_set(PAL_3, RES_PAL_COLLECTIBLES2_SIZE, res_pal_collectibles2);
         }
         /* Check release button  */        
         if (pad_btn_pressed(PAD_1, PAD_BTN_B))
@@ -53,10 +57,10 @@ int main()
             {
                 pal_fade(3);
                 pal_fade_wait();
-            pal_primary_set(PAL_0, 16, font00_pal);
-            pal_primary_set(PAL_1, 16, font00_pal);            
-            pal_primary_set(PAL_2, 16, font00_pal);
-            pal_primary_set(PAL_3, 16, font00_pal);  
+            pal_primary_set(PAL_0, RES_PAL_PLAYER_SIZE, res_pal_player);
+            pal_primary_set(PAL_1, RES_PAL_COLLECTIBLES_SIZE, res_pal_collectibles);            
+            pal_primary_set(PAL_2, RES_PAL_ENEMY00_SIZE, res_pal_enemy00);
+            pal_primary_set(PAL_3, RES_PAL_ENEMY01_SIZE, res_pal_enemy01);   
             pal_swap();                
             }
                         
