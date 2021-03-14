@@ -288,6 +288,42 @@ inline void dma_vsram_transfer_fast(const void *restrict src,
                              VDP_DMA_VSRAM_WRITE_CMD);
 }
 
+bool dma_vram_fill(const uint16_t dest, uint16_t length,
+                   const uint8_t value, const uint16_t increment)
+{
+    if (length < 2)
+    {
+        return false;
+    }
+    /*
+     * In a DMA fill operation, the first write writes an entire word instead of
+     * a byte. Then, in each write a byte is written. Therefore, a length of 1
+     * will write 2 bytes, a length of 2 will write 3 bytes, etc.
+     * We need to do an initial decrement to length.
+     *      value = 0xFF
+     *      length = 2 -> length = 1 -> FF FF
+     *      length = 3 -> length = 2 -> FF FF FF
+     *      length = 4 -> length = 3 -> FF FF FF FF
+     */
+    --length;
+
+    /* Prevent VDP corruption waiting for a running DMA copy/fill operation */
+    dma_wait();
+
+    /* Sets the autoincrement after each write */
+    *VDP_PORT_CTRL_W = VDP_REG_AUTOINC | increment;
+    /* Sets the DMA length in bytes */
+    *VDP_PORT_CTRL_W = VDP_REG_DMALEN_L | (length & 0xFF);
+    *VDP_PORT_CTRL_W = VDP_REG_DMALEN_H | ((length >> 8) & 0xFF);    
+    /* Sets the DMA operation to VRAM fill operation */
+    *VDP_PORT_CTRL_W = VDP_REG_DMASRC_H | 0x80;
+    /* Builds the ctrl port write address command */
+    *VDP_PORT_CTRL_L = dma_ctrl_addr_build(VDP_DMA_VRAM_WRITE_CMD, dest);
+    /* Set fill value. The high byte must be equal for the first write */
+    *VDP_PORT_DATA_W = (value << 8) | value;
+    return true;
+}
+
 inline uint16_t dma_queue_size(void)
 {
     return dma_queue_index;

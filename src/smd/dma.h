@@ -120,6 +120,21 @@ void dma_vsram_transfer_fast(const void *restrict src, const uint16_t dest,
                              const uint16_t length, const uint16_t increment);
 
 /**
+ * @brief Executes a DMA VRAM fill operation
+ * 
+ * @param dest Destination address on VRAM
+ * @param length Transfer length in bytes, minimum 2
+ * @param increment Write position increment after each write (normally 1)
+ * @return True on success, false otherwise
+ * 
+ * @note The DMA VRAM fill operation does not stop the m68k, so it is a good
+ * idea to use it with dma_wait() function to wait for it to finish the fill
+ * operation.
+ */
+bool dma_vram_fill(const uint16_t dest, uint16_t length,
+                   const uint8_t value, const uint16_t increment);
+
+/**
  * @brief Returns the current DMA's queue command size
  * 
  * @return uint16_t Total DMA commands in the queue

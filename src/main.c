@@ -3,6 +3,7 @@
 #include "../res/res_pal.h"
 #include "../res/res_til.h"
 
+#if 0
 int main()
 {
     uint8_t color = 1;
@@ -39,15 +40,10 @@ int main()
             pal_alternate_set(PAL_2, RES_PAL_COLLECTIBLES2_SIZE, res_pal_collectibles2);
             pal_alternate_set(PAL_3, RES_PAL_COLLECTIBLES2_SIZE, res_pal_collectibles2);
         }
-        /* Check release button  */        
+        /* Check press button  */        
         if (pad_btn_pressed(PAD_1, PAD_BTN_B))
         {
-            if (!pal_is_fading())
-            {
-                pal_fade(2);
-            }
-            pal_fade_step();
-            //vid_display_enable();
+            dma_vram_fill(VID_PLANE_A_ADDR, 2048, 0, 0xFFFF);
         }
         if (pad_btn_pressed(PAD_1, PAD_BTN_C))
         {
@@ -74,5 +70,18 @@ int main()
         pal_update();
         dma_queue_flush();
 
+    }
+}
+#endif
+
+int main()
+{
+    smd_ints_enable();
+    dma_vram_fill(VID_PLANE_A_ADDR, 10, 0xFF, 2);
+
+    while (1)
+    {
+ 
+        vid_vsync_wait();
     }
 }

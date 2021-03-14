@@ -15,8 +15,8 @@ inline void tiles_load(const void *restrict src, const uint16_t tile_index,
                        const uint16_t length)
 {
     /*
-       A tile real offset in VRAM is its index * 32 and the amount of words 
-       to transfer would be length (in tiles) * 32 
+       A real tile offset in VRAM is its index * 32 and the amount of words 
+       to transfer would be length (in tiles) * 16 
     */
     dma_vram_transfer(src, tile_index << 5, length << 4, 2);
 }
