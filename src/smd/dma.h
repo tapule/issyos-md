@@ -86,7 +86,7 @@ bool dma_vsram_transfer(const void *restrict src, const uint16_t dest,
  * @note Parameters or 128kB boundaries are not checked, so be aware that it is
  * a bit unsafe if you don't know what you are doing.
  */
-void dma_vram_transfer_fast(const void *restrict src, const uint16_t dest,
+bool dma_vram_transfer_fast(const void *restrict src, const uint16_t dest,
                             const uint16_t length, const uint16_t increment);
 
 /**
@@ -101,7 +101,7 @@ void dma_vram_transfer_fast(const void *restrict src, const uint16_t dest,
  * @note Parameters or 128kB boundaries are not checked, so be aware that it is
  * a bit unsafe if you don't know what you are doing.
  */
-void dma_cram_transfer_fast(const void *restrict src, const uint16_t dest,
+bool dma_cram_transfer_fast(const void *restrict src, const uint16_t dest,
                             const uint16_t length, const uint16_t increment);
 
 /**
@@ -116,7 +116,7 @@ void dma_cram_transfer_fast(const void *restrict src, const uint16_t dest,
  * @note Parameters or 128kB boundaries are not checked, so be aware that it is
  * a bit unsafe if you don't know what you are doing.
  */
-void dma_vsram_transfer_fast(const void *restrict src, const uint16_t dest,
+bool dma_vsram_transfer_fast(const void *restrict src, const uint16_t dest,
                              const uint16_t length, const uint16_t increment);
 
 /**

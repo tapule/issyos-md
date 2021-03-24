@@ -8,7 +8,9 @@
  * Configuration parameters
  *
  * Diferent configuration preferences for the Sega MegaDrive/Genesis hardware.
- * Here you can configure how the hardware sould start and behave
+ * Here you can configure how the hardware sould start and behave.
+ * These values are used internally to do some operations, so it is mandatory to
+ * define them.
  * 
  */
 
@@ -43,8 +45,11 @@
 /* Horizontal and vertical plane scroll modes */
 #define VID_HSCROLL_MODE VID_HSCROLL_TILE
 #define VID_VSCROLL_MODE VID_VSCROLL_PLANE 
-/* Planes size */
+/* Planes sizes in tiles */
 #define VID_PLANE_SIZE VID_PLANE_SIZE_64X32 
+#define VID_PLANE_TILES 2048
+#define VID_PLANE_WIDTH 64
+#define VID_PLANE_HEIGTH 32
 
 /* 
  * DMA configuration default values

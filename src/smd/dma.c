@@ -53,8 +53,9 @@ static inline uint32_t dma_ctrl_addr_build(const uint32_t xram_addr,
  * @param length Transfer length in words
  * @param increment Write position increment after each write (normally 2)
  * @param xram_addr VRAM/CRAM/VSRAM DMA address base command
+ * @return true Always, for compatibility with the other set of functions
  */
-void dma_transfer_fast(const uint32_t src, const uint16_t dest,
+bool dma_transfer_fast(const uint32_t src, const uint16_t dest,
                        const uint16_t length, const uint16_t increment,
                        const uint32_t xram_addr)
 {
@@ -85,6 +86,8 @@ void dma_transfer_fast(const uint32_t src, const uint16_t dest,
     z80_bus_request_fast();
     *VDP_PORT_CTRL_W = *cmd_p;
     z80_bus_release();
+
+    return true;
 }
 
 /**
@@ -264,7 +267,7 @@ inline bool dma_vsram_transfer(const void *restrict src, const uint16_t dest,
                         VDP_DMA_VSRAM_WRITE_CMD);
 }
 
-inline void dma_vram_transfer_fast(const void *restrict src,
+inline bool dma_vram_transfer_fast(const void *restrict src,
                                    const uint16_t dest, const uint16_t length,
                                    const uint16_t increment)
 {
@@ -272,7 +275,7 @@ inline void dma_vram_transfer_fast(const void *restrict src,
                              VDP_DMA_VRAM_WRITE_CMD);
 }
 
-inline void dma_cram_transfer_fast(const void *restrict src,
+inline bool dma_cram_transfer_fast(const void *restrict src,
                                    const uint16_t dest, const uint16_t length,
                                    const uint16_t increment)
 {
@@ -280,7 +283,7 @@ inline void dma_cram_transfer_fast(const void *restrict src,
                              VDP_DMA_CRAM_WRITE_CMD);
 }
 
-inline void dma_vsram_transfer_fast(const void *restrict src,
+inline bool dma_vsram_transfer_fast(const void *restrict src,
                                     const uint16_t dest, const uint16_t length,
                                     const uint16_t increment)
 {

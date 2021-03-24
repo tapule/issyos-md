@@ -8,4 +8,10 @@
  * ??
  */
 
-#include "sprite.h"
+#include "plane.h"
+#include "dma.h"
+
+inline void plane_clear(const uint16_t plane)
+{
+    dma_vram_fill(plane, VID_PLANE_TILES << 1, 0x00, 1);
+}

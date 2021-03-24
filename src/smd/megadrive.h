@@ -24,6 +24,7 @@
 #include "dma.h"
 #include "pal.h"
 #include "tiles.h"
+#include "plane.h"
 
 
 
@@ -57,11 +58,9 @@ uint16_t smd_ints_status(void);
     * TODO:
 
     smd_ints_mask_set
-        Establecer la mascara de interrupciones
+        Set interrupts mask
     smd_ints_mask_get
-        Establecer la mascara de interrupciones
-
-
+        Get interrupts mask
 */
 
 

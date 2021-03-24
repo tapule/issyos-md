@@ -1,9 +1,8 @@
 #include <stdint.h>
+#include "vram.h"
 #include "smd/megadrive.h"
-#include "../res/res_pal.h"
-#include "../res/res_til.h"
+#include "../res/res.h"
 
-#if 0
 int main()
 {
     uint8_t color = 1;
@@ -11,12 +10,7 @@ int main()
 
     smd_ints_enable();
     
-    tiles_load_fast(res_til_1tile, 1, RES_TIL_1TILE_SIZE);
-    tiles_load_fast(res_til_4tiles, 1 + RES_TIL_1TILE_SIZE, RES_TIL_4TILES_SIZE);
-    tiles_load(res_til_tiles8xbig, 1 + RES_TIL_1TILE_SIZE + RES_TIL_4TILES_SIZE,
-               RES_TIL_TILES8XBIG_SIZE);
-    tiles_load(res_til_back8xbig, 1 + RES_TIL_1TILE_SIZE + RES_TIL_4TILES_SIZE +
-               RES_TIL_TILES8XBIG_SIZE, RES_TIL_BACK8XBIG_SIZE);
+    tiles_load_fast(res_font_sys, VRAM_INDEX_FONT, RES_FONT_SYS_SIZE);
 
     pal_primary_set(PAL_0, RES_PAL_PLAYER_SIZE, res_pal_player);
     pal_primary_set(PAL_1, RES_PAL_COLLECTIBLES_SIZE, res_pal_collectibles);            
@@ -43,7 +37,8 @@ int main()
         /* Check press button  */        
         if (pad_btn_pressed(PAD_1, PAD_BTN_B))
         {
-            dma_vram_fill(VID_PLANE_A_ADDR, 2048, 0, 0xFFFF);
+            plane_clear(PLANE_A);
+            plane_clear(PLANE_B);
         }
         if (pad_btn_pressed(PAD_1, PAD_BTN_C))
         {
@@ -72,16 +67,18 @@ int main()
 
     }
 }
-#endif
 
+#if 0
 int main()
 {
     smd_ints_enable();
-    dma_vram_fill(VID_PLANE_A_ADDR, 10, 0xFF, 2);
-
+    //dma_vram_fill(VID_PLANE_A_ADDR, VID_PLANE_TILES <<, 0xFF, 2);
+    plane_clear(PLANE_A);
+    plane_clear(PLANE_B);
     while (1)
     {
  
         vid_vsync_wait();
     }
 }
+#endif

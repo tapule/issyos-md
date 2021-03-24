@@ -16,12 +16,9 @@
 #ifndef RES_H
 #define RES_H
 
-#include <stdint.h>
-
-extern const uint16_t font00_pal[16];
-extern const uint32_t font00_tiles[96 * 8];
-extern const uint16_t bgB_pal[16];
-extern const uint16_t bgB_map[64*28];
-extern const uint32_t bgB_tiles[352*8];
+#include "res_font.h"
+#include "res_img.h"
+#include "res_pal.h"
+#include "res_til.h"
 
 #endif // RES_H
