@@ -133,20 +133,6 @@ void vid_plane_size_set(const vid_plane_size_t size);
  */
 void vid_autoinc_set(const uint8_t increment);
 
-/**
- * @brief Configures a tile with all its posible properties to be drawn
- * 
- * @param tile_index VRam index of tile to drawn
- * @param palette CRam palete index (0..3)
- * @param h_flip Horizontal flip property (0 no flip, 1 flip horizontally)
- * @param v_flip Vertical flip property (0 no flip, 1 flip vertically)
- * @param priority Drawing priority (0 low priority, 1 high priority)
- * @return uint16_t Tile with all the properties configured in
- */
-uint16_t vid_tile_config(const uint16_t tile_index, const uint16_t palette,
-                         const uint16_t h_flip, const uint16_t v_flip,
-                         const uint16_t priority);
-                         
 /*
     * TODO:
     vid_hilightshadow_set

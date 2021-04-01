@@ -145,10 +145,3 @@ inline void vid_autoinc_set(const uint8_t increment)
     *VDP_PORT_CTRL_W = VDP_REG_AUTOINC | increment;
 }
 
-inline uint16_t vid_tile_config(const uint16_t tile_index,
-                                const uint16_t palette, const uint16_t h_flip,
-                                const uint16_t v_flip, const uint16_t priority)
-{
-    return (priority << 15) | (palette << 13) | (v_flip << 12) |
-           (h_flip << 11) | tile_index;
-}

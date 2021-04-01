@@ -57,8 +57,11 @@ bin/
 *.code*
 .vscode
 
+# Resources source data
+res-src/
+
 # WIP data
-wip/
+res-src-wip/
 
 # mdtools repo
 mdtools/
