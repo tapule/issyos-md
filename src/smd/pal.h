@@ -30,11 +30,17 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-/* Palette identifiers (also palette color start indexes) */
-#define PAL_0   0       /* Colors 0..15 */
-#define PAL_1   16      /* Colors 16..31 */
-#define PAL_2   32      /* Colors 32..47 */
-#define PAL_3   48      /* Colors 48..64 */
+/* Palette identifiers */
+#define PAL_0   0       /* Palette 0 - Colors 0..15 */
+#define PAL_1   1       /* Palette 1 - Colors 16..31 */
+#define PAL_2   2       /* Palette 2 - Colors 32..47 */
+#define PAL_3   3       /* Palette 3 - Colors 48..64 */
+
+/* Palettes CRAM starting indexes */
+#define PAL_0_INDEX   0       /* Colors 0..15 */
+#define PAL_1_INDEX   16      /* Colors 16..31 */
+#define PAL_2_INDEX   32      /* Colors 32..47 */
+#define PAL_3_INDEX   48      /* Colors 48..64 */
 
 /**
  * @brief Initialises the palette system

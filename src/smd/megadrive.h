@@ -25,6 +25,7 @@
 #include "pal.h"
 #include "tiles.h"
 #include "plane.h"
+#include "text.h"
 
 
 

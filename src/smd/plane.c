@@ -32,6 +32,7 @@ void plane_rect_fill(const uint16_t plane, const uint16_t tile,
 {
     uint16_t tile_row[VID_PLANE_WIDTH];
     uint16_t i;
+    
     /* Setup tile buffer */
     for (i = 0; i < width; ++i)
     {
