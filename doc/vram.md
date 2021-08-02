@@ -23,6 +23,7 @@ Tiles with ASCII glyphs between 32-95 (64 glyphs)
 ##  0xFC00..0xFE7F - Sprite table (640 Bytes)
 
 ##  0x7F4 (0xFE80..0xFFFF) - 12 tiles
+* Podría poner los 3 slots de armas del osd, son 12 tiles justos
 - 1 tile OSD hart icon
 - 1 tile OSD key icon
 - 1 tile OSD coin icon
@@ -30,7 +31,8 @@ Tiles with ASCII glyphs between 32-95 (64 glyphs)
 - 1 tile OSD health full
 - 1 tile OSD health half
 - 1 tile OSD health empty
-* 5 tiles left 
+* 5 tiles left
+  
 
  *  -> 1742 free tiles
  */

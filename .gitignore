@@ -61,7 +61,9 @@ bin/
 res-src/
 
 # WIP data
+doc-wip/
 res-src-wip/
+
 
 # mdtools repo
 mdtools/
