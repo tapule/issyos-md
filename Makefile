@@ -37,7 +37,7 @@ PLUGIN   = $(MARSDEV)/m68k-elf/libexec/gcc/m68k-elf/$(GCC_VER)
 LTO_SO   = liblto_plugin.so
 
 # Includes: Local + GCC (+ Newlib, uncomment to use it)
-INCS     = -Isrc -Ismd -Ires
+INCS     = -Isrc -Ismd -Ires -Imddev/src/smd
 INCS    += -I$(MARSDEV)/m68k-elf/lib/gcc/m68k-elf/$(GCC_VER)/include
 #INCS   += -I$(MARSDEV)/m68k-elf/m68k-elf/include
 
@@ -48,8 +48,8 @@ LIBS     = -L$(MARSDEV)/m68k-elf/lib/gcc/m68k-elf/$(GCC_VER) -lgcc
 # Default base flags
 CCFLAGS  = -m68000 -Wall -Wextra -std=c99 -ffreestanding
 ASFLAGS  = -m68000 --register-prefix-optional
-LDFLAGS  = -T src/smd/smd.ld -nostdlib
-Z80FLAGS = -isrc/smd/xgm
+LDFLAGS  = -T mddev/src/smd/smd.ld -nostdlib
+Z80FLAGS = -imddev/src/smd/xgm
 
 # Extra flags set by debug or release target as needed
 EXFLAGS  = 
@@ -57,11 +57,15 @@ EXFLAGS  =
 # Sources
 CSRC  = $(wildcard src/*.c)
 CSRC += $(wildcard src/smd/*.c)
+CSRC += $(wildcard mddev/src/smd/*.c)
 SSRC  = $(wildcard src/*.s)
 SSRC += $(wildcard src/smd/*.s)
 SSRC += $(wildcard src/smd/boot/*.s)
+SSRC += $(wildcard mddev/src/smd/*.s)
+SSRC += $(wildcard mddev/src/smd/boot/*.s)
+
 # Z80 source for XGM driver
-ZSRC  = $(wildcard src/smd/xgm/*.s80)
+ZSRC  = $(wildcard mddev/src/smd/xgm/*.s80)
 # Resources
 # TODO: Include resources
 RSRC  = $(wildcard res/*.c)

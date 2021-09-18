@@ -111,7 +111,7 @@
 *.lib   binary
 
 # Executables
-*.exe   binary
+*.bin   binary
 *.out   binary
-*.app   binary
+*.elf   binary
 
