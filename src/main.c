@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include "vram.h"
 //#include "../mddev/src/smd/megadrive.h"
-#include "megadrive.h"
+#include "mddev.h"
 #include "../res/res.h"
 
 int main()

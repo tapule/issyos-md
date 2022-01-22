@@ -1,6 +1,3 @@
-[submodule "md-customtools"]
-	path = md-customtools
-	url = git@github.com:tapule/md-customtools.git
 [submodule "mddev"]
 	path = mddev
 	url = git@github.com:tapule/mddev.git
