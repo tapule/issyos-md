@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 #
 # The Curse of Issyos MegaDrive port
-# Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
+# Coded by: Juan Ángel Moreno Fernández (@_tapule) 2022
 # Github: https://github.com/tapule/issyos-md
 #
 # Makefile
@@ -9,17 +9,17 @@
 #
 
 # Default paths for Marsdev
-MARSDEV ?= /opt/mars
-MARSBIN  = $(MARSDEV)/m68k-elf/bin
-TOOLSBIN = $(MARSDEV)/bin
+MARSDEV  ?= toolchain
+MARSBIN  := $(MARSDEV)/bin
+TOOLSBIN := $(MARSDEV)/bin
 
 # GCC environment
-CC   = $(MARSBIN)/m68k-elf-gcc
-AS   = $(MARSBIN)/m68k-elf-as
-LD   = $(MARSBIN)/m68k-elf-ld
-NM   = $(MARSBIN)/m68k-elf-nm
-GDB  = $(MARSBIN)/m68k-elf-gdb
-OBJC = $(MARSBIN)/m68k-elf-objcopy
+CC   := $(MARSBIN)/m68k-elf-gcc
+AS   := $(MARSBIN)/m68k-elf-as
+LD   := $(MARSBIN)/m68k-elf-ld
+NM   := $(MARSBIN)/m68k-elf-nm
+GDB  := $(MARSBIN)/m68k-elf-gdb
+OBJC := $(MARSBIN)/m68k-elf-objcopy
 
 # Z80 Assembler to build XGM driver
 ASMZ80   = $(TOOLSBIN)/sjasm
@@ -27,44 +27,48 @@ ASMZ80   = $(TOOLSBIN)/sjasm
 # Tools
 # TODO: Include tools to manage resources etc.
 # BINTOS  = $(TOOLSBIN)/bintos
-BINTOC  = mddev/bin/bintoc
+BINTOC  = $(TOOLSBIN)/bintoc
 BLASTEM = $(MARSDEV)/blastem/blastem
 
 # Some files needed are in a versioned directory
 GCC_VER := $(shell $(CC) -dumpversion)
 
 # Need the LTO plugin so NM can dump our symbol table
-PLUGIN   = $(MARSDEV)/m68k-elf/libexec/gcc/m68k-elf/$(GCC_VER)
+PLUGIN   = $(MARSDEV)/libexec/gcc/m68k-elf/$(GCC_VER)
 LTO_SO   = liblto_plugin.so
 
 # Includes: Local + GCC (+ Newlib, uncomment to use it)
-INCS     = -Isrc -Ires -Imddev/src
-INCS    += -I$(MARSDEV)/m68k-elf/lib/gcc/m68k-elf/$(GCC_VER)/include
+INCS     = -Isrc -Ires -Ismd/src -Ismd/src/boot
+INCS    += -I$(MARSDEV)/lib/gcc/m68k-elf/$(GCC_VER)/include
 #INCS   += -I$(MARSDEV)/m68k-elf/m68k-elf/include
 
 # Libraries: GCC (+ Newlib, uncomment to use it)
-LIBS     = -L$(MARSDEV)/m68k-elf/lib/gcc/m68k-elf/$(GCC_VER) -lgcc
+LIBS     = -L$(MARSDEV)/lib/gcc/m68k-elf/$(GCC_VER) -lgcc
 #LIBS    += -L$(MARSDEV)/m68k-elf/m68k-elf/lib -lnosys
 
 # Default base flags
-CCFLAGS  = -m68000 -Wall -Wextra -std=c17 -ffreestanding
+#CCFLAGS  = -m68000 -Wall -Wextra -Wno-unused-local-typedefss -std=c17 -ffreestanding
+CCFLAGS  = -m68000 -Wall -Wextra -Wpedantic -Wno-unused-local-typedefs -std=c23 -ffreestanding
 ASFLAGS  = -m68000 --register-prefix-optional
-LDFLAGS  = -T mddev/src/smd.ld -nostdlib
-Z80FLAGS = -imddev/src/xgm
+LDFLAGS  = -T smd/src/smd.ld -nostdlib
+Z80FLAGS = -ismd/src/xgm
 
 # Extra flags set by debug or release target as needed
-EXFLAGS  = 
+EXFLAGS  =
 
 # Sources
 CSRC  = $(wildcard src/*.c)
-CSRC += $(wildcard mddev/src/*.c)
+# CSRC += $(wildcard src/man/*.c)
+# CSRC += $(wildcard src/sys/*.c)
+CSRC += $(wildcard smd/src/*.c)
+CSRC += $(wildcard smd/src/boot/*.c)
 SSRC  = $(wildcard src/*.s)
-SSRC += $(wildcard mddev/src/*.s)
-SSRC += $(wildcard mddev/src/boot/*.s)
+SSRC += $(wildcard smd/src/*.s)
+SSRC += $(wildcard smd/src/boot/*.s)
 SSRC += $(wildcard res/*.s)
 
 # Z80 source for XGM driver
-# ZSRC  = $(wildcard mddev/src/smd/xgm/*.s80)
+# ZSRC  = $(wildcard smd/src/smd/xgm/*.s80)
 
 # Resources
 # TODO: Include resources
@@ -81,9 +85,9 @@ OUTOBJS = $(addprefix obj/, $(OBJS))
 ASM    = $(CSRC:.c=.lst)
 OUTASM = $(addprefix obj/, $(ASM))
 
-.PHONY: all release asm debug mddev
+.PHONY: all release asm debug smd
 
-all: mddev release
+all: release
 
 # Release target including optimizations
 release: EXFLAGS  = -O3 -fno-web -fno-gcse -fno-unit-at-a-time -fshort-enums
@@ -97,8 +101,6 @@ debug: EXFLAGS = -g -Og -DDEBUG
 debug: bin/rom.bin obj/symbol.txt
 
 # ASM output target. Generates asm listings
-#asm: EXFLAGS  = -O3 -fno-web -fno-gcse -fno-unit-at-a-time -fomit-frame-pointer
-#asm: EXFLAGS += -fshort-enums
 asm: EXFLAGS  = -O3 -fno-web -fno-gcse -fno-unit-at-a-time -fshort-enums
 asm: EXFLAGS += -fomit-frame-pointer -fuse-linker-plugin
 asm: EXFLAGS += -fno-unwind-tables -DNDEBUG
@@ -113,7 +115,7 @@ bin/rom.bin: bin/rom.elf
 	@echo "-> Stripping ELF header..."
 	@mkdir -p $(dir $@)
 	@$(OBJC) -O binary $< bin/unpad.bin
-	@echo "-> Padding rom file..."	
+	@echo "-> Padding rom file..."
 	@dd if=bin/unpad.bin of=$@ bs=8192 conv=sync
 	@rm -f bin/unpad.bin
 
@@ -122,7 +124,7 @@ obj/%.o: %.c
 	@mkdir -p $(dir $@)
 	@$(CC) $(CCFLAGS) $(EXFLAGS) $(INCS) -c $< -o $@
 
-obj/%.o: %.s 
+obj/%.o: %.s
 	@echo "AS $<"
 	@mkdir -p $(dir $@)
 	@$(AS) $(ASFLAGS) $< -o $@
@@ -131,6 +133,7 @@ obj/%.lst: %.c
 	@echo "-> Exporting ASM listings..."
 	@mkdir -p $(dir $@)
 	@$(CC) $(CCFLAGS) $(EXFLAGS) $(INCS) -S -c $< -o $@
+#	@$(CC) $(CCFLAGS) $(EXFLAGS) $(INCS) -S -fverbose-asm -c $< -o $@
 
 # %.o80: %.s80
 #	$(ASMZ80) $(Z80FLAGS) $< $@ obj/z80out.lst
@@ -145,12 +148,12 @@ obj/symbol.txt: bin/rom.bin
 	@echo "-> Exporting symbol table..."
 	$(NM) --plugin=$(PLUGIN)/$(LTO_SO) -n bin/rom.elf > obj/symbol.txt
 
-mddev:
-	@echo "-> Building mddev..."
-	@make -C mddev xgm
-	@make -C mddev tools
+smd:
+	@echo "-> Building smd..."
+	@make -C smd xgm
+	@make -C smd tools
 
-.PHONY: run drun clean 
+.PHONY: run drun clean
 
 run: release
 	@echo "-> running..."
@@ -166,5 +169,4 @@ clean:
 	@echo "-> Cleaning project..."
 	@rm -rf obj
 	@rm -f bin/rom.elf bin/unpad.bin bin/rom.bin
-	# @make -C mddev clean
-
+	# @make -C smd clean

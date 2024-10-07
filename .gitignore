@@ -29,19 +29,27 @@
 *.idb
 *.pdb
 
-# rom files
+# Rom files
 *.bin
+
+# VSCode project files
+*.code*
+.vscode
 
 # Symbols
 symbol.txt
 
-# Resources
+# Assets dir
+assets/
 
-# object dir
+# Object dir
 obj/
 
-# binary dir
+# Binary dir
 bin/
+
+# Toolchain dir
+toolchain/
 
 # Other files
 *.zip
@@ -53,17 +61,10 @@ bin/
 *.lst
 *~
 
-# VSCode project files
-*.code*
-.vscode
-
 # WIP data
 wip/
-doc-wip/
-res-src-wip/
-
-# Resources source data
-res-src/
+wip-doc/
+wip-assets/
 
 # Mame history dir
 history/

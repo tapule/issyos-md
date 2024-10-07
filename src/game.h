@@ -4,15 +4,20 @@
  * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2022 
  * Github: https://github.com/tapule/issyos-md
  *
- * File: main.c
- * Main entry point for the game
+ * File: game.h
+ * Main game object
+ *
  */
 
-#include <mddev.h>
-#include "game.h"
+#ifndef GAME_H
+#define GAME_H
 
-int main()
-{
-    game_init();
-    game_run();
-}
+#include <mddev.h>
+
+/* Game initialization */
+void game_init(void);
+
+/* Starts the game */
+void game_run(void);
+
+#endif /* GAME_H */
