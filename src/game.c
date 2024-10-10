@@ -24,9 +24,9 @@ void game_load_resources(void)
     pal_primary_set(PAL_1_INDEX, RES_PAL_COLLECTIBLES_SIZE, res_pal_collectibles);
 
     /* System font */
-    tiles_load_fast(res_font_sys, VRAM_INDEX_FONT, RES_FONT_SYS_SIZE);
-    text_font_set(VRAM_INDEX_FONT);
-    text_pal_set(PAL_0);
+    smd_tiles_load_fast(res_font_sys, VRAM_INDEX_FONT, RES_FONT_SYS_SIZE);
+    smd_text_font_set(VRAM_INDEX_FONT);
+    smd_text_pal_set(PAL_0);
 
     /* Other resource load examples */
     z80_bus_request();
@@ -41,7 +41,7 @@ void game_init(void)
 {
     smd_ints_disable();
     game_load_resources();
-    vid_display_enable();
+    smd_vdp_display_enable();
     smd_ints_enable();
 }
 
@@ -57,7 +57,7 @@ void game_run(void)
     while (1)
     {
         /* Game body background color */
-        vid_background_color_set(5);
+        smd_vdp_background_color_set(5);
 
         pad_update();
 
@@ -69,23 +69,23 @@ void game_run(void)
             case 0:
                 ++sfx;
                 kdebug_alert("Boton A: Start sound 0");
-                size = text_render("SOUND 0 PLAYING", text);
+                size = smd_text_render("SOUND 0 PLAYING", text);
                 sound_sfx_play_auto(64, 15);
                 break;
             case 1:
                 ++sfx;
                 kdebug_alert("Boton A: Start sound 1");
-                size = text_render("SOUND 1 PLAYING", text);
+                size = smd_text_render("SOUND 1 PLAYING", text);
                 sound_sfx_play_auto(65, 15);
                 break;
             case 2:
                 sfx = 0;
                 kdebug_alert("Boton A: Start sound 0");
-                size = text_render("SOUND 2 PLAYING", text);
+                size = smd_text_render("SOUND 2 PLAYING", text);
                 sound_sfx_play_auto(66, 15);
                 break;
             }
-            plane_hline_draw(PLANE_A, text, 2, 4, size, false);
+            plane_hline_draw( SMD_PLANE_A, text, 2, 4, size, false);
         }
         /* Check press button  */
         if (pad_btn_pressed(PAD_1, PAD_BTN_B))
@@ -95,13 +95,13 @@ void game_run(void)
             {
             // Pause
             case 0:
-                size = text_render("MUSIC PAUSE   ", text);
+                size = smd_text_render("MUSIC PAUSE   ", text);
                 sound_music_pause();
                 status = 1;
                 break;
             // Resume
             case 1:
-                size = text_render("MUSIC RESUME   ", text);
+                size = smd_text_render("MUSIC RESUME   ", text);
                 sound_music_resume();
                 status = 0;
                 break;
@@ -110,22 +110,22 @@ void game_run(void)
                 switch (song)
                 {
                 case 0:
-                    size = text_render("MUSIC SONG 0", text);
+                    size = smd_text_render("MUSIC SONG 0", text);
                     sound_music_play(mus_credits);
                     break;
                 case 1:
-                    size = text_render("MUSIC SONG 1", text);
+                    size = smd_text_render("MUSIC SONG 1", text);
                     sound_music_play(mus_demo);
                     break;
                 case 2:
-                    size = text_render("MUSIC SONG 2", text);
+                    size = smd_text_render("MUSIC SONG 2", text);
                     sound_music_play(mus_caves);
                     break;
                 }
                 status = 0;
                 break;
             }
-            plane_hline_draw(PLANE_A, text, 2, 6, size, false);
+            plane_hline_draw( SMD_PLANE_A, text, 2, 6, size, false);
         }
         if (pad_btn_pressed(PAD_1, PAD_BTN_C))
         {
@@ -136,8 +136,8 @@ void game_run(void)
             {
                 song = 0;
             }
-            size = text_render("MUSIC STOP  ", text);
-            plane_hline_draw(PLANE_A, text, 2, 6, size, false);
+            size = smd_text_render("MUSIC STOP  ", text);
+            plane_hline_draw( SMD_PLANE_A, text, 2, 6, size, false);
         }
 
         /* Main game body goes here */
@@ -146,15 +146,15 @@ void game_run(void)
         //dma_queue_vsram_transfer(data, 0, 2, 2);
 
         /* Wait vsync background color */
-        vid_background_color_set(6);
+        smd_vdp_background_color_set(6);
         //wait(10);
-        vid_vsync_wait();
+        smd_vdp_vsync_wait();
         // sound_update(); // Ojo, hecho automáticamente en el vint
         pal_update();
-        spr_update();
+        smd_spr_update();
 
         /* Vertical blank background color */
-        vid_background_color_set(2);
+        smd_vdp_background_color_set(2);
         dma_queue_flush();
     }
 }

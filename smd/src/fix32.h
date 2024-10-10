@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: MIT */
 /**
  * MDDev development kit
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021 
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
  * Github: https://github.com/tapule/mddev
  *
  * File: fix32.h
@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef MDDEV_FIX32_H
-#define MDDEV_FIX32_H
+#ifndef SMD_FIX32_H
+#define SMD_FIX32_H
 
 #include<stdint.h>
 
@@ -39,4 +39,4 @@ typedef int32_t fix32_t;
 #define fix32_mul(x, y)         (((x) * (y)) >> FIX32_FRACT_BITS)
 #define fix32_div(x, y)         (((x) << FIX32_FRACT_BITS) / (y))
 
-#endif /* MDDEV_FIX32_H */
+#endif /* SMD_FIX32_H */

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: MIT */
 /**
  * MDDev development kit
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021 
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
  * Github: https://github.com/tapule/mddev
  *
  * File: plane.h
@@ -19,25 +19,18 @@
  *
  * More info:
  * https://blog.bigevilcorporation.co.uk/2012/03/23/sega-megadrive-4-hello-world/
- * 
+ *
  */
 
-#ifndef MDDEV_PLANE_H
-#define MDDEV_PLANE_H
+#ifndef SMD_PLANE_H
+#define SMD_PLANE_H
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "config.h"
-
-/* Plane convenient defines */
-#define PLANE_A VID_PLANE_A_ADDR
-#define PLANE_B VID_PLANE_B_ADDR
-#define PLANE_W VID_PLANE_W_ADDR
-
 
 /**
  * @brief Configures a plane cell tile with all its draw properties
- * 
+ *
  * @param tile_index VRam index of tile to drawn
  * @param palette CRam palete index (0..3)
  * @param h_flip Horizontal flip property (0 no flip, 1 flip horizontally)
@@ -51,9 +44,9 @@ uint16_t plane_cell_config(const uint16_t tile_index, const uint16_t palette,
 
 /**
  * @brief Clears an entire VDP plane
- * 
+ *
  * @param plane Plane to clear
- * 
+ *
  * @note This function clears the plane immediately. Use it wisely with the
  * display off or in the vertical blank, otherwise you will get some glitches.
  */
@@ -61,14 +54,14 @@ void plane_clear(const uint16_t plane);
 
 /**
  * @brief Draws a rectangle of tiles in a concrete position of a plane
- * 
+ *
  * @param plane Destination plane where tiles should be drawn
  * @param tile Tile index or a full cell tile config to use as fill value
- * @param x Plane horizontal position in cells 
+ * @param x Plane horizontal position in cells
  * @param y Plane vertical position in cells
  * @param width Rectangle width in tiles
  * @param height Rectangle height in tiles
- * 
+ *
  * @note This function draws the plane immediately. Use it wisely with the
  * display off or in the vertical blank, otherwise you will get some glitches.
  */
@@ -78,10 +71,10 @@ void plane_rect_fill(const uint16_t plane, const uint16_t tile,
 
 /**
  * @brief Draws a tile in a concrete position of a plane
- * 
+ *
  * @param plane Destination plane where the tile should be drawn
  * @param tile Tile index or a full cell tile config
- * @param x Plane horizontal position in cells 
+ * @param x Plane horizontal position in cells
  * @param y Plane vertical position in cells
  *
  * @note This function draws the tile immediately. Use it wisely with the
@@ -92,10 +85,10 @@ void plane_tile_draw(const uint16_t plane, const uint16_t tile,
 
 /**
  * @brief Draws a horizontal line of tiles in a concrete position of a plane
- * 
+ *
  * @param plane Destination plane where tiles should be drawn
  * @param tiles Source tiles indexes or full cells tiles configurations
- * @param x Plane horizontal position in cells 
+ * @param x Plane horizontal position in cells
  * @param y Plane vertical position in cells
  * @param length Line of tiles length
  * @param defer True to enqueue the operation, false to do it directly
@@ -106,10 +99,10 @@ void plane_hline_draw(const uint16_t plane, const uint16_t *restrict tiles,
 
 /**
  * @brief Draws faster a horizontal line of tiles in a position of a plane
- * 
+ *
  * @param plane Destination plane where tiles should be drawn
  * @param tiles Source tiles indexes or full cells tiles configurations
- * @param x Plane horizontal position in cells 
+ * @param x Plane horizontal position in cells
  * @param y Plane vertical position in cells
  * @param length Line of tiles length
  *
@@ -124,10 +117,10 @@ void plane_hline_draw_fast(const uint16_t plane, const uint16_t *restrict tiles,
 
 /**
  * @brief Draws a vertical line of tiles in a concrete position of a plane
- * 
+ *
  * @param plane Destination plane where tiles should be drawn
  * @param tiles Source tiles indexes or full cells tiles configurations
- * @param x Plane horizontal position in cells 
+ * @param x Plane horizontal position in cells
  * @param y Plane vertical position in cells
  * @param length Line of tiles length
  * @param defer True to enqueue the operation, false to do it directly
@@ -138,10 +131,10 @@ void plane_vline_draw(const uint16_t plane, const uint16_t *restrict tiles,
 
 /**
  * @brief Draws faster a vertical line of tiles in a position of a plane
- * 
+ *
  * @param plane Destination plane where tiles should be drawn
  * @param tiles Source tiles indexes or full cells tiles configurations
- * @param x Plane horizontal position in cells 
+ * @param x Plane horizontal position in cells
  * @param y Plane vertical position in cells
  * @param length Line of tiles length
  *
@@ -156,10 +149,10 @@ void plane_vline_draw_fast(const uint16_t plane, const uint16_t *restrict tiles,
 
 /**
  * @brief Draws a rectangle of tiles in a concrete position of a plane
- * 
+ *
  * @param plane Destination plane where tiles should be drawn
  * @param tiles Source tiles indexes or full cells tiles configurations
- * @param x Plane horizontal position in cells 
+ * @param x Plane horizontal position in cells
  * @param y Plane vertical position in cells
  * @param width Rectangle width in tiles
  * @param height Rectangle height in tiles
@@ -171,10 +164,10 @@ void plane_rect_draw(const uint16_t plane, const uint16_t *restrict tiles,
 
 /**
  * @brief Draws faster a rectangle of tiles in a concrete position of a plane
- * 
+ *
  * @param plane Destination plane where tiles should be drawn
  * @param tiles Source tiles indexes or full cells tiles configurations
- * @param x Plane horizontal position in cells 
+ * @param x Plane horizontal position in cells
  * @param y Plane vertical position in cells
  * @param width Rectangle width in tiles
  * @param height Rectangle height in tiles
@@ -188,4 +181,4 @@ void plane_rect_draw_fast(const uint16_t plane, const uint16_t *restrict tiles,
                           const uint16_t x, const uint16_t y,
                           const uint16_t width, const uint16_t height);
 
-#endif /* MDDEV_PLANE_H */
+#endif /* SMD_PLANE_H */

@@ -64,35 +64,34 @@
 
 ; setBank_BC
 ; ----------
-; A    -> bit 22-15 of rom address to set in the bank register
+; A    -> bit 21-15 of rom address to set in the bank register
 ; BC  <-  BANKREG
 ; A   <-  0
 ;
 ; set the bank register for ROM area
-; = 105 cycles
+; = 101 cycles
 
             macro   setBank_BC
 
             LD  BC, BANKREG         ; BC = BANKREG              ' 10
             LD  (BC), A             ; #1 (bit 15)               ' 7
-            RRCA                     ;                          ' 4
+            RRCA                    ;                           ' 4
             LD  (BC), A             ; #2 (bit 16)               ' 7
-            RRCA                     ;                          ' 4
+            RRCA                    ;                           ' 4
             LD  (BC), A             ; #3 (bit 17)               ' 7
-            RRCA                     ;                          ' 4
+            RRCA                    ;                           ' 4
             LD  (BC), A             ; #4 (bit 18)               ' 7
-            RRCA                     ;                          ' 4
+            RRCA                    ;                           ' 4
             LD  (BC), A             ; #5 (bit 19)               ' 7
-            RRCA                     ;                          ' 4
+            RRCA                    ;                           ' 4
             LD  (BC), A             ; #6 (bit 20)               ' 7
-            RRCA                     ;                          ' 4
+            RRCA                    ;                           ' 4
             LD  (BC), A             ; #7 (bit 21)               ' 7
-            RRCA                     ;                          ' 4
-            LD  (BC), A             ; #8 (bit 22)               ' 7
-            XOR A                    ;                          ' 4
+            XOR A                   ;                           ' 4
+            LD  (BC), A             ; #8 (bit 22 = 0)           ' 7
             LD  (BC), A             ; #9 (bit 23 = 0)           ' 7
 
-            endm                    ;                           ' 105
+            endm                    ;                           ' 101
 
 
 ; setBank_DE
@@ -135,16 +134,13 @@
 ; E    -> value
 ;
 ; write to YM2612 (no busy check)
-; = 26 cycles
+; = 18 cycles
 
             macro   writeYMFast
 
             LD      (HL), D         ; write address             ' 7     |
-            NOP                     ;                           ' 4     | 15
-            NOP                     ; wait a bit for YM         ' 4     |
-
-            INC     L               ; next port                 ' 4     |
-            LD      (HL), E         ; write value               ' 7     | 11
+            INC     L               ; next port                 ' 4     | 18
+            LD      (HL), E         ; write value               ' 7     |
 
             endm
 
@@ -375,7 +371,7 @@
             endm
 
             macro   wait7
-            LD      A, $0
+            OR      $0
             endm
 
             macro   wait8
@@ -388,8 +384,8 @@
             endm
 
             macro   wait10
-            JP      .loop
-.loop
+            JP      .go
+.go
             endm
 
             macro   wait11
@@ -398,8 +394,8 @@
             endm
 
             macro   wait12
-            JR      .loop
-.loop
+            JR      .go
+.go
             endm
 
             macro   wait13
@@ -463,8 +459,8 @@
             endm
 
             macro   wait25
-            wait18
-            wait7
+            wait21
+            wait4
             endm
 
             macro   wait26
@@ -527,8 +523,8 @@
             endm
 
             macro   wait38
-            wait27
-            wait11
+            wait24
+            wait14
             endm
 
             macro   wait39

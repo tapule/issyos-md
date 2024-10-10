@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: MIT */
 /**
  * MDDev development kit
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021 
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
  * Github: https://github.com/tapule/mddev
  *
  * File: pal.c
@@ -9,7 +9,7 @@
  */
 
 #include "pal.h"
-#include "video.h"
+#include "vdp.h"
 #include "dma.h"
 
 /* Internal palette color buffers */
@@ -154,7 +154,7 @@ void pal_fade_wait(void)
 {
     while (pal_fade_step())
     {
-        vid_vsync_wait();
+        smd_vdp_vsync_wait();
         pal_update();
     }
 }

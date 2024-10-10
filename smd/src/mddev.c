@@ -23,7 +23,7 @@ void smd_init(void)
     /* Initialises the XGM based sound engine */
     sound_init();
     /* Initialises the graphics  */
-    vid_init();
+    smd_vdp_init();
     /* Initialises the pseudo-random number generator */
     rnd_init();
     /* Initialises the DMA system  */
@@ -31,5 +31,5 @@ void smd_init(void)
     /* Initialises the palette system  */
     pal_init();
     /* Initialises the palette system  */
-    spr_init();
+    smd_spr_init();
 }

@@ -12,17 +12,16 @@
  * You must include it in your proyects.
  */
 
-#ifndef MDDEV_H
-#define MDDEV_H
+#ifndef SMD_H
+#define SMD_H
 
-#define MDDEV_VERSION   0.1
+#define SMD_VERSION   0.1
 
 //#include "boot/vectors.h"
 //#include "boot/interrupts.h"
 //#include "boot/boot.h"
 
 #include "assert.h"
-#include "config.h"
 
 #include "memory.h"
 #include "sys.h"
@@ -31,7 +30,7 @@
 #include "psg.h"
 #include "ym2612.h"
 #include "sound.h"
-#include "video.h"
+#include "vdp.h"
 #include "rand.h"
 #include "dma.h"
 #include "pal.h"
@@ -54,4 +53,4 @@
  */
 void smd_init(void);
 
-#endif /* MDDEV_H */
+#endif /* SMD_H */

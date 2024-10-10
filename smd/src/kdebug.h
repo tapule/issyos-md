@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: MIT */
 /**
  * MDDev development kit
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021 
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
  * Github: https://github.com/tapule/mddev
  *
  * File: kdebug.h
- * Gens KMod Debugging routines 
+ * Gens KMod Debugging routines
  *
- * Gens KMod is a modified version developed by Kaneda of Gens emulator by 
+ * Gens KMod is a modified version developed by Kaneda of Gens emulator by
  * Stephane Dallongeville. Among other improvements KMod adds some debugging
  * features. These features are also supported by Blastem emulator.
  *
@@ -15,8 +15,8 @@
  * https://documentation.help/Gens-KMod/documentation.pdf
  */
 
-#ifndef MDDEV_KDEBUG_H
-#define MDDEV_KDEBUG_H
+#ifndef SMD_KDEBUG_H
+#define SMD_KDEBUG_H
 
 /* Debugging disabled so do not evaluate kdebug functions. */
 #ifdef NDEBUG
@@ -42,23 +42,23 @@ void __kdebug_halt(void);
 
 /**
  * @brief Outputs a message string
- * 
+ *
  * Shows a text message on the emulator's Message window.
- * 
+ *
  * @param str   Text string to output
  */
 void __kdebug_alert(const char *str);
 
 /**
  * @brief Starts the emulator timer
- * 
+ *
  * It starts an internal emulator timer counter based on m68k cycles.
  */
 void __kdebug_timer_start(void);
 
 /**
  * @brief Stops the emulator timer
- * 
+ *
  * It stops the internal emulator timer counter and output its value in the
  * emulator's Message window
  */
@@ -71,4 +71,4 @@ void __kdebug_timer_output(void);
 
 #endif
 
-#endif /* MDDEV_KDEBUG_H */
+#endif /* SMD_KDEBUG_H */

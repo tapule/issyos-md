@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: MIT */
 /**
  * MDDev development kit
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021 
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
  * Github: https://github.com/tapule/mddev
  *
  * File: rand.c
@@ -21,7 +21,7 @@ void rnd_init(void)
     /* CHECKME: Seems that this is not so random */
     /* Mix a random generated value with the MegaDrive HV counter */
     rnd_var = (uint16_t) 0xCE52 ^ (uint16_t) (0xCE52 << 9);
-    rnd_seed = *VDP_PORT_HV_COUNTER ^ (*VDP_PORT_HV_COUNTER >> 7);
+    rnd_seed = *SMD_VDP_PORT_HV_COUNTER ^ (*SMD_VDP_PORT_HV_COUNTER >> 7);
     rnd_seed = rnd_seed ^ rnd_var ^ (rnd_var << 13);
 }
 

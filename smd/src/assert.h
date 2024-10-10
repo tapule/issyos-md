@@ -11,10 +11,10 @@
  * validates a predicate at compile time without generating any code.
  */
 
-#ifndef MDDEV_CTASSERT_H
-#define MDDEV_CTASSERT_H
+#ifndef SMD_CTASSERT_H
+#define SMD_CTASSERT_H
 
 #undef static_assert
 #define static_assert _Static_assert
 
-#endif /* MDDEV_CTASSERT_H */
+#endif /* SMD_CTASSERT_H */

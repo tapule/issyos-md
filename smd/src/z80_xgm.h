@@ -1,6 +1,6 @@
 /* Generated with bintoc v0.01                           */
 /* A binary to C language resource converter             */
-/* Github: https://github.com/tapule/mddev               */
+/* Github: https://github.com/tapule/mdtools               */
 
 #ifndef Z80_XGM_H
 #define Z80_XGM_H

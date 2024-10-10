@@ -9,8 +9,8 @@
  *
  * Response handlers for the most important exceptions and interrupts on the SMD
  */
-#ifndef MDDEV_HANDLERS_H
-#define MDDEV_HANDLERS_H
+#ifndef SMD_HANDLERS_H
+#define SMD_HANDLERS_H
 
 void smd_exc_bus_error(void);
 void smd_exc_address_error(void);
@@ -26,4 +26,4 @@ void smd_int_hblank(void);
 void smd_int_vblank(void);
 void smd_int_unhandled(void);
 
-#endif /* MDDEV_HANDLERS_H */
+#endif /* SMD_HANDLERS_H */

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: MIT */
 /**
  * MDDev development kit
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021 
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
  * Github: https://github.com/tapule/mddev
  *
  * File: sys.c
@@ -23,34 +23,34 @@
  *  RSV:     Reserved. Not used
  *  VER3..0: Megadrive/Genesis version
  */
-#define VERSION_PORT     ((volatile uint8_t *) 0xA10001)
+#define SMD_VERSION_PORT     ((volatile uint8_t *) 0xA10001)
 
-static bool ints_status_flag;
+static bool smd_ints_status_flag;
 
 
 inline void smd_ints_enable(void)
 {
     __asm__ volatile ("\tandi.w	#0xF8FF, %sr\n");
-    ints_status_flag = true;
+    smd_ints_status_flag = true;
 }
 
 inline void smd_ints_disable(void)
 {
     __asm__ volatile ("\tori.w	#0x700, %sr\n");
-    ints_status_flag = false;    
+    smd_ints_status_flag = false;
 }
 
 inline bool smd_ints_status(void)
 {
-    return ints_status_flag;
+    return smd_ints_status_flag;
 }
 
 inline bool smd_is_pal(void)
 {
-    return *VERSION_PORT & 0x40;
+    return *SMD_VERSION_PORT & 0x40;
 }
 
 inline bool smd_is_japanese(void)
 {
-    return !(*VERSION_PORT & 0x80);
+    return !(*SMD_VERSION_PORT & 0x80);
 }

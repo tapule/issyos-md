@@ -18,14 +18,16 @@
  * https://github.com/Stephane-D/SGDK/blob/master/inc/dma.h
  */
 
-#ifndef MDDEV_DMA_H
-#define MDDEV_DMA_H
+#ifndef SMD_DMA_H
+#define SMD_DMA_H
 
 #include <stdint.h>
 #include <stdbool.h>
 
-// ifndef DMA_QUEUE_SIZE define DMA_QUEUE_SIZE ???
-
+/* DMA internal queue size in operations */
+#ifndef DMA_QUEUE_SIZE
+    #define DMA_QUEUE_SIZE 64
+#endif
 
 /**
  * @brief Initialises the DMA system
@@ -193,4 +195,4 @@ bool dma_queue_cram_transfer(const void *restrict src, const uint16_t dest,
 bool dma_queue_vsram_transfer(const void *restrict src, const uint16_t dest,
                               const uint16_t length, const uint16_t increment);
 
-#endif /* MDDEV_DMA_H */
+#endif /* SMD_DMA_H */

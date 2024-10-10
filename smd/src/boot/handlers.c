@@ -1,6 +1,6 @@
 #include "handlers.h"
 #include "../sound.h"
-#include "../video.h"
+#include "../vdp.h"
 
 [[gnu::interrupt]]
 void smd_exc_bus_error(void)
@@ -46,7 +46,7 @@ void smd_int_hblank(void)
 void smd_int_vblank(void)
 {
     sound_update();
-    vid_vblank_flag = 1;
+    smd_vdp_vblank_flag = 1;
 }
 
 [[gnu::interrupt]]

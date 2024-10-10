@@ -17,7 +17,7 @@
 #define _HEADER_SRAM_ENABLED "  "
 #endif
 
-typedef struct smd_header_t
+typedef struct
 {
     char system_name[16];       /* 16B - Console name (Must start with "SEGA") */
     char copyright[16];         /* 16B - Copyright and release date */

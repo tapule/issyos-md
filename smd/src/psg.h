@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: MIT */
 /**
  * MDDev development kit
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021 
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
  * Github: https://github.com/tapule/mddev
  *
  * File: psg.h
@@ -17,18 +17,18 @@
  * https://blog.bigevilcorporation.co.uk/2012/09/03/sega-megadrive-10-sound-part-i-the-psg-chip/
  */
 
-#ifndef MDDEV_PSG_H
-#define MDDEV_PSG_H
+#ifndef SMD_PSG_H
+#define SMD_PSG_H
 
 /**
  * @brief initialises the PSG sound hardware.
- * 
+ *
  * Controls the initialisation process of the PSG. It reset the channels and
  * put them in silence.
- * 
+ *
  * @note This function is called from the boot process so maybe you don't need
  * to call it anymore.
  */
 void psg_init(void);
 
-#endif /* MDDEV_PSG_H */
+#endif /* SMD_PSG_H */
