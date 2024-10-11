@@ -13,7 +13,7 @@
 void smd_init(void)
 {
     /* Initialises the z80 secondary CPU */
-    z80_init();
+    smd_z80_init();
     /* Initialises gamepad ports */
     pad_init();
     /* Initialises the PSG (Programmable Sound Generator) */

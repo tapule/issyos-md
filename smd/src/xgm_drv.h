@@ -2,13 +2,13 @@
 /* A binary to C language resource converter             */
 /* Github: https://github.com/tapule/mdtools               */
 
-#ifndef Z80_XGM_H
-#define Z80_XGM_H
+#ifndef XGM_DRV_H
+#define XGM_DRV_H
 
 #include <stdint.h>
 
-#define Z80_XGM_SIZE    5888
+#define XGM_DRV_SIZE    5888
 
-extern const uint8_t z80_xgm[Z80_XGM_SIZE];
+extern const uint8_t xgm_drv[XGM_DRV_SIZE];
 
-#endif /* Z80_XGM_H */
+#endif /* XGM_DRV_H */

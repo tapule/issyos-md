@@ -82,9 +82,9 @@ bool dma_transfer_fast(const uint32_t src, const uint16_t dest,
     /* Issues the DMA from a ram varible and in words (see SEGA notes on DMA) */
     *SMD_VDP_PORT_CTRL_W = *cmd_p;
     ++cmd_p;
-    z80_bus_request_fast();
+    smd_z80_bus_request_fast();
     *SMD_VDP_PORT_CTRL_W = *cmd_p;
-    z80_bus_release();
+    smd_z80_bus_release();
 
     return true;
 }
@@ -341,7 +341,7 @@ void dma_queue_flush(void)
     uint32_t *queue_p = (uint32_t *) dma_queue;
     uint16_t i;
 
-    z80_bus_request_fast();
+    smd_z80_bus_request_fast();
     for (i = 0; i < dma_queue_index; ++i)
     {
         /*
@@ -360,7 +360,7 @@ void dma_queue_flush(void)
         *SMD_VDP_PORT_CTRL_W = *queue_p >> 16;
         *SMD_VDP_PORT_CTRL_W = *queue_p++;
     }
-    z80_bus_release();
+    smd_z80_bus_release();
     dma_queue_clear();
 }
 

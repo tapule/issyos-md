@@ -1,6 +1,6 @@
 # The Curse of Issyos MegaDrive port
 This is a work in progress non official port/conversion of Locomalito's PC game
-The Curse of Issyos to Sega's MegaDrive/Genesis written in C and mk68 asm. 
+The Curse of Issyos to Sega's MegaDrive/Genesis written in C and mk68 asm.
 
 ## Compilation
 To be writen
@@ -18,7 +18,7 @@ I am learning from giants:
 
 ## Tools used
 - VSCode
-- [Marsdev](https://github.com/andwn/marsdev) toolchain.
+- [Mdtc](https://github.com/tapule/mdtc) toolchain.
 - Git
 - Gitg
 - Bless

@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: MIT */
 /**
  * MDDev development kit
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021 
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
  * Github: https://github.com/tapule/mddev
  *
  * File: pad.c
  * Control routines for Sega Megadrive/Genesis gamepads
- */ 
+ */
 
 #include "pad.h"
 #include "z80.h"
@@ -24,7 +24,7 @@
 /* Gamepads types for later accesses */
 static uint8_t pad_types[PAD_NUM] = {PAD_TYPE_UNKNOWN, PAD_TYPE_UNKNOWN};
 
-/* 
+/*
  * Current and previous frame gamepads states
  * A 0 bit means not pressed, a 1 bit means pressed
  */
@@ -52,19 +52,19 @@ void pad_init(void)
      * Data: 0 means a button has been pressed, 1 if it has been released
      * CTrl: 0 means a pin on data port is an output, 1 if it is an input
      * The pin 7 is not connected so we can ignore it.
-     * 
+     *
      * It is also important to halt the z80 while we are touching these ports to
      * prevent it to access the m68k's bus due to a hardware bug.
-     *  
+     *
      */
-    z80_bus_request_fast();
+    smd_z80_bus_request_fast();
     *PAD_1_DATA_PORT = 0x40;
     *PAD_1_CTRL_PORT = 0x40;
     *PAD_2_DATA_PORT = 0x40;
     *PAD_2_CTRL_PORT = 0x40;
     *PAD_EXP_DATA_PORT = 0x40;
     *PAD_EXP_CTRL_PORT = 0x40;
-    z80_bus_release();
+    smd_z80_bus_release();
 }
 
 void pad_update(void)
@@ -72,7 +72,7 @@ void pad_update(void)
     pad_state_old[PAD_1] = pad_state[PAD_1];
     pad_state_old[PAD_2] = pad_state[PAD_2];
 
-    z80_bus_request_fast();
+    smd_z80_bus_request_fast();
     /* 1st step read:
      * | ?| ?| C| B| R| L| D| U|
      */
@@ -145,11 +145,11 @@ void pad_update(void)
         __asm__ volatile ("\tnop\n");
         pad_state[PAD_2] |= ((*PAD_2_DATA_PORT & 0x0F) << 8);
     }
-    z80_bus_release();
-    
+    smd_z80_bus_release();
+
     /* Invert the state bits to use 0 as not pressed, 1 as pressed */
     pad_state[PAD_1] ^= 0x0FFF;
-    pad_state[PAD_2] ^= 0x0FFF;    
+    pad_state[PAD_2] ^= 0x0FFF;
 }
 
 inline uint8_t pad_type(const uint16_t pad)

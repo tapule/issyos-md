@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: MIT */
 /**
  * MDDev development kit
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021 
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
  * Github: https://github.com/tapule/mddev
  *
  * File: ym2612.c
@@ -31,7 +31,7 @@
  */
 inline void ym2612_wait(void)
 {
-    /* 
+    /*
      * Wait while the YM2612 is busy reading bit 7 on 0xA04000.
      * It is recommended to read only from this port as several revisions of
      * this hardware may fail to read status from other port.
@@ -44,7 +44,7 @@ inline void ym2612_wait(void)
 
 /**
  * @brief Writes the regiter index to operate with to the FM1 address port
- * 
+ *
  * @param reg Register index to write
  */
 inline void ym2612_fm1_addr_write(const uint8_t reg)
@@ -55,7 +55,7 @@ inline void ym2612_fm1_addr_write(const uint8_t reg)
 
 /**
  * @brief Writes data to the FM1 data port
- * 
+ *
  * @param data Data value to send to the data port
  */
 inline void ym2612_fm1_data_write(const uint8_t data)
@@ -66,7 +66,7 @@ inline void ym2612_fm1_data_write(const uint8_t data)
 
 /**
  * @brief Writes the regiter index to operate with to the FM2 address port
- * 
+ *
  * @param reg Register index to write
  */
 inline void ym2612_fm2_addr_write(const uint8_t reg)
@@ -77,7 +77,7 @@ inline void ym2612_fm2_addr_write(const uint8_t reg)
 
 /**
  * @brief Writes data to the FM2 data port
- * 
+ *
  * @param data Data value to send to the data port
  */
 inline void ym2612_fm2_data_write(const uint8_t data)
@@ -88,7 +88,7 @@ inline void ym2612_fm2_data_write(const uint8_t data)
 
 /**
  * @brief Writes data to a concrete register index in the FM1 set
- * 
+ *
  * @param reg Register index to write data to
  * @param data Data to be written
  */
@@ -100,7 +100,7 @@ inline void ym2612_fm1_write(const uint8_t reg, const uint8_t data)
 
 /**
  * @brief Writes data to a concrete register index in the FM2 set
- * 
+ *
  * @param reg Register index to write data to
  * @param data Data to be written
  */
@@ -115,7 +115,7 @@ void ym2612_init(void)
     uint16_t i;
     uint8_t reg;
 
-    z80_bus_request();
+    smd_z80_bus_request();
 
     /* Disable DAC */
     ym2612_fm1_write(0x2B, 0x00);
@@ -157,5 +157,5 @@ void ym2612_init(void)
         ym2612_fm1_data_write(0x04 + i);
     }
 
-    z80_bus_release();
+    smd_z80_bus_release();
 }

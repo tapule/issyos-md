@@ -29,11 +29,11 @@ void game_load_resources(void)
     smd_text_pal_set(PAL_0);
 
     /* Other resource load examples */
-    z80_bus_request();
+    smd_z80_bus_request();
         sound_sfx_set(64, res_sfx_door, RES_SFX_DOOR_SIZE);
         sound_sfx_set(65, res_sfx_spit, RES_SFX_SPIT_SIZE);
         sound_sfx_set(66, sfx_snd_death14, SFX_SND_DEATH14_SIZE);
-    z80_bus_release();
+    smd_z80_bus_release();
     sound_music_play(mus_credits);
 }
 
@@ -85,7 +85,7 @@ void game_run(void)
                 sound_sfx_play_auto(66, 15);
                 break;
             }
-            plane_hline_draw( SMD_PLANE_A, text, 2, 4, size, false);
+            plane_hline_draw(SMD_PLANE_A, text, 2, 4, size, false);
         }
         /* Check press button  */
         if (pad_btn_pressed(PAD_1, PAD_BTN_B))

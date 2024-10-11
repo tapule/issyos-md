@@ -29,7 +29,7 @@
  * @note This function is called from the boot process so maybe you don't need
  * to call it anymore.
  */
-void z80_init(void);
+void smd_z80_init(void);
 
 /**
  * @brief Reset the z80 CPU.
@@ -37,7 +37,7 @@ void z80_init(void);
  * Forces the z80 to reset and start executing code from the first line of its
  * internal memory. This is done by cleaning the PC, I and R internal registers.
  */
-void z80_reset(void);
+void smd_z80_reset(void);
 
 /**
  * @brief Performs a z80 bus request.
@@ -45,7 +45,7 @@ void z80_reset(void);
  * We can't access the z80 memory while it's running so we need to ask it for
  * its bus. This will pause the z80 and grand us secure access to its RAM.
  */
-void z80_bus_request(void);
+void smd_z80_bus_request(void);
 
 /**
  * @brief Performs a fast z80 bus request.
@@ -54,7 +54,7 @@ void z80_bus_request(void);
  * these cases, we can ask the z80 for the bus, but there is no need to wait for
  * it to be ready. One example of this situation is doing safe DMA transfers.
  */
-void z80_bus_request_fast(void);
+void smd_z80_bus_request_fast(void);
 
 /**
  * @brief Release the z80 bus.
@@ -62,14 +62,14 @@ void z80_bus_request_fast(void);
  * Once we ended using the z80 bus, we must release it and let the CPU run
  * again.
  */
-void z80_bus_release(void);
+void smd_z80_bus_release(void);
 
 /**
  * @brief Checks if the z80 is halted and the bus is free
  *
  * @return True if we own the bus, false if z80 is the owner
  */
-bool z80_is_bus_free(void);
+bool smd_z80_is_bus_free(void);
 
 /**
  * @brief Load a chunk of data on the z80.
@@ -83,7 +83,7 @@ bool z80_is_bus_free(void);
  * @note This function does not request the bus, so be aware that it is a bit
  * unsafe if you don't manage the bus request/release in advance.
  */
-void z80_data_load(const uint8_t *src, const uint16_t dest, uint16_t size);
+void smd_z80_data_load(const uint8_t *src, const uint16_t dest, uint16_t size);
 
 /**
  * @brief Load a new program on the z80.
@@ -94,6 +94,6 @@ void z80_data_load(const uint8_t *src, const uint16_t dest, uint16_t size);
  * @param src   Pointer to the source program data.
  * @param size  Size in bytes of our program data.
  */
-// void z80_program_load(const uint8_t *restrict src, uint16_t size);
+// void smd_z80_program_load(const uint8_t *restrict src, uint16_t size);
 
 #endif /* SMD_Z80_H */

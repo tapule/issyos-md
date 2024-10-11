@@ -62,10 +62,10 @@ void sound_update(void);
  *
  * @note For optimization purposes, this function does not request the z80 bus
  * so be aware that you must request it in your code:
- *   z80_bus_request();
+ *   smd_z80_z80_bus_request();
  *     sound_sfx_set(64, my_sfx_1, MY_SFX_1_SIZE);
  *     sound_sfx_set(65, my_sfx_2, MY_SFX_2_SIZE);
- *   z80_bus_release();
+ *   smd_z80_z80_bus_release();
  */
 void sound_sfx_set(const uint8_t id, const uint8_t *sample,
                    const uint32_t length);
