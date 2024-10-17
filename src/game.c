@@ -30,11 +30,11 @@ void game_load_resources(void)
 
     /* Other resource load examples */
     smd_z80_bus_request();
-        sound_sfx_set(64, res_sfx_door, RES_SFX_DOOR_SIZE);
-        sound_sfx_set(65, res_sfx_spit, RES_SFX_SPIT_SIZE);
-        sound_sfx_set(66, sfx_snd_death14, SFX_SND_DEATH14_SIZE);
+        smd_xgm_sfx_set(64, res_sfx_door, RES_SFX_DOOR_SIZE);
+        smd_xgm_sfx_set(65, res_sfx_spit, RES_SFX_SPIT_SIZE);
+        smd_xgm_sfx_set(66, sfx_snd_death14, SFX_SND_DEATH14_SIZE);
     smd_z80_bus_release();
-    sound_music_play(mus_credits);
+    smd_xgm_music_play(mus_credits);
 }
 
 void game_init(void)
@@ -70,19 +70,19 @@ void game_run(void)
                 ++sfx;
                 kdebug_alert("Boton A: Start sound 0");
                 size = smd_text_render("SOUND 0 PLAYING", text);
-                sound_sfx_play_auto(64, 15);
+                smd_xgm_sfx_play_auto(64, 15);
                 break;
             case 1:
                 ++sfx;
                 kdebug_alert("Boton A: Start sound 1");
                 size = smd_text_render("SOUND 1 PLAYING", text);
-                sound_sfx_play_auto(65, 15);
+                smd_xgm_sfx_play_auto(65, 15);
                 break;
             case 2:
                 sfx = 0;
                 kdebug_alert("Boton A: Start sound 0");
                 size = smd_text_render("SOUND 2 PLAYING", text);
-                sound_sfx_play_auto(66, 15);
+                smd_xgm_sfx_play_auto(66, 15);
                 break;
             }
             plane_hline_draw(SMD_PLANE_A, text, 2, 4, size, false);
@@ -96,13 +96,13 @@ void game_run(void)
             // Pause
             case 0:
                 size = smd_text_render("MUSIC PAUSE   ", text);
-                sound_music_pause();
+                smd_xgm_music_pause();
                 status = 1;
                 break;
             // Resume
             case 1:
                 size = smd_text_render("MUSIC RESUME   ", text);
-                sound_music_resume();
+                smd_xgm_music_resume();
                 status = 0;
                 break;
             // Start new song
@@ -111,15 +111,15 @@ void game_run(void)
                 {
                 case 0:
                     size = smd_text_render("MUSIC SONG 0", text);
-                    sound_music_play(mus_credits);
+                    smd_xgm_music_play(mus_credits);
                     break;
                 case 1:
                     size = smd_text_render("MUSIC SONG 1", text);
-                    sound_music_play(mus_demo);
+                    smd_xgm_music_play(mus_demo);
                     break;
                 case 2:
                     size = smd_text_render("MUSIC SONG 2", text);
-                    sound_music_play(mus_caves);
+                    smd_xgm_music_play(mus_caves);
                     break;
                 }
                 status = 0;
@@ -129,7 +129,7 @@ void game_run(void)
         }
         if (pad_btn_pressed(PAD_1, PAD_BTN_C))
         {
-            sound_music_stop();
+            smd_xgm_music_stop();
             status = 4;
             ++song;
             if (song == 3)
@@ -149,7 +149,7 @@ void game_run(void)
         smd_vdp_background_color_set(6);
         //wait(10);
         smd_vdp_vsync_wait();
-        // sound_update(); // Ojo, hecho automáticamente en el vint
+        // smd_xgm_update(); // Ojo, hecho automáticamente en el vint
         pal_update();
         smd_spr_update();
 

@@ -29,7 +29,7 @@
 #include "pad.h"
 #include "psg.h"
 #include "ym2612.h"
-#include "sound.h"
+#include "xgm.h"
 #include "vdp.h"
 #include "rand.h"
 #include "dma.h"

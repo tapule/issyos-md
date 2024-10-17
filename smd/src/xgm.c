@@ -4,12 +4,12 @@
  * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
  * Github: https://github.com/tapule/mddev
  *
- * File: sound.c
+ * File: xgm.c
  * Sound and music system
  */
 
 #include <stdint.h>
-#include "sound.h"
+#include "xgm.h"
 #include "sys.h"
 #include "z80.h"
 #include "null_data.h"
@@ -20,7 +20,7 @@
  * addresses and sizes. The first entry of this table (id 0) is used for the
  * silent sample (null_data can be used as silent sample).
  */
-#define XGM_SAMPLE_ID_TABLE ((volatile uint8_t *) 0xA01C00)
+#define SMD_XGM_SAMPLE_ID_TABLE ((volatile uint8_t *) 0xA01C00)
 
 /*
  * XGM status variable address:
@@ -35,9 +35,9 @@
  *  b7: Driver ready
 
  */
-#define XGM_STATUS_ADDR ((volatile uint8_t *) 0xA00102)
-#define XGM_STATUS_PLAYING  1
-#define XGM_STATUS_READY    128
+#define SMD_XGM_STATUS_ADDR ((volatile uint8_t *) 0xA00102)
+#define SMD_XGM_STATUS_PLAYING  1
+#define SMD_XGM_STATUS_READY    128
 
 /*
  * XGM commands variable address:
@@ -51,23 +51,23 @@
  *  b6: Play XGM command
  *  b7: Unused??
  */
-#define XGM_COMMAND_ADDR ((volatile uint8_t *) 0xA00100)
-#define XGM_COMMAND_CLEAR       0x0F
-#define XGM_COMMAND_PAUSE       0x10
-#define XGM_COMMAND_RESUME      0x20
-#define XGM_COMMAND_PLAY        0x40
+#define SMD_XGM_COMMAND_ADDR ((volatile uint8_t *) 0xA00100)
+#define SMD_XGM_COMMAND_CLEAR       0x0F
+#define SMD_XGM_COMMAND_PAUSE       0x10
+#define SMD_XGM_COMMAND_RESUME      0x20
+#define SMD_XGM_COMMAND_PLAY        0x40
 
 /* XGM parameters data address */
-#define XGM_PARAMS_ADDR ((volatile uint8_t *) 0xA00104)
+#define SMD_XGM_PARAMS_ADDR ((volatile uint8_t *) 0xA00104)
 
 /*
  * "Dummy" music sequence which contains commands to reset / turn off the
- * YM2612 sounds. It it used in sound_music_stop function to silent and put
+ * YM2612 sounds. It it used in smd_xgm_music_stop function to silent and put
  * the XGM driver in a healthy state.
  * Note: Converted from stop_xgm binary resource in SGDK
  */
-#define XGM_RESET_SEQUENCE_SIZE    172
-const uint8_t xgm_reset_sequence[XGM_RESET_SEQUENCE_SIZE] = {
+#define SMD_XGM_RESET_SEQUENCE_SIZE    172
+const uint8_t xgm_reset_sequence[SMD_XGM_RESET_SEQUENCE_SIZE] = {
     0xAC, 0x5E, 0x40, 0x7F, 0x44, 0x7F, 0x48, 0x7F, 0x4C, 0x7F, 0x41, 0x7F,
     0x45, 0x7F, 0x49, 0x7F, 0x4D, 0x7F, 0x42, 0x7F, 0x46, 0x7F, 0x4A, 0x7F,
     0x4E, 0x7F, 0x80, 0xFF, 0x84, 0xFF, 0x88, 0xFF, 0x8C, 0xFF, 0x4E, 0x81,
@@ -94,14 +94,14 @@ static uint16_t xgm_tempo_def;
 static int16_t xgm_tempo_cnt;
 
 /* Next channel that sould be used for sfx */
-static uint16_t sound_sfx_next_channel;
+static uint16_t smd_xgm_sfx_next_channel;
 /* Is sfx muted? */
-static bool sound_sfx_muted;
+static bool smd_xgm_sfx_muted;
 
 
-void sound_init(void)
+void smd_xgm_init(void)
 {
-    volatile uint8_t *smp_table = XGM_SAMPLE_ID_TABLE;
+    volatile uint8_t *smp_table = SMD_XGM_SAMPLE_ID_TABLE;
     uint32_t smp_null_addr = (uint32_t) null_data;
     uint16_t xgm_ready;
 
@@ -121,7 +121,7 @@ void sound_init(void)
     smp_table[3] = NULL_DATA_SIZE >> 16;
 
     smd_z80_reset();
-    xgm_ready = *XGM_STATUS_ADDR & XGM_STATUS_READY;
+    xgm_ready = *SMD_XGM_STATUS_ADDR & SMD_XGM_STATUS_READY;
     smd_z80_bus_release();
 
     /*
@@ -135,20 +135,20 @@ void sound_init(void)
         }
         /* Request the bus here to read the xgm status */
         smd_z80_bus_request();
-            xgm_ready = *XGM_STATUS_ADDR & XGM_STATUS_READY;
+            xgm_ready = *SMD_XGM_STATUS_ADDR & SMD_XGM_STATUS_READY;
         smd_z80_bus_release();
     } while (!xgm_ready);
 
     /* Skip channel 0 for sfx as it is normally used for music */
-    sound_sfx_next_channel = 1;
-    sound_sfx_muted = false;
+    smd_xgm_sfx_next_channel = 1;
+    smd_xgm_sfx_muted = false;
     /* Initialize XGM synchronisation variables */
     xgm_tempo = 60;
 	xgm_tempo_def = smd_is_pal() ? 50 : 60;
     xgm_tempo_cnt = 0;
 }
 
-inline void sound_update(void)
+inline void smd_xgm_update(void)
 {
     int16_t cnt = xgm_tempo_cnt;
     uint16_t step = xgm_tempo_def;
@@ -175,7 +175,7 @@ inline void sound_update(void)
          * the PENDING_FRM (0x0F) variable or not. We check here if this is
          * happening and wait for the z80 to finish doing it.
          */
-        if (!XGM_PARAMS_ADDR[0x0E])
+        if (!SMD_XGM_PARAMS_ADDR[0x0E])
         {
             break;
         }
@@ -189,14 +189,14 @@ inline void sound_update(void)
      * XGM PENDING_FRM (0x0F) variable contains number of XGM frame to process.
      * Increment it here.
      */
-    XGM_PARAMS_ADDR[0x0F] += num;
+    SMD_XGM_PARAMS_ADDR[0x0F] += num;
 }
 
-void sound_sfx_set(const uint8_t id, const uint8_t *sample,
+void smd_xgm_sfx_set(const uint8_t id, const uint8_t *sample,
                    const uint32_t length)
 {
     /* Get the sample id index in the sample table */
-    volatile uint8_t *smp_table_ptr = (XGM_SAMPLE_ID_TABLE + (uint32_t) (id << 2));
+    volatile uint8_t *smp_table_ptr = (SMD_XGM_SAMPLE_ID_TABLE + (uint32_t) (id << 2));
 
     /* Set the sample address in the sample table index */
     smp_table_ptr[0] = ((uint32_t) sample) >> 8;
@@ -206,89 +206,89 @@ void sound_sfx_set(const uint8_t id, const uint8_t *sample,
     smp_table_ptr[3] = length >> 16;
 }
 
-void sound_sfx_play(const uint8_t id, uint8_t priority, const uint16_t channel)
+void smd_xgm_sfx_play(const uint8_t id, uint8_t priority, const uint16_t channel)
 {
     volatile uint8_t *pcm_params;
 
-    if (!sound_sfx_muted)
+    if (!smd_xgm_sfx_muted)
     {
         smd_ints_disable();
         smd_z80_bus_request();
 
-        pcm_params = XGM_PARAMS_ADDR + 0x04 + (channel * 2);
+        pcm_params = SMD_XGM_PARAMS_ADDR + 0x04 + (channel * 2);
 
         /*
          * Set PCM priority and sample id to play:
-         * XGM_PARAMS_ADDR + 0x04 = PCM0 priority
-         * XGM_PARAMS_ADDR + 0x05 = PCM0 sample id
-         * XGM_PARAMS_ADDR + 0x06 = PCM1 priority
-         * XGM_PARAMS_ADDR + 0x07 = PCM1 sample id
-         * XGM_PARAMS_ADDR + 0x08 = PCM2 priority
-         * XGM_PARAMS_ADDR + 0x09 = PCM2 sample id
-         * XGM_PARAMS_ADDR + 0x0A = PCM3 priority
-         * XGM_PARAMS_ADDR + 0x0B = PCM3 sample id
+         * SMD_XGM_PARAMS_ADDR + 0x04 = PCM0 priority
+         * SMD_XGM_PARAMS_ADDR + 0x05 = PCM0 sample id
+         * SMD_XGM_PARAMS_ADDR + 0x06 = PCM1 priority
+         * SMD_XGM_PARAMS_ADDR + 0x07 = PCM1 sample id
+         * SMD_XGM_PARAMS_ADDR + 0x08 = PCM2 priority
+         * SMD_XGM_PARAMS_ADDR + 0x09 = PCM2 sample id
+         * SMD_XGM_PARAMS_ADDR + 0x0A = PCM3 priority
+         * SMD_XGM_PARAMS_ADDR + 0x0B = PCM3 sample id
          */
         pcm_params[0] = priority & 0xF;
         pcm_params[1] = id;
 
         /*
          * Set XGM driver play PCM channel command
-         * XGM_COMMAND_PLAY_PCM0 = 0x01
-         * XGM_COMMAND_PLAY_PCM1 = 0x02
-         * XGM_COMMAND_PLAY_PCM2 = 0x04
-         * XGM_COMMAND_PLAY_PCM3 = 0x08
+         * SMD_XGM_COMMAND_PLAY_PCM0 = 0x01
+         * SMD_XGM_COMMAND_PLAY_PCM1 = 0x02
+         * SMD_XGM_COMMAND_PLAY_PCM2 = 0x04
+         * SMD_XGM_COMMAND_PLAY_PCM3 = 0x08
          */
-        *XGM_COMMAND_ADDR |= (1 << channel);
+        *SMD_XGM_COMMAND_ADDR |= (1 << channel);
 
         smd_z80_bus_release();
         smd_ints_enable();
 
         /* Adjust play auto next channel skipping channel 0 */
-        sound_sfx_next_channel = channel + 1;
-        if (sound_sfx_next_channel > 3)
+        smd_xgm_sfx_next_channel = channel + 1;
+        if (smd_xgm_sfx_next_channel > 3)
         {
-            sound_sfx_next_channel = 1;
+            smd_xgm_sfx_next_channel = 1;
         }
     }
 }
 
-inline void sound_sfx_play_auto(const uint8_t id, uint8_t priority)
+inline void smd_xgm_sfx_play_auto(const uint8_t id, uint8_t priority)
 {
-    sound_sfx_play(id, priority, sound_sfx_next_channel);
+    smd_xgm_sfx_play(id, priority, smd_xgm_sfx_next_channel);
 }
 
-inline void sound_sfx_stop(const uint16_t channel)
+inline void smd_xgm_sfx_stop(const uint16_t channel)
 {
     /* Stop a channel is the same as playing silent sample on it */
-    sound_sfx_play(0, 15, channel);
+    smd_xgm_sfx_play(0, 15, channel);
 }
 
-void sound_sfx_mute(void)
+void smd_xgm_sfx_mute(void)
 {
     int16_t i;
 
-    if (!sound_sfx_muted)
+    if (!smd_xgm_sfx_muted)
     {
         /* Stop all sample channels first */
         for (i = 0; i < 4; ++i)
         {
-            sound_sfx_stop(i);
+            smd_xgm_sfx_stop(i);
         }
-        sound_sfx_muted = true;
+        smd_xgm_sfx_muted = true;
     }
 }
 
-inline void sound_sfx_unmute(void)
+inline void smd_xgm_sfx_unmute(void)
 {
-    sound_sfx_muted = false;
+    smd_xgm_sfx_muted = false;
 }
 
-inline bool sound_sfx_is_muted(void)
+inline bool smd_xgm_sfx_is_muted(void)
 {
-    return sound_sfx_muted;
+    return smd_xgm_sfx_muted;
 }
 
-void sound_music_play(const uint8_t *song)
+void smd_xgm_music_play(const uint8_t *song)
 {
     uint8_t ids[0x100 - 4];
     uint32_t addr;
@@ -335,58 +335,58 @@ void sound_music_play(const uint8_t *song)
     addr += 4;
 
     /* Set XGM music data address */
-    XGM_PARAMS_ADDR[0] = addr >> 0;
-    XGM_PARAMS_ADDR[1] = addr >> 8;
-    XGM_PARAMS_ADDR[2] = addr >> 16;
-    XGM_PARAMS_ADDR[3] = addr >> 24;
+    SMD_XGM_PARAMS_ADDR[0] = addr >> 0;
+    SMD_XGM_PARAMS_ADDR[1] = addr >> 8;
+    SMD_XGM_PARAMS_ADDR[2] = addr >> 16;
+    SMD_XGM_PARAMS_ADDR[3] = addr >> 24;
 
     /* Clear previous commands */
-    *XGM_COMMAND_ADDR &= XGM_COMMAND_CLEAR;
+    *SMD_XGM_COMMAND_ADDR &= SMD_XGM_COMMAND_CLEAR;
     /* Set XGM driver play XGM command */
-    *XGM_COMMAND_ADDR |= XGM_COMMAND_PLAY;
+    *SMD_XGM_COMMAND_ADDR |= SMD_XGM_COMMAND_PLAY;
     /* Clear pending frame */
-    XGM_PARAMS_ADDR[0x0F] = 0;
+    SMD_XGM_PARAMS_ADDR[0x0F] = 0;
 
     smd_z80_bus_release();
     smd_ints_enable();
 }
 
-void sound_music_pause(void)
+void smd_xgm_music_pause(void)
 {
     smd_ints_disable();
     smd_z80_bus_request();
 
     /* Clear previous commands */
-    *XGM_COMMAND_ADDR &= XGM_COMMAND_CLEAR;
+    *SMD_XGM_COMMAND_ADDR &= SMD_XGM_COMMAND_CLEAR;
     /* Set XGM driver pause XGM command */
-    *XGM_COMMAND_ADDR |= XGM_COMMAND_PAUSE;
+    *SMD_XGM_COMMAND_ADDR |= SMD_XGM_COMMAND_PAUSE;
     /* Clear pending frame */
-    XGM_PARAMS_ADDR[0x0F] = 0;
+    SMD_XGM_PARAMS_ADDR[0x0F] = 0;
 
     smd_z80_bus_release();
     smd_ints_enable();
 }
 
-void sound_music_resume(void)
+void smd_xgm_music_resume(void)
 {
     smd_ints_disable();
     smd_z80_bus_request();
 
     /* Check if we are already playing a song */
-    if ((*XGM_COMMAND_ADDR & XGM_COMMAND_PLAY) == 0)
+    if ((*SMD_XGM_COMMAND_ADDR & SMD_XGM_COMMAND_PLAY) == 0)
     {
         /* Clear previous commands */
-        *XGM_COMMAND_ADDR &= XGM_COMMAND_CLEAR;
+        *SMD_XGM_COMMAND_ADDR &= SMD_XGM_COMMAND_CLEAR;
         /* Set XGM driver resume XGM command */
-        *XGM_COMMAND_ADDR |= XGM_COMMAND_RESUME;
+        *SMD_XGM_COMMAND_ADDR |= SMD_XGM_COMMAND_RESUME;
         /* Clear pending frame */
-        XGM_PARAMS_ADDR[0x0F] = 0;
+        SMD_XGM_PARAMS_ADDR[0x0F] = 0;
     }
     smd_z80_bus_release();
     smd_ints_enable();
 }
 
-void sound_music_stop(void)
+void smd_xgm_music_stop(void)
 {
     uint32_t addr;
 
@@ -400,17 +400,17 @@ void sound_music_stop(void)
     smd_z80_bus_request();
 
     /* Set stop sequence as XGM music data address */
-    XGM_PARAMS_ADDR[0] = addr >> 0;
-    XGM_PARAMS_ADDR[1] = addr >> 8;
-    XGM_PARAMS_ADDR[2] = addr >> 16;
-    XGM_PARAMS_ADDR[3] = addr >> 24;
+    SMD_XGM_PARAMS_ADDR[0] = addr >> 0;
+    SMD_XGM_PARAMS_ADDR[1] = addr >> 8;
+    SMD_XGM_PARAMS_ADDR[2] = addr >> 16;
+    SMD_XGM_PARAMS_ADDR[3] = addr >> 24;
 
     /* Clear previous commands */
-    *XGM_COMMAND_ADDR &= XGM_COMMAND_CLEAR;
+    *SMD_XGM_COMMAND_ADDR &= SMD_XGM_COMMAND_CLEAR;
     /* Set XGM driver play XGM command */
-    *XGM_COMMAND_ADDR |= XGM_COMMAND_PLAY;
+    *SMD_XGM_COMMAND_ADDR |= SMD_XGM_COMMAND_PLAY;
     /* Clear pending frame */
-    XGM_PARAMS_ADDR[0x0F] = 0;
+    SMD_XGM_PARAMS_ADDR[0x0F] = 0;
 
     smd_z80_bus_release();
     smd_ints_enable();

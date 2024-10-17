@@ -43,10 +43,14 @@
 #include "../smd/src/boot/handlers.h"
 #include "../smd/src/z80.h"
 #include "../smd/src/ym2612.h"
+#include "../smd/src/xgm.h"
+#include "../smd/src/xgm_drv.h"
 #include "../smd/src/vdp.h"
 #include "../smd/src/tiles.h"
 #include "../smd/src/text.h"
 #include "../smd/src/sys.h"
 #include "../smd/src/sprite.h"
+#include "../smd/src/rand.h"
+#include "../smd/src/psg.h"
 
 #endif /* SMD_H */

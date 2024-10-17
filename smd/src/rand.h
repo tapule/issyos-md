@@ -27,7 +27,7 @@
  * @note This function is called from the boot process so maybe you don't need
  * to call it anymore.
  */
-void rnd_init(void);
+void smd_rnd_init(void);
 
 /**
  * @brief Sets a new seed for prng
@@ -37,7 +37,7 @@ void rnd_init(void);
  *
  * @param seed  New seed
  */
-void rnd_seed_set(const uint16_t seed);
+void smd_rnd_seed_set(const uint16_t seed);
 
 /**
  * @brief Gets the current seed
@@ -46,7 +46,7 @@ void rnd_seed_set(const uint16_t seed);
  *
  * @return uint16_t The current seed
  */
-uint16_t rnd_seed_get(void);
+uint16_t smd_rnd_seed_get(void);
 
 /**
  * @brief Generates a new random number
@@ -55,6 +55,6 @@ uint16_t rnd_seed_get(void);
  *
  * @return uint16_t The new number
  */
-uint16_t rnd_get(void);
+uint16_t smd_rnd_get(void);
 
 #endif /* SMD_RAND_H */

@@ -17,15 +17,15 @@ void smd_init(void)
     /* Initialises gamepad ports */
     pad_init();
     /* Initialises the PSG (Programmable Sound Generator) */
-    psg_init();
+    smd_psg_init();
     /* Initialises the Yamaha YM2612 FM sound chip */
-    ym2612_init();
+    smd_ym2612_init();
     /* Initialises the XGM based sound engine */
-    sound_init();
+    smd_xgm_init();
     /* Initialises the graphics  */
     smd_vdp_init();
     /* Initialises the pseudo-random number generator */
-    rnd_init();
+    smd_rnd_init();
     /* Initialises the DMA system  */
     dma_init();
     /* Initialises the palette system  */

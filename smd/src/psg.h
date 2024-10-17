@@ -29,6 +29,6 @@
  * @note This function is called from the boot process so maybe you don't need
  * to call it anymore.
  */
-void psg_init(void);
+void smd_psg_init(void);
 
 #endif /* SMD_PSG_H */

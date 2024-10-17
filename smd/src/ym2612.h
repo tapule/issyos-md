@@ -33,6 +33,6 @@
  * @note This function is called from the boot process so maybe you don't need
  * to call it anymore.
  */
-void ym2612_init(void);
+void smd_ym2612_init(void);
 
 #endif /* SMD_YM2612_H */

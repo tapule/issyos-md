@@ -1,5 +1,5 @@
 #include "handlers.h"
-#include "../sound.h"
+#include "../xgm.h"
 #include "../vdp.h"
 
 [[gnu::interrupt]]
@@ -45,7 +45,7 @@ void smd_int_hblank(void)
 [[gnu::interrupt]]
 void smd_int_vblank(void)
 {
-    sound_update();
+    smd_xgm_update();
     smd_vdp_vblank_flag = 1;
 }
 

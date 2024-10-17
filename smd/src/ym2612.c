@@ -21,15 +21,17 @@
  * These ports are accessed through memory location 0xA04000..0xA04003 from the
  * m68k side.
  */
-#define YM2612_FM1_PORT_ADDRESS ((volatile uint8_t *) 0xA04000)
-#define YM2612_FM1_PORT_DATA    ((volatile uint8_t *) 0xA04001)
-#define YM2612_FM2_PORT_ADDRESS ((volatile uint8_t *) 0xA04002)
-#define YM2612_FM2_PORT_DATA    ((volatile uint8_t *) 0xA04003)
+#define SMD_YM2612_FM1_PORT_ADDRESS ((volatile uint8_t *) 0xA04000)
+#define SMD_YM2612_FM1_PORT_DATA    ((volatile uint8_t *) 0xA04001)
+#define SMD_YM2612_FM2_PORT_ADDRESS ((volatile uint8_t *) 0xA04002)
+#define SMD_YM2612_FM2_PORT_DATA    ((volatile uint8_t *) 0xA04003)
+// CHECKME: No debería poner los registros con defines en lugar de magic nums??
+
 
 /**
  * @brief Waits the YM2112 to be ready to receive new data
  */
-inline void ym2612_wait(void)
+inline void smd_ym2612_wait(void)
 {
     /*
      * Wait while the YM2612 is busy reading bit 7 on 0xA04000.
@@ -37,7 +39,7 @@ inline void ym2612_wait(void)
      * this hardware may fail to read status from other port.
      * https://plutiedev.com/blog/20200103
      */
-    while(*YM2612_FM1_PORT_ADDRESS & 0X80)
+    while(*SMD_YM2612_FM1_PORT_ADDRESS & 0X80)
     {
     }
 }
@@ -47,10 +49,10 @@ inline void ym2612_wait(void)
  *
  * @param reg Register index to write
  */
-inline void ym2612_fm1_addr_write(const uint8_t reg)
+inline void smd_ym2612_fm1_addr_write(const uint8_t reg)
 {
-    ym2612_wait();
-    *YM2612_FM1_PORT_ADDRESS = reg;
+    smd_ym2612_wait();
+    *SMD_YM2612_FM1_PORT_ADDRESS = reg;
 }
 
 /**
@@ -58,10 +60,10 @@ inline void ym2612_fm1_addr_write(const uint8_t reg)
  *
  * @param data Data value to send to the data port
  */
-inline void ym2612_fm1_data_write(const uint8_t data)
+inline void smd_ym2612_fm1_data_write(const uint8_t data)
 {
-    ym2612_wait();
-    *YM2612_FM1_PORT_DATA = data;
+    smd_ym2612_wait();
+    *SMD_YM2612_FM1_PORT_DATA = data;
 }
 
 /**
@@ -69,10 +71,10 @@ inline void ym2612_fm1_data_write(const uint8_t data)
  *
  * @param reg Register index to write
  */
-inline void ym2612_fm2_addr_write(const uint8_t reg)
+inline void smd_ym2612_fm2_addr_write(const uint8_t reg)
 {
-    ym2612_wait();
-    *YM2612_FM2_PORT_ADDRESS = reg;
+    smd_ym2612_wait();
+    *SMD_YM2612_FM2_PORT_ADDRESS = reg;
 }
 
 /**
@@ -80,10 +82,10 @@ inline void ym2612_fm2_addr_write(const uint8_t reg)
  *
  * @param data Data value to send to the data port
  */
-inline void ym2612_fm2_data_write(const uint8_t data)
+inline void smd_ym2612_fm2_data_write(const uint8_t data)
 {
-    ym2612_wait();
-    *YM2612_FM2_PORT_DATA = data;
+    smd_ym2612_wait();
+    *SMD_YM2612_FM2_PORT_DATA = data;
 }
 
 /**
@@ -92,10 +94,10 @@ inline void ym2612_fm2_data_write(const uint8_t data)
  * @param reg Register index to write data to
  * @param data Data to be written
  */
-inline void ym2612_fm1_write(const uint8_t reg, const uint8_t data)
+inline void smd_ym2612_fm1_write(const uint8_t reg, const uint8_t data)
 {
-    ym2612_fm1_addr_write(reg);
-    ym2612_fm1_data_write(data);
+    smd_ym2612_fm1_addr_write(reg);
+    smd_ym2612_fm1_data_write(data);
 }
 
 /**
@@ -104,13 +106,13 @@ inline void ym2612_fm1_write(const uint8_t reg, const uint8_t data)
  * @param reg Register index to write data to
  * @param data Data to be written
  */
-inline void ym2612_fm2_write(const uint8_t reg, const uint8_t data)
+inline void smd_ym2612_fm2_write(const uint8_t reg, const uint8_t data)
 {
-    ym2612_fm2_addr_write(reg);
-    ym2612_fm2_data_write(data);
+    smd_ym2612_fm2_addr_write(reg);
+    smd_ym2612_fm2_data_write(data);
 }
 
-void ym2612_init(void)
+void smd_ym2612_init(void)
 {
     uint16_t i;
     uint8_t reg;
@@ -118,20 +120,20 @@ void ym2612_init(void)
     smd_z80_bus_request();
 
     /* Disable DAC */
-    ym2612_fm1_write(0x2B, 0x00);
+    smd_ym2612_fm1_write(0x2B, 0x00);
 
     /* Mute all FM Channels */
     reg = 0x40;
     for (i = 0; i < 4; i++)
     {
-        ym2612_fm1_write(reg, 0x7F);
-        ym2612_fm2_write(reg, 0x7F);
+        smd_ym2612_fm1_write(reg, 0x7F);
+        smd_ym2612_fm2_write(reg, 0x7F);
         ++reg;
-        ym2612_fm1_write(reg, 0x7F);
-        ym2612_fm2_write(reg, 0x7F);
+        smd_ym2612_fm1_write(reg, 0x7F);
+        smd_ym2612_fm2_write(reg, 0x7F);
         ++reg;
-        ym2612_fm1_write(reg, 0x7F);
-        ym2612_fm2_write(reg, 0x7F);
+        smd_ym2612_fm1_write(reg, 0x7F);
+        smd_ym2612_fm2_write(reg, 0x7F);
         ++reg;
         ++reg;
     }
@@ -139,22 +141,22 @@ void ym2612_init(void)
     /* Enable left and right output for all channels */
     for (i = 0; i < 3; ++i)
     {
-        ym2612_fm1_write(0xB4 + i, 0xC0);
-        ym2612_fm2_write(0xB4 + i, 0xC0);
+        smd_ym2612_fm1_write(0xB4 + i, 0xC0);
+        smd_ym2612_fm2_write(0xB4 + i, 0xC0);
     }
 
     /* Disable LFO */
-    ym2612_fm1_write(0x22, 0x00);
+    smd_ym2612_fm1_write(0x22, 0x00);
 
     /* Disable timers A and B and set channel 6 to normal mode */
-    ym2612_fm1_write(0x27, 0x00);
+    smd_ym2612_fm1_write(0x27, 0x00);
 
     /* All key off */
-    ym2612_fm1_addr_write(0x28);
+    smd_ym2612_fm1_addr_write(0x28);
     for (i = 0; i < 3; ++i)
     {
-        ym2612_fm1_data_write(0x00 + i);
-        ym2612_fm1_data_write(0x04 + i);
+        smd_ym2612_fm1_data_write(0x00 + i);
+        smd_ym2612_fm1_data_write(0x04 + i);
     }
 
     smd_z80_bus_release();
