@@ -1,11 +1,14 @@
-/* SPDX-License-Identifier: MIT */
-/**
- * MDDev development kit
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021 
- * Github: https://github.com/tapule/mddev
+/*
+ * SPDX-License-Identifier: [TIPO_LICENCIA]
  *
- * File: smdcpp.ld
- * SEGA Megadrive/Genesis linker script for C++ language
+ * This file is part of The Curse of Issyos MegaDrive port.
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2024
+ * Github: https://github.com/tapule
+ */
+
+/**
+ * \file            smdcpp.ld
+ * \brief           SEGA Megadrive/Genesis linker script for C++ language
  *
  * Linker script for C language based on work by Chilly Willy and Stephane
  * Dallongeville
@@ -30,7 +33,7 @@ __DYNAMIC  =  0;
  * | .text              |
  * |        _stext      |
  * |        ctor list   | the ctor and dtor lists are for
- * |        dtor list   | C++ support 
+ * |        dtor list   | C++ support
  * |        _etext      |
  * +--------------------+
  * | .rodata            | Read only data
@@ -56,18 +59,14 @@ __DYNAMIC  =  0;
  * +--------------------+ <- 0x01000000
  */
 
-/*
- * Memory Layout: What memory is available where
- */
+/* Memory Layout: What memory is available where */
 MEMORY
 {
     rom (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00A00000
     ram (rwx) : ORIGIN = 0x00FF0000, LENGTH = 0x00010000
 }
 
-/*
- * Allocate the stack to be at the top of memory, since the stack grows down
- */
+/* Allocate the stack to be at the top of memory, since the stack grows down */
 PROVIDE (__stack = 0x01000000);
 
 /*
@@ -77,9 +76,7 @@ PROVIDE (__stack = 0x01000000);
  */
 SECTIONS
 {
-    /*
-     * .text output section : Code & constant. Added to the rom
-     */
+    /* .text output section : Code & constant. Added to the rom */
     .text 0x00000000:
     {
         /* Define tag _stext at location counter position */
@@ -103,7 +100,7 @@ SECTIONS
          * __CTOR_LIST__ and __CTOR_END__ are head and tail labels for this
          * section
          */
-        . = ALIGN(0x4);        
+        . = ALIGN(0x4);
         __CTOR_LIST__ = .;
         LONG((__CTOR_END__ - __CTOR_LIST__) / 4 - 2)
         *(.ctors)
@@ -129,7 +126,7 @@ SECTIONS
         * .init section constains only a function call that calls all the C++
         * constructors registered in __CTOR_LIST__
         * __INIT_SECTION__ is a head labels for this section
-        */        
+        */
         . = ALIGN(0x4);
         __INIT_SECTION__ = . ;
         *(.init)
@@ -145,11 +142,11 @@ SECTIONS
         SHORT (0x4E75)  /* rts */
 
         /* Define tag _etext at the end of this section */
-        _etext = .;  
+        _etext = .;
     } > rom
     __text_size = SIZEOF (.text);
 
-     /*
+    /*
      * .rodata output section: Read only data, global variables marked as const
      * and string constants.
      */
@@ -162,12 +159,12 @@ SECTIONS
 
         /* Used by SGDK's Rescomp to put resources */
         *(.rodata_bin)
-        *(.rodata_binf)        
-        _erodata = .;        
+        *(.rodata_binf)
+        _erodata = .;
     } > rom
     _rodata_size = SIZEOF (.rodata);
 
-     /*
+    /*
      * .data output section: Read-write initialized global and static data
      * 0xFF0000 is the VMA (Virtual Memory Address): Address where this section
      * would be during execution.
@@ -220,9 +217,7 @@ SECTIONS
         *(.stabstr)
     }
 
-    /*
-     * C++ exception handling tables to unwind the stack
-     */
+    /* C++ exception handling tables to unwind the stack */
     .eh_frame 0 (NOLOAD) :
     {
         *(.eh_frame)

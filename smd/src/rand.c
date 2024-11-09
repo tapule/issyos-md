@@ -1,21 +1,26 @@
-/* SPDX-License-Identifier: MIT */
-/**
- * MDDev development kit
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
- * Github: https://github.com/tapule/mddev
+/*
+ * SPDX-License-Identifier: [TIPO_LICENCIA]
  *
- * File: rand.c
- * Control routines for Pseudo-Random Numbers Generation
+ * This file is part of The Curse of Issyos MegaDrive port.
+ * Coded by: Juan Ángel Moreno Fernández (\_tapule) 2024
+ * Github: https://github.com/tapule
+ */
+
+/**
+ * \file            rand.c
+ * \brief           Pseudo-Random Numbers Generation functions
  */
 
 #include "rand.h"
 #include "vdp.h"
 
-/* Stores the lastest (current) calculated seed */
+/**
+ * \brief           Stores the lastest (current) calculated seed
+ */
 static uint16_t smd_rnd_seed;
 
-void smd_rnd_init(void)
-{
+void
+smd_rnd_init(void) {
     uint16_t smd_rnd_var;
 
     /* CHECKME: Seems that this is not so random */
@@ -25,23 +30,22 @@ void smd_rnd_init(void)
     smd_rnd_seed = smd_rnd_seed ^ smd_rnd_var ^ (smd_rnd_var << 13);
 }
 
-void smd_rnd_seed_set(const uint16_t seed)
-{
+void
+smd_rnd_seed_set(const uint16_t seed) {
     /* seed must be a non-zero value */
-    if (seed == 0)
-    {
+    if (seed == 0) {
         smd_rnd_init();
     }
     smd_rnd_seed = seed;
 }
 
-inline uint16_t smd_rnd_seed_get(void)
-{
+inline uint16_t
+smd_rnd_seed_get(void) {
     return smd_rnd_seed;
 }
 
-uint16_t smd_rnd_get(void)
-{
+uint16_t
+smd_rnd_get(void) {
     /* Xorshift algorithm */
     smd_rnd_seed ^= smd_rnd_seed << 7;
     smd_rnd_seed ^= smd_rnd_seed >> 9;

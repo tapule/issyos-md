@@ -1,11 +1,14 @@
-/* SPDX-License-Identifier: MIT */
-/**
- * MDDev development kit
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
- * Github: https://github.com/tapule/mddev
+/*
+ * SPDX-License-Identifier: [TIPO_LICENCIA]
  *
- * File: rand.h
- * Control routines for Pseudo-Random Numbers Generation
+ * This file is part of The Curse of Issyos MegaDrive port.
+ * Coded by: Juan Ángel Moreno Fernández (\_tapule) 2024
+ * Github: https://github.com/tapule
+ */
+
+/**
+ * \file            rand.h
+ * \brief           Pseudo-Random Numbers Generation functions
  *
  * Implementation of pseudo-random number generation using Xorshift algorithm
  * by George Marsaglia
@@ -19,42 +22,40 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
- * @brief initialises the prng.
- *
- * Starts the pseudo-random number generator with a random seed
- *
- * @note This function is called from the boot process so maybe you don't need
- * to call it anymore.
+ * \brief           Initialise the pseudo-random number generator with a random seed
+ * \note            This function is called from the boot process so maybe you
+ *                  don't need to call it anymore.
  */
 void smd_rnd_init(void);
 
 /**
- * @brief Sets a new seed for prng
+ * \brief           Sets a custom seed for prng
  *
- * Setting the seed used to generate pseudo-random numbers lets you repeat the
- * sequence of numbers generated
+ * Setting a custom seed lets you repeat the sequence of numbers generated
  *
- * @param seed  New seed
+ * \param[in]       seed: Custom seed
  */
 void smd_rnd_seed_set(const uint16_t seed);
 
 /**
- * @brief Gets the current seed
- *
- * Returns the current seed used to generate pseudo-random numbers
- *
- * @return uint16_t The current seed
+ * \brief           Get the current seed
+ * \return          The current seed used to generate pseudo-random numbers
  */
 uint16_t smd_rnd_seed_get(void);
 
 /**
- * @brief Generates a new random number
- *
- * Returns a new pseudo-random number
- *
- * @return uint16_t The new number
+ * \brief           Generate a new random number
+ * \return          The new random number
  */
 uint16_t smd_rnd_get(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* SMD_RAND_H */

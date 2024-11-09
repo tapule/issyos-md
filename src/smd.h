@@ -46,7 +46,7 @@
 #include "../smd/src/xgm.h"
 #include "../smd/src/xgm_drv.h"
 #include "../smd/src/vdp.h"
-#include "../smd/src/tiles.h"
+#include "../smd/src/tile.h"
 #include "../smd/src/text.h"
 #include "../smd/src/sys.h"
 #include "../smd/src/sprite.h"

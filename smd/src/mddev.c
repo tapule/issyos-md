@@ -1,21 +1,24 @@
-/* SPDX-License-Identifier: MIT */
-/**
- * MDDev development kit
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
- * Github: https://github.com/tapule/mddev
+/*
+ * SPDX-License-Identifier: [TIPO_LICENCIA]
  *
- * File: mddev.c
- * MDdev common entry point
+ * This file is part of The Curse of Issyos MegaDrive port.
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2024
+ * Github: https://github.com/tapule
+ */
+
+/**
+ * \file            mddev.c
+ * \brief           MDdev common entry point
  */
 
 #include "mddev.h"
 
-void smd_init(void)
-{
+void
+smd_init(void) {
     /* Initialises the z80 secondary CPU */
     smd_z80_init();
     /* Initialises gamepad ports */
-    pad_init();
+    smd_pad_init();
     /* Initialises the PSG (Programmable Sound Generator) */
     smd_psg_init();
     /* Initialises the Yamaha YM2612 FM sound chip */
@@ -27,9 +30,9 @@ void smd_init(void)
     /* Initialises the pseudo-random number generator */
     smd_rnd_init();
     /* Initialises the DMA system  */
-    dma_init();
+    smd_dma_init();
     /* Initialises the palette system  */
-    pal_init();
+    smd_pal_init();
     /* Initialises the palette system  */
     smd_spr_init();
 }

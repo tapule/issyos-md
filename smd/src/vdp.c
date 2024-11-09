@@ -1,36 +1,41 @@
-/* SPDX-License-Identifier: MIT */
-/**
- * MDDev development kit
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
- * Github: https://github.com/tapule/mddev
+/*
+ * SPDX-License-Identifier: [TIPO_LICENCIA]
  *
- * File: video.c
- * Control routines for Sega Megadrive/Genesis VDP
+ * This file is part of The Curse of Issyos MegaDrive port.
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2024
+ * Github: https://github.com/tapule
+ */
+
+/**
+ * \file            vdp.c
+ * \brief           Control routines for Sega Megadrive/Genesis VDP
  */
 
 #include "vdp.h"
 
-/* Stores if the console is working in PAL mode */
-static uint8_t smd_vdp_pal_mode_flag;
+/**
+ * \brief           Stores if the console is working in PAL mode
+ */
+static uint8_t smd_vdp_smd_pal_mode_flag;
 
 /* This flag is set when the vertical blank starts */
 volatile uint8_t smd_vdp_vblank_flag;
 
-void smd_vdp_init(void)
-{
+void
+smd_vdp_init(void) {
     /*
      * We need to start reading the control port because it cancels whatever it
      * was doing and put it into a well known state.
      * At the same time, we use this read to save the PAL mode.
      */
-    // CHECKME: SI MULTIPLICO POR 8 (DESPLAZAR 3 A LA IZQ) PODRÍA QUITAR LOS TERNARIOS
-    smd_vdp_pal_mode_flag = *SMD_VDP_PORT_CTRL_W & 0x01;
+    /* TODO: SI MULTIPLICO POR 8 (DESPLAZAR 3 A LA IZQ) PODRÍA QUITAR LOS TERNARIOS */
+    smd_vdp_smd_pal_mode_flag = *SMD_VDP_PORT_CTRL_W & 0x01;
 
     /* Initialise the VDP register */
     /* H interrupt off, HV counter on */
     *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_MODESET_1 | 0x04;
     /* Display off, V interrupt on, DMA on, V30 cells mode in pal, V28 ntsc  */
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_MODESET_2 | 0x34 | (smd_vdp_pal_mode_flag ? 8 : 0);
+    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_MODESET_2 | 0x34 | (smd_vdp_smd_pal_mode_flag ? 8 : 0);
     /* Plane A table address (divided by 0x2000 and lshifted 3 = rshift 10 ) */
     *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_PLANEA_ADDR | (SMD_VDP_PLANE_A_ADDR >> 10);
     /* Plane W table address (divided by 0x800 and lshifted 1 = rsifht 10) */
@@ -64,80 +69,69 @@ void smd_vdp_init(void)
     smd_vdp_vsram_clear();
 }
 
-inline void smd_vdp_display_enable(void)
-{
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_MODESET_2 | 0x74 | (smd_vdp_pal_mode_flag ? 8 : 0);
+inline void
+smd_vdp_display_enable(void) {
+    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_MODESET_2 | 0x74 | (smd_vdp_smd_pal_mode_flag ? 8 : 0);
 }
 
-inline void smd_vdp_display_disable(void)
-{
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_MODESET_2 | 0x34 | (smd_vdp_pal_mode_flag ? 8 : 0);
+inline void
+smd_vdp_display_disable(void) {
+    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_MODESET_2 | 0x34 | (smd_vdp_smd_pal_mode_flag ? 8 : 0);
 }
 
-void smd_vdp_vsync_wait(void)
-{
+void
+smd_vdp_vsync_wait(void) {
     /* Set the vblak flag to 0 and wait for the vblank interrupt to change it */
     smd_vdp_vblank_flag = 0;
-    while (!smd_vdp_vblank_flag)
-    {
-        __asm__ volatile ("\tnop\n");
+    while (!smd_vdp_vblank_flag) {
+        __asm__ volatile("\tnop\n");
     }
     smd_vdp_vblank_flag = 0;
 }
 
-void smd_vdp_vram_clear(void)
-{
-    uint16_t i;
-
+void
+smd_vdp_vram_clear(void) {
     *SMD_VDP_PORT_CTRL_L = SMD_VDP_VRAM_WRITE_CMD;
 
-    for (i = 0; i < (65536 / 4); ++i)
-    {
+    for (uint16_t i = 0; i < (65536 / 4); ++i) {
         *SMD_VDP_PORT_DATA_L = 0x00;
     }
 }
 
-void smd_vdp_cram_clear(void)
-{
-    uint16_t i;
-
+void
+smd_vdp_cram_clear(void) {
     *SMD_VDP_PORT_CTRL_L = SMD_VDP_CRAM_WRITE_CMD;
 
-    for (i = 0; i < (128 / 4); ++i)
-    {
+    for (uint16_t i = 0; i < (128 / 4); ++i) {
         *SMD_VDP_PORT_DATA_L = 0;
     }
 }
 
-void smd_vdp_vsram_clear(void)
-{
-    uint16_t i;
-
+void
+smd_vdp_vsram_clear(void) {
     *SMD_VDP_PORT_CTRL_L = SMD_VDP_VSRAM_WRITE_CMD;
 
-    for (i = 0; i < (80 / 4); ++i)
-    {
+    for (uint16_t i = 0; i < (80 / 4); ++i) {
         *SMD_VDP_PORT_DATA_L = 0;
     }
 }
 
-inline void smd_vdp_background_color_set(const uint8_t index)
-{
+inline void
+smd_vdp_background_color_set(const uint8_t index) {
     *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_BGCOLOR | index;
 }
 
-inline void smd_vdp_scroll_mode_set(const smd_vdp_hscroll_mode_t hscroll_mode,
-                                const smd_vdp_vscroll_mode_t vscroll_mode)
-{
+inline void
+smd_vdp_scroll_mode_set(const smd_vdp_hscroll_mode_t hscroll_mode, const smd_vdp_vscroll_mode_t vscroll_mode) {
     *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_MODESET_3 | vscroll_mode | hscroll_mode;
 }
 
-inline void smd_vdp_plane_size_set(const smd_vdp_plane_size_t size)
-{
+inline void
+smd_vdp_plane_size_set(const smd_vdp_plane_size_t size) {
     *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_PLANE_SIZE | size;
 }
 
-inline void smd_vdp_autoinc_set(const uint8_t increment)
-{
+inline void
+smd_vdp_autoinc_set(const uint8_t increment) {
     *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_AUTOINC | increment;
 }

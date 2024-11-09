@@ -1,11 +1,14 @@
-/* SPDX-License-Identifier: MIT */
-/**
- * MDDev development kit
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
- * Github: https://github.com/tapule/mddev
+/*
+ * SPDX-License-Identifier: [TIPO_LICENCIA]
  *
- * File: kdebug.h
- * Gens KMod Debugging routines
+ * This file is part of The Curse of Issyos MegaDrive port.
+ * Coded by: Juan Ángel Moreno Fernández (\_tapule) 2024
+ * Github: https://github.com/tapule
+ */
+
+/**
+ * \file            kdebug.h
+ * \brief           Gens KMod Debugging routines
  *
  * Gens KMod is a modified version developed by Kaneda of Gens emulator by
  * Stephane Dallongeville. Among other improvements KMod adds some debugging
@@ -18,57 +21,57 @@
 #ifndef SMD_KDEBUG_H
 #define SMD_KDEBUG_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Debugging disabled so do not evaluate kdebug functions. */
 #ifdef NDEBUG
 
-#define kdebug_halt() ((void)0)
-#define kdebug_alert(x) ((void)0)
-#define kdebug_timer_start() ((void)0)
-#define kdebug_timer_stop() ((void)0)
-#define kdebug_timer_output() ((void)0)
+#define smd_kdebug_halt() ((void)0)
+#define smd_kdebug_alert(x) ((void)0)
+#define smd_kdebug_timer_start() ((void)0)
+#define smd_kdebug_timer_stop() ((void)0)
+#define smd_kdebug_timer_output() ((void)0)
 
 #else
 
-#define kdebug_halt() __kdebug_halt()
-#define kdebug_alert(x) __kdebug_alert(x)
-#define kdebug_timer_start() __kdebug_timer_start()
-#define kdebug_timer_stop() __kdebug_timer_stop()
-#define kdebug_timer_output() __kdebug_timer_output()
+#define smd_kdebug_halt() __smd_kdebug_halt()
+#define smd_kdebug_alert(x) __smd_kdebug_alert(x)
+#define smd_kdebug_timer_start() __smd_kdebug_timer_start()
+#define smd_kdebug_timer_stop() __smd_kdebug_timer_stop()
+#define smd_kdebug_timer_output() __smd_kdebug_timer_output()
 
 /**
- * @brief Pauses rom emulation
+ * \brief           Pause rom emulation
  */
-void __kdebug_halt(void);
+void __smd_kdebug_halt(void);
 
 /**
- * @brief Outputs a message string
- *
- * Shows a text message on the emulator's Message window.
- *
- * @param str   Text string to output
+ * \brief           Output a message string on the emulator's Message window
+ * \param[in]       str: Text string to output
  */
-void __kdebug_alert(const char *str);
+void __smd_kdebug_alert(const char *restrict str);
 
 /**
- * @brief Starts the emulator timer
- *
- * It starts an internal emulator timer counter based on m68k cycles.
+ * \brief           Start an internal emulator timer counter based on m68k cycles
  */
-void __kdebug_timer_start(void);
+void __smd_kdebug_timer_start(void);
 
 /**
- * @brief Stops the emulator timer
- *
- * It stops the internal emulator timer counter and output its value in the
- * emulator's Message window
+ * \brief           Stop the internal emulator timer and output its value
  */
-void __kdebug_timer_stop(void);
+void __smd_kdebug_timer_stop(void);
 
 /**
- * @brief Outputs current emulator timer value
+ * \brief           Output current internal emulator timer value
  */
-void __kdebug_timer_output(void);
+void __smd_kdebug_timer_output(void);
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif /* SMD_KDEBUG_H */

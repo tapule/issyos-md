@@ -10,7 +10,7 @@
 #include "../smd/src/xgm.c"
 #include "../smd/src/xgm_drv.c"
 #include "../smd/src/vdp.c"
-#include "../smd/src/tiles.c"
+#include "../smd/src/tile.c"
 #include "../smd/src/text.c"
 #include "../smd/src/sys.c"
 #include "../smd/src/sprite.c"

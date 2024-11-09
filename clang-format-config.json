@@ -1,0 +1,29 @@
+{
+    "version": 1,
+    "paths": [
+        {
+            "path": "src/*.c",
+            "recursive": true
+        },
+        {
+            "path": "src/*.h",
+            "recursive": true
+        },
+        {
+            "path": "smd/src/*.c",
+            "recursive": true
+        },
+        {
+            "path": "smd/src/*.h",
+            "recursive": true
+        },
+        {
+            "path": "smd/src/**/*.c",
+            "recursive": true
+        },
+        {
+            "path": "smd/src/**/*.h",
+            "recursive": true
+        }
+    ]
+}

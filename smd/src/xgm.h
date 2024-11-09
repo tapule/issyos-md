@@ -1,11 +1,14 @@
-/* SPDX-License-Identifier: MIT */
-/**
- * MDDev development kit
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
- * Github: https://github.com/tapule/mddev
+/*
+ * SPDX-License-Identifier: [TIPO_LICENCIA]
  *
- * File: xgm.h
- * Sound and music system
+ * This file is part of The Curse of Issyos MegaDrive port.
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2024
+ * Github: https://github.com/tapule
+ */
+
+/**
+ * \file            xgm.h
+ * \brief           Sound and music system
  *
  * This system provides an interface to play sfx and music in the Sega
  * Megadrive/Genesis. It uses the XGM (eXtended Genesis Music) sound driver by
@@ -23,32 +26,28 @@
 #define SMD_XGM_H
 
 #include <stdint.h>
-#include <stdbool.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
- * @brief initialises the sound system
- *
- * Controls the sound system initialisation process using the XGM driver. It
- * loads the driver in the z80 memory space performs the initialization
- * proccess.
- *
- * @note This function is called from the boot process so maybe you don't need
- * to call it anymore.
+ * \brief           Initialise the sound system using the XGM driver
+ * CHECKME: Esta anotación tiene sentido en esta versión?
+ * \note            This function is called from the boot process so maybe you
+ *                  don't need to call it anymore.
  */
 void smd_xgm_init(void);
 
 /**
- * @brief Manages sound synchronization
- *
- * Handles the sound timing notifying the z80 in each frame.
- *
- * @note This function is called automatically in the vint so you don't need to
- * call it.
+ * \brief           Handles the sound timing notifying the z80 in each frame.
+ * \note            This function is called automatically in the vint so you
+ *                  don't need to call it.
  */
 void smd_xgm_update(void);
 
 /**
- * @brief Adds a PCM sample to the XGM sample table
+ * \brief           Adds a PCM sample to the XGM sample table
  *
  * The XGM sample table can hold up to 255 samples. Sample id 0 is not allowed
  * and normally samples id < 64 are used by music, but you can use them if you
@@ -56,105 +55,97 @@ void smd_xgm_update(void);
  * By design the XGM driver needs its samples aligned to 256 bytes boundary with
  * a size multiple of 256.
  *
- * @param id XGM sample table id to define
- * @param sample Sample address (must be aligned to 256 bytes boundary)
- * @param length Sample size in bytes (must be multiple of 256 bytes)
- *
- * @note For optimization purposes, this function does not request the z80 bus
- * so be aware that you must request it in your code:
- *   smd_z80_z80_bus_request();
- *     smd_xgm_sfx_set(64, my_sfx_1, MY_SFX_1_SIZE);
- *     smd_xgm_sfx_set(65, my_sfx_2, MY_SFX_2_SIZE);
- *   smd_z80_z80_bus_release();
+ * \param[in]       id: XGM sample table id to define
+ * \param[in]       sample: Sample address (must be aligned to 256 bytes boundary)
+ * \param[in]       size: Sample size in bytes (must be multiple of 256 bytes)
+ * \note            For optimization purposes, this function does not request
+ *                  the z80 bus so be aware that you must request it in your code:
+ *                     smd_z80_bus_request();
+ *                       smd_xgm_sfx_set(64, my_sfx_1, MY_SFX_1_SIZE);
+ *                       smd_xgm_sfx_set(65, my_sfx_2, MY_SFX_2_SIZE);
+ *                     smd_z80_bus_release();
  */
-void smd_xgm_sfx_set(const uint8_t id, const uint8_t *sample,
-                   const uint32_t length);
+void smd_xgm_sfx_set(const uint8_t id, const uint8_t *restrict sample, const uint32_t size);
 
 /**
- * @brief Start playing a PCM sample on a specific channel
+ * \brief           Start playing a PCM sample on a specific channel
  *
  * Plays a sample id previously defined with smd_xgm_sfx_set in the selected
- * channel. There are 4 channels available [0.. 3], but be aware that the first
- * one is usually used by music. The norm for SFX is using channels [1.. 3].
+ * channel. There are 4 channels available [0...3], but be aware that the first
+ * one is usually used by music. The norm for SFX is using channels [1...3].
  * Priority is used to decide whether a sample which is playing in the channel
  * should be replaced with this one. If priority is higher than priority in the
  * current sample, it will be replaced with the new one.
  *
- * @param id Sample id in the XGM sample table to play
- * @param priority Playing priority ranging from 0 (lowest) to 15 highest
- * @param channel Desired channel to play the sample
+ * \param[in]       id: Sample id in the XGM sample table to play
+ * \param[in]       priority: Playing priority ranging from 0 (lowest) to 15 highest
+ * \param[in]       channel: Desired channel to play the sample
  */
-void smd_xgm_sfx_play(const uint8_t id, uint8_t priority, const uint16_t channel);
+void smd_xgm_sfx_play(const uint8_t id, const uint8_t priority, const uint16_t channel);
 
 /**
- * @brief Start playing a PCM sample autoselecting the channel
+ * \brief           Start playing a PCM sample autoselecting the channel
  *
  * Acts like smd_xgm_sfx_play but selects the channel to use automatically.
  * Priority is used to decide whether a sample which is playing in the channel
  * should be replaced with this one. If priority is higher than priority in the
  * current sample, it will be replaced with the new one.
  *
- * @param id Sample id in the XGM sample table to play
- * @param priority Playing priority ranging from 0 (lowest) to 15 highest
+ * \param[in]       id: Sample id in the XGM sample table to play
+ * \param[in]       priority: Playing priority ranging from 0 (lowest) to 15
  */
-void smd_xgm_sfx_play_auto(const uint8_t id, uint8_t priority);
+void smd_xgm_sfx_play_auto(const uint8_t id, const uint8_t priority);
 
 /**
- * @brief Stop playing the PCM sample on a specific channel
- *
- * @param channel Desired channel to stop
+ * \brief           Stop playing the PCM sample on a specific channel
+ * \param[in]       channel: Desired channel to stop
  */
 void smd_xgm_sfx_stop(const uint16_t channel);
 
 /**
- * @brief Mute PCM sounds
- *
- * Stops all sample channels and prevent playing them
+ * \brief           Mute PCM sounds
  */
 void smd_xgm_sfx_mute(void);
 
 /**
- * @brief Unmute PCM sounds
+ * \brief           Unmute PCM sounds
  */
 void smd_xgm_sfx_unmute(void);
 
 /**
- * @brief Checks whether PCM sounds are muted
- *
- * @return True if PCM sounds are muted, false otherwise
+ * \brief           Checks whether PCM sounds are muted
+ * \return          true if PCM sounds are muted, false otherwise
  */
 bool smd_xgm_sfx_is_muted(void);
 
 /**
- * @brief Start playing a XGM track
+ * \brief           Start playing a XGM music track
  *
  * Load and start playing the specified XGM track. XGM files must be in its
  * compiled form XGC. The utility xgmtool can be used to convert directly from
  * VGM files to XGC.
  *
- * @param song XGM track address
+ * \param[in]       song: XGM track address
  */
-void smd_xgm_music_play(const uint8_t *song);
+void smd_xgm_music_play(const uint8_t *restrict song);
 
 /**
- * @brief Pause music
- *
- * Pause playing the current song. It can be resumed using smd_xgm_music_resume.
+ * \brief           Pause music
  */
 void smd_xgm_music_pause(void);
 
 /**
- * @brief Resume music
- *
- * Resume playing music after pausing it with smd_xgm_music_pause.
+ * \brief           Resume music
  */
 void smd_xgm_music_resume(void);
 
 /**
- * @brief Stop music
- *
- * Stop playing the current song and reset the music system to a healthy state.
+ * \brief           Stop music
  */
 void smd_xgm_music_stop(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* SMD_XGM_H */

@@ -1,26 +1,28 @@
-/* SPDX-License-Identifier: MIT */
-/**
- * MDDev development kit
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
- * Github: https://github.com/tapule/mddev
+/*
+ * SPDX-License-Identifier: [TIPO_LICENCIA]
  *
- * File: psg.c
- * Control routines for Sega Megadrive/Genesis PSG
+ * This file is part of The Curse of Issyos MegaDrive port.
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2024
+ * Github: https://github.com/tapule
+ */
+
+/**
+ * \file            psg.c
+ * \brief           Control routines for Sega Megadrive/Genesis PSG
  */
 
 #include <stdint.h>
 #include "psg.h"
 
-/* PSG port from the m68k side */
+/**
+ * \brief           PSG port from the m68k side
+ */
 #define SMD_PSG_PORT ((volatile uint8_t *) 0xC00011)
 
-void smd_psg_init(void)
-{
-    uint16_t i;
-
+void
+smd_psg_init(void) {
     /* Do silence in all 4 channels */
-    for (i = 0; i < 4; ++i)
-    {
+    for (uint16_t i = 0; i < 4; ++i) {
         /* Set volume (attenuation) to 15 which is silence */
         *SMD_PSG_PORT = 0x90 | (i << 5) | 0x0F;
 
