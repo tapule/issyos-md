@@ -1,5 +1,5 @@
 /*
- * SPDX-License-Identifier: [TIPO_LICENCIA]
+ * SPDX-License-Identifier: MIT
  *
  * This file is part of The Curse of Issyos MegaDrive port.
  * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2024
