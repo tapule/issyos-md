@@ -12,21 +12,8 @@
  */
 
 #include "pad.h"
+#include "ports.h"
 #include "z80.h"
-
-/**
- * \brief           Gamepads data ports (DATAx)
- */
-#define SMD_PAD_1_DATA_PORT   ((volatile uint8_t *) 0xA10003)
-#define SMD_PAD_2_DATA_PORT   ((volatile uint8_t *) 0xA10005)
-#define SMD_PAD_EXP_DATA_PORT ((volatile uint8_t *) 0xA10007)
-
-/**
- * \brief           Gamepads control ports (CTRLx)
- */
-#define SMD_PAD_1_CTRL_PORT   ((volatile uint8_t *) 0xA10009)
-#define SMD_PAD_2_CTRL_PORT   ((volatile uint8_t *) 0xA1000B)
-#define SMD_PAD_EXP_CTRL_PORT ((volatile uint8_t *) 0xA1000D)
 
 /**
  * \brief           Gamepads types

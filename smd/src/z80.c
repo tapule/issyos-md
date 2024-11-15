@@ -12,25 +12,12 @@
  */
 
 #include "z80.h"
-
-/**
- * \brief           Z80 control ports
- */
-#define SMD_Z80_BUS_PORT    ((volatile uint16_t *) 0xA11100)
-#define SMD_Z80_RESET_PORT  ((volatile uint16_t *) 0xA11200)
+#include "ports.h"
 
 /**
  * \brief           Estimated reset wait time borrowed from Sik z80 tutorial.
  */
 #define SMD_Z80_RESET_WAIT  (32)
-
-/**
- * \brief           Z80 memory pointer and size (8KB)
- */
-#define SMD_Z80_RAM_ADDRESS ((uint8_t *) 0xA00000)
-#define SMD_Z80_RAM_SIZE    (8 * 1024)
-
-
 
 static void
 smd_z80_ram_clear(void) {

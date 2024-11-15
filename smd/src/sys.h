@@ -8,7 +8,8 @@
 
 /**
  * \file            sys.h
- * \brief           System core routines to manage the Sega Megadrive/Genesis hardware
+ * \brief           System core routines to boot and manage the Sega
+ *                  Megadrive/Genesis hardware
  *
  * More info:
  * https://www.eeeguide.com/register-architecture-of-68000-microprocessor/

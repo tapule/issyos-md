@@ -30,6 +30,14 @@
 extern "C" {
 #endif
 
+typedef struct dma_transfer_t {
+    void *src;
+    uint16_t dest;
+    uint16_t size;
+    uint16_t inc;
+} dma_transfer_t;
+
+
 /**
  * \brief           Default DMA internal queue size in commands or operations
  */

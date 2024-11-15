@@ -12,6 +12,7 @@
  */
 
 #include "kdebug.h"
+#include "ports.h"
 #include "vdp.h"
 
 #define SMD_KMOD_CONTROL_PAUSE_CMD (0x00)

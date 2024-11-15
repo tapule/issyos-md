@@ -51,7 +51,7 @@ extern "C" {
  * \note            This function is called from the boot process so maybe you
  *                  don't need to call it anymore.
  */
-void smd_init(void);
+// void smd_init(void);
 
 #ifdef __cplusplus
 }

@@ -13,11 +13,7 @@
 
 #include <stdint.h>
 #include "psg.h"
-
-/**
- * \brief           PSG port from the m68k side
- */
-#define SMD_PSG_PORT ((volatile uint8_t *) 0xC00011)
+#include "ports.h"
 
 void
 smd_psg_init(void) {

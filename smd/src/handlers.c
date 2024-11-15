@@ -1,6 +1,6 @@
 #include "handlers.h"
-#include "../xgm.h"
-#include "../vdp.h"
+#include "xgm.h"
+#include "vdp.h"
 
 [[gnu::interrupt]]
 void smd_exc_bus_error(void)
@@ -23,7 +23,7 @@ void smd_exc_chk_instruction(void)
 {}
 
 [[gnu::interrupt]]
-void smd_exc_trapv(void)
+void smd_exc_trapv_instruction (void)
 {}
 
 [[gnu::interrupt]]

@@ -12,6 +12,7 @@
  */
 
 #include "dma.h"
+#include "ports.h"
 #include "vdp.h"
 #include "z80.h"
 
@@ -63,7 +64,7 @@ smd_dma_transfer_fast(const uint32_t src, const uint16_t dest, const uint16_t si
     uint16_t *cmd_p = (uint16_t *) &cmd;
 
     /* Prevent VDP corruption waiting for a running DMA copy/fill operation */
-    smd_dma_wait();
+    // smd_dma_wait();
 
     /* Sets the autoincrement on word writes */
     *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_AUTOINC | inc;
@@ -89,10 +90,42 @@ smd_dma_transfer_fast(const uint32_t src, const uint16_t dest, const uint16_t si
     return true;
 }
 
+bool
+smd_dma_transfer_fast_t(const dma_transfer_t *restrict tr, const uint32_t xram_addr) {
+    /* Used to issue the dma from a ram space */
+    volatile uint32_t cmd;
+    uint16_t *cmd_p = (uint16_t *) &cmd;
+
+    /* Prevent VDP corruption waiting for a running DMA copy/fill operation */
+    // smd_dma_wait();
+
+    /* Sets the autoincrement on word writes */
+    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_AUTOINC | tr->inc;
+    /* Sets the DMA size in words */
+    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_DMALEN_L | (tr->size & 0xFF);
+    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_DMALEN_H | ((tr->size >> 8) & 0xFF);
+    /*
+     * Sets the DMA source address. An additional lshift is needed to convert
+     * src from bytes to words
+     */
+    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_DMASRC_L | (((uint32_t)tr->src >> 1) & 0xFF);
+    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_DMASRC_M | (((uint32_t)tr->src >> 9) & 0xFF);
+    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_DMASRC_H | (((uint32_t)tr->src >> 17) & 0x7F);
+    /* Builds the ctrl port write address command in a ram variable */
+    cmd = smd_dma_ctrl_addr_build(xram_addr, tr->dest);
+    /* Issues the DMA from a ram varible and in words (see SEGA notes on DMA) */
+    *SMD_VDP_PORT_CTRL_W = *cmd_p;
+    ++cmd_p;
+    smd_z80_bus_request_fast();
+    *SMD_VDP_PORT_CTRL_W = *cmd_p;
+    smd_z80_bus_release();
+
+    return true;
+}
+
+
 /**
  * \brief           Execute a DMA transfer from RAM/ROM to VRAM/CRAM/VSRAM checking 128kB boundaries
- *
- *
  * \param[in]       src: Source address on RAM/ROM space
  * \param[in]       dest: Destination address on VRAM/CRAM/VSRAM
  * \param[in]       size: Transfer size in words
@@ -107,6 +140,7 @@ smd_dma_transfer(const uint32_t src, const uint16_t dest, uint16_t size, const u
     uint32_t bytes_to_128k;
     uint32_t words_to_128k;
 
+    /* CHECKME: This must be checked with asserts */
     if (inc < 2 || size == 0) {
         return false;
     }
@@ -122,7 +156,7 @@ smd_dma_transfer(const uint32_t src, const uint16_t dest, uint16_t size, const u
     /* How many bytes there are until the next 128k jump */
     bytes_to_128k = 0x20000 - (src & 0x1FFFF);
     /* How many words there are until the next 128k jump */
-    words_to_128k = 0x20000 - (src & 0x1FFFF);
+    words_to_128k = bytes_to_128k >> 1;
     if (size > words_to_128k) {
         /* Does a fast transfer of second half */
         smd_dma_transfer_fast(src + bytes_to_128k, dest + bytes_to_128k, size - words_to_128k, inc, xram_addr);

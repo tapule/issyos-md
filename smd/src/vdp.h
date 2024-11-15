@@ -32,39 +32,6 @@ extern "C" {
 #endif
 
 /**
- * \brief           VDP ports
- *
- * There are 3 ports to talk with the VDP. These ports can be accessed as 16 or
- * 32 bits.
- * To work with the VDP we need to write commands to the control port and if we
- * want to write or read vram, cram or vsram we must write the address to/from
- * the data port.
- * The control port is also the VDP's status register, so it can be read to get
- * this information:
- *              | *| *| *| *| *| *| FE| FF|
- *              |VI|SO|SC|OD|VB|HB|DMA|PAL|
- *  FE: 1 = FIFO is empty.
- *  FF: 1 = FIFO is full.
- *  VI: 1 = Vertical interrupt occurred.
- *  SO: 1 = Sprite limit has been hit on current scanline
- *          17+ in 256 pixel wide mode
- *          21+ in 320 pixel wide mode.
- *  SC: 1 = Collision happened between non-zero pixels in two sprites. Used for
- *          pixel-accurate collision detection.
- *  OD: 1 = Odd frame displayed in interlaced mode
- *  VB: 1 = Vertical blank in progress.
- *  HB: 1 = Horizontal blank in progress.
- *  DMA: 1 = DMA in progress.
- *  PAL: 1 = PAL system
- *       0 = NTSC system.
- */
-#define SMD_VDP_PORT_DATA_W         ((volatile uint16_t *)0xC00000)
-#define SMD_VDP_PORT_DATA_L         ((volatile uint32_t *)0xC00000)
-#define SMD_VDP_PORT_CTRL_W         ((volatile uint16_t *)0xC00004)
-#define SMD_VDP_PORT_CTRL_L         ((volatile uint32_t *)0xC00004)
-#define SMD_VDP_PORT_HV_COUNTER     ((volatile uint16_t *)0xC00008)
-
-/**
  * \brief           VDP registers
  *
  * The VDP has 24 registers (some of them not used) which control how video

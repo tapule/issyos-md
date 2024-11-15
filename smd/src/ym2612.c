@@ -14,23 +14,8 @@
 
 #include <stdint.h>
 #include "ym2612.h"
+#include "ports.h"
 #include "z80.h"
-
-/**
- * \brief           YM2612 control ports
- *
- * The internal registers of the FM YM2612 are divided in two sets:
- *  FM1: LFO, Timers, Key On/Off, DAC, FM Channels 1..3
- *  FM2: FM Channels 4..6
- * Each set has its own register address and data ports which has to be written
- * in byte size.
- * These ports are accessed through memory location 0xA04000..0xA04003 from the
- * m68k side.
- */
-#define SMD_YM2612_FM1_PORT_ADDRESS ((volatile uint8_t *) 0xA04000)
-#define SMD_YM2612_FM1_PORT_DATA    ((volatile uint8_t *) 0xA04001)
-#define SMD_YM2612_FM2_PORT_ADDRESS ((volatile uint8_t *) 0xA04002)
-#define SMD_YM2612_FM2_PORT_DATA    ((volatile uint8_t *) 0xA04003)
 
 /**
  * \brief           Wait for the YM2112 to be ready to receive new data

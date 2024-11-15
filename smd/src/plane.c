@@ -12,8 +12,9 @@
  */
 
 #include "plane.h"
-#include "dma.h"
+#include "ports.h"
 #include "vdp.h"
+#include "dma.h"
 
 inline uint16_t
 smd_plane_cell_config(const uint16_t tile_index, const uint16_t palette, const uint16_t h_flip, const uint16_t v_flip,

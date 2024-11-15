@@ -12,6 +12,7 @@
  */
 
 #include "vdp.h"
+#include "ports.h"
 
 /**
  * \brief           Stores if the console is working in PAL mode

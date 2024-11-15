@@ -132,8 +132,8 @@ obj/%.o: %.s
 obj/%.lst: %.c
 	@echo "-> Exporting ASM listings..."
 	@mkdir -p $(dir $@)
-	@$(CC) $(CCFLAGS) $(EXFLAGS) $(INCS) -S -c $< -o $@
-#	@$(CC) $(CCFLAGS) $(EXFLAGS) $(INCS) -S -fverbose-asm -c $< -o $@
+#	@$(CC) $(CCFLAGS) $(EXFLAGS) $(INCS) -S -c $< -o $@
+	@$(CC) $(CCFLAGS) $(EXFLAGS) $(INCS) -S -fverbose-asm -c $< -o $@
 
 # %.o80: %.s80
 #	$(ASMZ80) $(Z80FLAGS) $< $@ obj/z80out.lst

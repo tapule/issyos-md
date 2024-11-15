@@ -12,7 +12,7 @@
  */
 
 #include "rand.h"
-#include "vdp.h"
+#include "ports.h"
 
 /**
  * \brief           Stores the lastest (current) calculated seed

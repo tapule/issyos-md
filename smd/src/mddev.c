@@ -13,6 +13,7 @@
 
 #include "mddev.h"
 
+#if 0
 void
 smd_init(void) {
     /* Initialises the z80 secondary CPU */
@@ -36,3 +37,4 @@ smd_init(void) {
     /* Initialises the palette system  */
     smd_spr_init();
 }
+#endif
