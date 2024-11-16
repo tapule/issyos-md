@@ -7,51 +7,55 @@
  */
 
 /**
- * \file            ports.h
- * \brief           Sega Megadrive/Genesis memory map ports definition
+ * \file            memory_map.h
+ * \brief           Sega Megadrive/Genesis memory map I/O definitions
  *
+ * The m68k interacts with the VDP, Pads, z80, ROM cartridge, etc. through the
+ * system bus via specific memory locations. Each device has its own address or
+ * range of addresses where the m68k must write/read to communicate with the
+ * particular device. This is known as memory mapped I/O.
  *
  * More info:
- *
+ * https://rasterscroll.com/mdgraphics/mega-drive-architecture/
  */
 
-#ifndef SMD_PORTS_H
-#define SMD_PORTS_H
+#ifndef SMD_MEMORY_MAP_H
+#define SMD_MEMORY_MAP_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- *  \brief
- *      Define start of ROM region
+ *  \brief          Start of ROM region and size (depends on the cartridge)
  */
-#define SMD_ROM_ADDR                (0x00000000)
+#define SMD_ROM_ADDRESS             (0x00000000)
+#ifndef SMD_ROM_SIZE
+    #define SMD_ROM_SIZE            (4 * 1024 * 1024)
+#endif
 
 /**
- * \brief           Z80 memory pointer and size (8KB)
+ * \brief           Start of Z80 memory region and size (8KB)
  */
-#define SMD_Z80_RAM_ADDRESS         ((uint8_t *) 0xA00000)
+#define SMD_Z80_RAM_ADDRESS         (0xA00000)
 #define SMD_Z80_RAM_SIZE            (8 * 1024)
 
 /**
- * \brief           YM2612 control ports
+ * \brief           YM2612 memory mapped control ports
  *
  * The internal registers of the FM YM2612 are divided in two sets:
  *  FM1: LFO, Timers, Key On/Off, DAC, FM Channels 1..3
  *  FM2: FM Channels 4..6
  * Each set has its own register address and data ports which has to be written
  * in byte size.
- * These ports are accessed through memory location 0xA04000..0xA04003 from the
- * m68k side.
  */
-#define SMD_YM2612_FM1_PORT_ADDRESS ((volatile uint8_t *) 0xA04000)
-#define SMD_YM2612_FM1_PORT_DATA    ((volatile uint8_t *) 0xA04001)
-#define SMD_YM2612_FM2_PORT_ADDRESS ((volatile uint8_t *) 0xA04002)
-#define SMD_YM2612_FM2_PORT_DATA    ((volatile uint8_t *) 0xA04003)
+#define SMD_YM2612_FM1_ADDRESS_PORT ((volatile uint8_t *)0xA04000)
+#define SMD_YM2612_FM1_DATA_PORT    ((volatile uint8_t *)0xA04001)
+#define SMD_YM2612_FM2_ADDRESS_PORT ((volatile uint8_t *)0xA04002)
+#define SMD_YM2612_FM2_DATA_PORT    ((volatile uint8_t *)0xA04003)
 
 /**
- * \brief           SMD Version port
+ * \brief           SMD version port
  *
  * The version read only port gives information about the Sega Megadrive/Genesis
  * hardware and version:
@@ -68,29 +72,34 @@ extern "C" {
 #define SMD_VERSION_PORT            ((volatile uint8_t *) 0xA10001)
 
 /**
- * \brief           Gamepads data ports (DATAx)
+ * \brief           Gamepads memory mapped data ports (DATAx)
  */
 #define SMD_PAD_1_DATA_PORT         ((volatile uint8_t *) 0xA10003)
 #define SMD_PAD_2_DATA_PORT         ((volatile uint8_t *) 0xA10005)
 #define SMD_PAD_EXP_DATA_PORT       ((volatile uint8_t *) 0xA10007)
 
 /**
- * \brief           Gamepads control ports (CTRLx)
+ * \brief           Gamepads memory mapped control ports (CTRLx)
  */
 #define SMD_PAD_1_CTRL_PORT         ((volatile uint8_t *) 0xA10009)
 #define SMD_PAD_2_CTRL_PORT         ((volatile uint8_t *) 0xA1000B)
 #define SMD_PAD_EXP_CTRL_PORT       ((volatile uint8_t *) 0xA1000D)
 
 /**
- * \brief           Z80 control ports
+ * \brief           Z80 memory mapped control ports
  */
 #define SMD_Z80_BUS_PORT            ((volatile uint16_t *) 0xA11100)
 #define SMD_Z80_RESET_PORT          ((volatile uint16_t *) 0xA11200)
 
+/**
+ * \brief           TMSS (Trademark Security System) memory mapped port
+ *
+ * TMSS is not available in early models. In models 1+ this must store 'SEGA'
+ */
 #define SMD_TMSS_PORT               ((volatile uint32_t *) 0xA14000)
 
 /**
- * \brief           VDP ports
+ * \brief           VDP memory mapped ports
  *
  * There are 3 ports to talk with the VDP. These ports can be accessed as 16 or
  * 32 bits.
@@ -116,11 +125,11 @@ extern "C" {
  *  PAL: 1 = PAL system
  *       0 = NTSC system.
  */
-#define SMD_VDP_PORT_DATA_W         ((volatile uint16_t *) 0xC00000)
-#define SMD_VDP_PORT_DATA_L         ((volatile uint32_t *) 0xC00000)
-#define SMD_VDP_PORT_CTRL_W         ((volatile uint16_t *) 0xC00004)
-#define SMD_VDP_PORT_CTRL_L         ((volatile uint32_t *) 0xC00004)
-#define SMD_VDP_PORT_HV_COUNTER     ((volatile uint16_t *) 0xC00008)
+#define SMD_VDP_DATA_PORT_U16       ((volatile uint16_t *) 0xC00000)
+#define SMD_VDP_DATA_PORT_U32       ((volatile uint32_t *) 0xC00000)
+#define SMD_VDP_CTRL_PORT_U16       ((volatile uint16_t *) 0xC00004)
+#define SMD_VDP_CTRL_PORT_U32       ((volatile uint32_t *) 0xC00004)
+#define SMD_VDP_HV_COUNTER_PORT     ((volatile uint16_t *) 0xC00008)
 
 /**
  * \brief           PSG port from the m68k side
@@ -128,13 +137,13 @@ extern "C" {
 #define SMD_PSG_PORT                ((volatile uint8_t *) 0xC00011)
 
 /**
- *  \brief
- *      Define start of RAM region
+ *  \brief          start of RAM region and size
  */
-#define SMD_RAM_ADDR                (0x00FF0000)
+#define SMD_RAM_ADDRESS             (0x00FF0000)
+#define SMD_RAM_SIZE                (64 * 1024)
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* SMD_PORTS_H */
+#endif /* SMD_MEMORY_MAP_H */

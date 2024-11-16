@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: MIT
  *
  * This file is part of The Curse of Issyos MegaDrive port.
- * Coded by: Juan Ángel Moreno Fernández (\_tapule) 2024
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2024
  * Github: https://github.com/tapule
  */
 
@@ -12,7 +12,7 @@
  */
 
 #include "plane.h"
-#include "ports.h"
+#include "memory_map.h"
 #include "vdp.h"
 #include "dma.h"
 
@@ -49,9 +49,9 @@ smd_plane_tile_draw(const uint16_t plane, const uint16_t tile, const uint16_t x,
 
     /* It doesn't make sense to use DMA for only one tile. Write it directly  */
     vram_addr = plane + ((x + (y * SMD_VDP_PLANE_WIDTH)) << 1);
-    *SMD_VDP_PORT_CTRL_L = (((uint32_t)(SMD_VDP_VRAM_WRITE_CMD)) | (((uint32_t)(vram_addr) & 0x3FFF) << 16)
+    *SMD_VDP_CTRL_PORT_U32 = (((uint32_t)(SMD_VDP_VRAM_WRITE_CMD)) | (((uint32_t)(vram_addr) & 0x3FFF) << 16)
                             | ((uint32_t)(vram_addr) >> 14));
-    *SMD_VDP_PORT_DATA_W = tile;
+    *SMD_VDP_DATA_PORT_U16 = tile;
 }
 
 void

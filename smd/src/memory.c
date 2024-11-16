@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: MIT
  *
  * This file is part of The Curse of Issyos MegaDrive port.
- * Coded by: Juan Ángel Moreno Fernández (\_tapule) 2024
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2024
  * Github: https://github.com/tapule
  */
 

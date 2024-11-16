@@ -13,7 +13,7 @@
 
 #include <stdint.h>
 #include "psg.h"
-#include "ports.h"
+#include "memory_map.h"
 
 void
 smd_psg_init(void) {

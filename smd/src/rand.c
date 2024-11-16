@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: MIT
  *
  * This file is part of The Curse of Issyos MegaDrive port.
- * Coded by: Juan Ángel Moreno Fernández (\_tapule) 2024
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2024
  * Github: https://github.com/tapule
  */
 
@@ -12,7 +12,7 @@
  */
 
 #include "rand.h"
-#include "ports.h"
+#include "memory_map.h"
 
 /**
  * \brief           Stores the lastest (current) calculated seed
@@ -26,7 +26,7 @@ smd_rnd_init(void) {
     /* CHECKME: Seems that this is not so random */
     /* Mix a random generated value with the MegaDrive HV counter */
     smd_rnd_var = (uint16_t) 0xCE52 ^ (uint16_t) (0xCE52 << 9);
-    smd_rnd_seed = *SMD_VDP_PORT_HV_COUNTER ^ (*SMD_VDP_PORT_HV_COUNTER >> 7);
+    smd_rnd_seed = *SMD_VDP_HV_COUNTER_PORT ^ (*SMD_VDP_HV_COUNTER_PORT >> 7);
     smd_rnd_seed = smd_rnd_seed ^ smd_rnd_var ^ (smd_rnd_var << 13);
 }
 

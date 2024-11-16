@@ -12,7 +12,7 @@
  */
 
 #include "z80.h"
-#include "ports.h"
+#include "memory_map.h"
 
 /**
  * \brief           Estimated reset wait time borrowed from Sik z80 tutorial.
@@ -24,7 +24,7 @@ smd_z80_ram_clear(void) {
     /* We need a 0 byte, not a word */
     const uint8_t zero = 0;
 
-    uint8_t *dest = SMD_Z80_RAM_ADDRESS;
+    uint8_t *dest = (uint8_t *) SMD_Z80_RAM_ADDRESS;
 
     /* We must access the Z80 RAM using bytes, words won't work */
     for (uint16_t i = 0; i < SMD_Z80_RAM_SIZE; ++i) {
@@ -83,7 +83,7 @@ smd_z80_is_bus_free(void) {
 void
 smd_z80_data_load(const uint8_t *restrict src, const uint16_t dest, uint16_t size) {
     /* Copy data to the correct offset in bytes */
-    volatile uint8_t *ram_dest = SMD_Z80_RAM_ADDRESS + dest;
+    uint8_t *ram_dest = (uint8_t *) SMD_Z80_RAM_ADDRESS + dest;
 
     while (size > 0) {
         *ram_dest = *src;

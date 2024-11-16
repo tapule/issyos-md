@@ -12,7 +12,7 @@
  */
 
 #include "kdebug.h"
-#include "ports.h"
+#include "memory_map.h"
 #include "vdp.h"
 
 #define SMD_KMOD_CONTROL_PAUSE_CMD (0x00)
@@ -23,34 +23,34 @@
 inline void
 __smd_kdebug_halt(void) {
     /* Pause game command */
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_KMOD_CONTROL | SMD_KMOD_CONTROL_PAUSE_CMD;
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_KMOD_CONTROL | SMD_KMOD_CONTROL_PAUSE_CMD;
 }
 
 void
 __smd_kdebug_alert(const char *restrict str) {
     /* We need to write string byte by byte */
     while (*str) {
-        *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_KMOD_MESSAGE | *str;
+        *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_KMOD_MESSAGE | *str;
         ++str;
     }
     /* Session ends with a 0 */
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_KMOD_MESSAGE | 0x00;
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_KMOD_MESSAGE | 0x00;
 }
 
 inline void
 __smd_kdebug_timer_start(void) {
     /* Start emulator timer command */
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_KMOD_TIMER | SMD_KMOD_TIMER_START_CMD;
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_KMOD_TIMER | SMD_KMOD_TIMER_START_CMD;
 }
 
 inline void
 __smd_kdebug_timer_stop(void) {
     /* Stop and output emulator timer command */
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_KMOD_TIMER | SMD_KMOD_TIMER_STOP_CMD;
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_KMOD_TIMER | SMD_KMOD_TIMER_STOP_CMD;
 }
 
 inline void
 __smd_kdebug_timer_output(void) {
     /* Output emulator timer command */
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_KMOD_TIMER | SMD_KMOD_TIMER_OUTPUT_CMD;
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_KMOD_TIMER | SMD_KMOD_TIMER_OUTPUT_CMD;
 }

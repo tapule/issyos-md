@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: MIT
  *
  * This file is part of The Curse of Issyos MegaDrive port.
- * Coded by: Juan Ángel Moreno Fernández (\_tapule) 2024
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2024
  * Github: https://github.com/tapule
  */
 
@@ -12,7 +12,7 @@
  */
 
 #include "dma.h"
-#include "ports.h"
+#include "memory_map.h"
 #include "vdp.h"
 #include "z80.h"
 
@@ -67,24 +67,24 @@ smd_dma_transfer_fast(const uint32_t src, const uint16_t dest, const uint16_t si
     // smd_dma_wait();
 
     /* Sets the autoincrement on word writes */
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_AUTOINC | inc;
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_AUTOINC | inc;
     /* Sets the DMA size in words */
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_DMALEN_L | (size & 0xFF);
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_DMALEN_H | ((size >> 8) & 0xFF);
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_DMALEN_L | (size & 0xFF);
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_DMALEN_H | ((size >> 8) & 0xFF);
     /*
      * Sets the DMA source address. An additional lshift is needed to convert
      * src from bytes to words
      */
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_DMASRC_L | ((src >> 1) & 0xFF);
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_DMASRC_M | ((src >> 9) & 0xFF);
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_DMASRC_H | ((src >> 17) & 0x7F);
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_DMASRC_L | ((src >> 1) & 0xFF);
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_DMASRC_M | ((src >> 9) & 0xFF);
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_DMASRC_H | ((src >> 17) & 0x7F);
     /* Builds the ctrl port write address command in a ram variable */
     cmd = smd_dma_ctrl_addr_build(xram_addr, dest);
     /* Issues the DMA from a ram varible and in words (see SEGA notes on DMA) */
-    *SMD_VDP_PORT_CTRL_W = *cmd_p;
+    *SMD_VDP_CTRL_PORT_U16 = *cmd_p;
     ++cmd_p;
     smd_z80_bus_request_fast();
-    *SMD_VDP_PORT_CTRL_W = *cmd_p;
+    *SMD_VDP_CTRL_PORT_U16 = *cmd_p;
     smd_z80_bus_release();
 
     return true;
@@ -100,24 +100,24 @@ smd_dma_transfer_fast_t(const dma_transfer_t *restrict tr, const uint32_t xram_a
     // smd_dma_wait();
 
     /* Sets the autoincrement on word writes */
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_AUTOINC | tr->inc;
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_AUTOINC | tr->inc;
     /* Sets the DMA size in words */
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_DMALEN_L | (tr->size & 0xFF);
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_DMALEN_H | ((tr->size >> 8) & 0xFF);
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_DMALEN_L | (tr->size & 0xFF);
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_DMALEN_H | ((tr->size >> 8) & 0xFF);
     /*
      * Sets the DMA source address. An additional lshift is needed to convert
      * src from bytes to words
      */
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_DMASRC_L | (((uint32_t)tr->src >> 1) & 0xFF);
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_DMASRC_M | (((uint32_t)tr->src >> 9) & 0xFF);
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_DMASRC_H | (((uint32_t)tr->src >> 17) & 0x7F);
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_DMASRC_L | (((uint32_t)tr->src >> 1) & 0xFF);
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_DMASRC_M | (((uint32_t)tr->src >> 9) & 0xFF);
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_DMASRC_H | (((uint32_t)tr->src >> 17) & 0x7F);
     /* Builds the ctrl port write address command in a ram variable */
     cmd = smd_dma_ctrl_addr_build(xram_addr, tr->dest);
     /* Issues the DMA from a ram varible and in words (see SEGA notes on DMA) */
-    *SMD_VDP_PORT_CTRL_W = *cmd_p;
+    *SMD_VDP_CTRL_PORT_U16 = *cmd_p;
     ++cmd_p;
     smd_z80_bus_request_fast();
-    *SMD_VDP_PORT_CTRL_W = *cmd_p;
+    *SMD_VDP_CTRL_PORT_U16 = *cmd_p;
     smd_z80_bus_release();
 
     return true;
@@ -260,7 +260,7 @@ smd_dma_init(void) {
 inline void
 smd_dma_wait(void) {
     /* Checks the DMA in progress flag in status register */
-    while (*SMD_VDP_PORT_CTRL_L & 0x10) {
+    while (*SMD_VDP_CTRL_PORT_U32 & 0x10) {
         __asm__ volatile("\tnop\n");
     }
 }
@@ -316,16 +316,16 @@ smd_dma_vram_fill(const uint16_t dest, uint16_t size, const uint8_t value, const
     smd_dma_wait();
 
     /* Sets the autoincrement after each write */
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_AUTOINC | inc;
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_AUTOINC | inc;
     /* Sets the DMA size in bytes */
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_DMALEN_L | (size & 0xFF);
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_DMALEN_H | ((size >> 8) & 0xFF);
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_DMALEN_L | (size & 0xFF);
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_DMALEN_H | ((size >> 8) & 0xFF);
     /* Sets the DMA operation to VRAM fill operation */
-    *SMD_VDP_PORT_CTRL_W = SMD_VDP_REG_DMASRC_H | 0x80;
+    *SMD_VDP_CTRL_PORT_U16 = SMD_VDP_REG_DMASRC_H | 0x80;
     /* Builds the ctrl port write address command */
-    *SMD_VDP_PORT_CTRL_L = smd_dma_ctrl_addr_build(SMD_VDP_DMA_VRAM_WRITE_CMD, dest);
+    *SMD_VDP_CTRL_PORT_U32 = smd_dma_ctrl_addr_build(SMD_VDP_DMA_VRAM_WRITE_CMD, dest);
     /* Set fill value. The high byte must be equal for the first write */
-    *SMD_VDP_PORT_DATA_W = (value << 8) | value;
+    *SMD_VDP_DATA_PORT_U16 = (value << 8) | value;
     return true;
 }
 
@@ -349,20 +349,20 @@ smd_dma_queue_flush(void) {
          * Sets the autoincrement on word writes and the high part of the DMA
          * size in words
          */
-        *SMD_VDP_PORT_CTRL_L = *queue_p;
+        *SMD_VDP_CTRL_PORT_U32 = *queue_p;
         ++queue_p;
         /*
          * Sets the low part of the DMA size in words and the high part of
          * source address
          */
-        *SMD_VDP_PORT_CTRL_L = *queue_p;
+        *SMD_VDP_CTRL_PORT_U32 = *queue_p;
         ++queue_p;
         /* Sets the middle and low part of the DMA source address */
-        *SMD_VDP_PORT_CTRL_L = *queue_p;
+        *SMD_VDP_CTRL_PORT_U32 = *queue_p;
         ++queue_p;
         /* Issues the DMA from ram space and in words (see SEGA notes on DMA) */
-        *SMD_VDP_PORT_CTRL_W = *queue_p >> 16;
-        *SMD_VDP_PORT_CTRL_W = *queue_p;
+        *SMD_VDP_CTRL_PORT_U16 = *queue_p >> 16;
+        *SMD_VDP_CTRL_PORT_U16 = *queue_p;
         ++queue_p;
     }
     smd_z80_bus_release();

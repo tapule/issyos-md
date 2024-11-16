@@ -12,7 +12,7 @@
  */
 
 #include "sys.h"
-#include "ports.h"
+#include "memory_map.h"
 #include "handlers.h"
 #include "dma.h"
 #include "pad.h"
@@ -139,7 +139,7 @@ static void (*const volatile smd_sys_vector_table[64])(void) = {
 [[gnu::interrupt, gnu::section(".text.smdboot"), noreturn]]
 static inline void
 smd_sys_boot(void) {
-    uint16_t *ram_addr = (uint16_t *) SMD_RAM_ADDR;
+    uint16_t *ram_addr = (uint16_t *) SMD_RAM_ADDRESS;
 
     /* Disable interrupts and set Supervisor bit */
     __asm__ volatile("\tmov.w	#0x2700, %sr\n");
@@ -184,7 +184,7 @@ smd_sys_boot(void) {
         /* Size of data to copy in bytes */
         uint16_t data_size = (uint16_t) ((uint32_t) (&_data_size));
 
-        ram_addr = (uint16_t *) SMD_RAM_ADDR;
+        ram_addr = (uint16_t *) SMD_RAM_ADDRESS;
         /* Adjust to use words instead of bytes */
         data_size = (data_size + 1) / 2;
         while (data_size) {

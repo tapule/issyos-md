@@ -14,7 +14,7 @@
 
 #include <stdint.h>
 #include "ym2612.h"
-#include "ports.h"
+#include "memory_map.h"
 #include "z80.h"
 
 /**
@@ -28,7 +28,7 @@ smd_ym2612_wait(void) {
      * this hardware may fail to read status from other port.
      * https://plutiedev.com/blog/20200103
      */
-    while (*SMD_YM2612_FM1_PORT_ADDRESS & 0x80) {}
+    while (*SMD_YM2612_FM1_ADDRESS_PORT & 0x80) {}
 }
 
 /**
@@ -38,7 +38,7 @@ smd_ym2612_wait(void) {
 static inline void
 smd_ym2612_fm1_reg_select(const uint8_t reg) {
     smd_ym2612_wait();
-    *SMD_YM2612_FM1_PORT_ADDRESS = reg;
+    *SMD_YM2612_FM1_ADDRESS_PORT = reg;
 }
 
 /**
@@ -48,7 +48,7 @@ smd_ym2612_fm1_reg_select(const uint8_t reg) {
 static inline void
 smd_ym2612_fm2_reg_select(const uint8_t reg) {
     smd_ym2612_wait();
-    *SMD_YM2612_FM2_PORT_ADDRESS = reg;
+    *SMD_YM2612_FM2_ADDRESS_PORT = reg;
 }
 
 /**
@@ -58,7 +58,7 @@ smd_ym2612_fm2_reg_select(const uint8_t reg) {
 static inline void
 smd_ym2612_fm1_data_write(const uint8_t data) {
     smd_ym2612_wait();
-    *SMD_YM2612_FM1_PORT_DATA = data;
+    *SMD_YM2612_FM1_DATA_PORT = data;
 }
 
 /**
@@ -68,7 +68,7 @@ smd_ym2612_fm1_data_write(const uint8_t data) {
 static inline void
 smd_ym2612_fm2_data_write(const uint8_t data) {
     smd_ym2612_wait();
-    *SMD_YM2612_FM2_PORT_DATA = data;
+    *SMD_YM2612_FM2_DATA_PORT = data;
 }
 
 /**

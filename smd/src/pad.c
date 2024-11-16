@@ -12,7 +12,7 @@
  */
 
 #include "pad.h"
-#include "ports.h"
+#include "memory_map.h"
 #include "z80.h"
 
 /**
