@@ -164,7 +164,12 @@ smd_spr_update(void) {
     }
 
     /* (smd_spr_count * sizeof(smd_spr_entry_t)) / 2  =  smd_spr_count << 2 because smd_spr_entry_t is 8 bytes */
-    smd_dma_vram_transfer_fast(smd_spr_table, SMD_VDP_SPRITE_TABLE_ADDR, smd_spr_count << 2, 2);
-
+    smd_dma_transfer_fast( &(smd_dma_transfer_t) {
+        .src  = smd_spr_table,
+        .dest = SMD_VDP_SPRITE_TABLE_ADDR,
+        .size = smd_spr_count << 2,
+        .inc  = 2,
+        .type = SMD_DMA_VRAM_TRANSFER
+    });
     smd_spr_clear();
 }

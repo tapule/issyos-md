@@ -77,7 +77,13 @@ inline void
 smd_pal_cram_set(const uint16_t index, const uint16_t count, const uint16_t *restrict colors) {
     /* We can't use a fast transfer here as we don't know the source address */
     /* CHECKME: Should I synchonize the internal primary buffer here?? */
-    smd_dma_cram_transfer(colors, index << 1, count, 2);
+    smd_dma_transfer( &(smd_dma_transfer_t) {
+        .src  = (uint16_t *) colors,
+        .dest = index << 1,
+        .size = count,
+        .inc  = 2,
+        .type = SMD_DMA_CRAM_TRANSFER
+    });
 }
 
 inline void
@@ -171,6 +177,12 @@ smd_pal_update(void) {
     if (smd_pal_update_needed) {
         smd_pal_update_needed = false;
         /* Transfer the whole primary color buffer to CRAM */
-        smd_dma_cram_transfer_fast(smd_pal_primary, 0, 64, 2);
+        smd_dma_transfer_fast( &(smd_dma_transfer_t) {
+            .src  = smd_pal_primary,
+            .dest = 0,
+            .size = 64,
+            .inc  = 2,
+            .type = SMD_DMA_CRAM_TRANSFER
+        });
     }
 }

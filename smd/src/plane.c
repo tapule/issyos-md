@@ -39,7 +39,13 @@ smd_plane_rect_fill(const uint16_t plane, const uint16_t tile, const uint16_t x,
     /* Draws rows in the plane */
     for (uint16_t i = 0; i < height; ++i) {
         /* x, y, i and SMD_VDP_PLANE_WIDTH are in tiles, convert to words */
-        smd_dma_vram_transfer_fast(&tile_row, plane + ((x + ((y + i) * SMD_VDP_PLANE_WIDTH)) << 1), width, 2);
+        smd_dma_transfer_fast( &(smd_dma_transfer_t) {
+            .src  = &tile_row,
+            .dest = plane + ((x + ((y + i) * SMD_VDP_PLANE_WIDTH)) << 1),
+            .size = width,
+            .inc  = 2,
+            .type = SMD_DMA_VRAM_TRANSFER
+        });
     }
 }
 
@@ -58,33 +64,69 @@ void
 smd_plane_hline_draw(const uint16_t plane, const uint16_t *restrict tiles, const uint16_t x, const uint16_t y,
                  const uint16_t length, const bool defer) {
     if (defer) {
-        smd_dma_queue_vram_transfer(tiles, plane + ((x + (y * SMD_VDP_PLANE_WIDTH)) << 1), length, 2);
+        smd_dma_transfer_enqueue( &(smd_dma_transfer_t) {
+            .src  = (uint16_t *) tiles,
+            .dest = plane + ((x + (y * SMD_VDP_PLANE_WIDTH)) << 1),
+            .size = length,
+            .inc  = 2,
+            .type = SMD_DMA_VRAM_TRANSFER
+        });
     } else {
-        smd_dma_vram_transfer(tiles, plane + ((x + (y * SMD_VDP_PLANE_WIDTH)) << 1), length, 2);
+        smd_dma_transfer( &(smd_dma_transfer_t) {
+            .src  = (uint16_t *) tiles,
+            .dest = plane + ((x + (y * SMD_VDP_PLANE_WIDTH)) << 1),
+            .size = length,
+            .inc  = 2,
+            .type = SMD_DMA_VRAM_TRANSFER
+        });
+
     }
 }
 
 void
 smd_plane_hline_draw_fast(const uint16_t plane, const uint16_t *restrict tiles, const uint16_t x, const uint16_t y,
                       const uint16_t length) {
-    smd_dma_vram_transfer_fast(tiles, plane + ((x + (y * SMD_VDP_PLANE_WIDTH)) << 1), length, 2);
+    smd_dma_transfer_fast( &(smd_dma_transfer_t) {
+        .src  = (uint16_t *) tiles,
+        .dest = plane + ((x + (y * SMD_VDP_PLANE_WIDTH)) << 1),
+        .size = length,
+        .inc  = 2,
+        .type = SMD_DMA_VRAM_TRANSFER
+    });
 }
 
 void
 smd_plane_vline_draw(const uint16_t plane, const uint16_t *restrict tiles, const uint16_t x, const uint16_t y,
                  const uint16_t length, const bool defer) {
     if (defer) {
-        smd_dma_queue_vram_transfer(tiles, plane + ((x + (y * SMD_VDP_PLANE_WIDTH)) << 1), length,
-                                SMD_VDP_PLANE_WIDTH << 1);
+        smd_dma_transfer_enqueue( &(smd_dma_transfer_t) {
+            .src  = (uint16_t *) tiles,
+            .dest = plane + ((x + (y * SMD_VDP_PLANE_WIDTH)) << 1),
+            .size = length,
+            .inc  = SMD_VDP_PLANE_WIDTH << 1,
+            .type = SMD_DMA_VRAM_TRANSFER
+        });
     } else {
-        smd_dma_vram_transfer(tiles, plane + ((x + (y * SMD_VDP_PLANE_WIDTH)) << 1), length, SMD_VDP_PLANE_WIDTH << 1);
+        smd_dma_transfer( &(smd_dma_transfer_t) {
+            .src  = (uint16_t *) tiles,
+            .dest = plane + ((x + (y * SMD_VDP_PLANE_WIDTH)) << 1),
+            .size = length,
+            .inc  = SMD_VDP_PLANE_WIDTH << 1,
+            .type = SMD_DMA_VRAM_TRANSFER
+        });
     }
 }
 
 void
 smd_plane_vline_draw_fast(const uint16_t plane, const uint16_t *restrict tiles, const uint16_t x, const uint16_t y,
                       const uint16_t length) {
-    smd_dma_vram_transfer_fast(tiles, plane + ((x + (y * SMD_VDP_PLANE_WIDTH)) << 1), length, SMD_VDP_PLANE_WIDTH << 1);
+    smd_dma_transfer_fast( &(smd_dma_transfer_t) {
+        .src  = (uint16_t *) tiles,
+        .dest = plane + ((x + (y * SMD_VDP_PLANE_WIDTH)) << 1),
+        .size = length,
+        .inc  = SMD_VDP_PLANE_WIDTH << 1,
+        .type = SMD_DMA_VRAM_TRANSFER
+    });
 }
 
 void
@@ -92,13 +134,24 @@ smd_plane_rect_draw(const uint16_t plane, const uint16_t *restrict tiles, const 
                 const uint16_t width, const uint16_t height, const bool defer) {
     if (defer) {
         for (uint16_t row = 0; row < height; ++row) {
-            smd_dma_queue_vram_transfer(tiles + (row * width), plane + ((x + ((y + row) * SMD_VDP_PLANE_WIDTH)) << 1),
-                                    width, 2);
+            smd_dma_transfer_enqueue( &(smd_dma_transfer_t) {
+                .src  = (uint16_t *) tiles + (row * width),
+                .dest = plane + ((x + ((y + row) * SMD_VDP_PLANE_WIDTH)) << 1),
+                .size = width,
+                .inc  = 2,
+                .type = SMD_DMA_VRAM_TRANSFER
+            });
         }
     } else {
         for (uint16_t row = 0; row < height; ++row) {
+            smd_dma_transfer( &(smd_dma_transfer_t) {
+                .src  = (uint16_t *) tiles + (row * width),
+                .dest = plane + ((x + ((y + row) * SMD_VDP_PLANE_WIDTH)) << 1),
+                .size = width,
+                .inc  = 2,
+                .type = SMD_DMA_VRAM_TRANSFER
+            });
 
-            smd_dma_vram_transfer(tiles + (row * width), plane + ((x + ((y + row) * SMD_VDP_PLANE_WIDTH)) << 1), width, 2);
         }
     }
 }
@@ -107,6 +160,12 @@ void
 smd_plane_rect_draw_fast(const uint16_t plane, const uint16_t *restrict tiles, const uint16_t x, const uint16_t y,
                      const uint16_t width, const uint16_t height) {
     for (uint16_t row = 0; row < height; ++row) {
-        smd_dma_vram_transfer_fast(tiles + (row * width), plane + ((x + ((y + row) * SMD_VDP_PLANE_WIDTH)) << 1), width, 2);
+        smd_dma_transfer_fast( &(smd_dma_transfer_t) {
+            .src  = (uint16_t *) tiles + (row * width),
+            .dest = plane + ((x + ((y + row) * SMD_VDP_PLANE_WIDTH)) << 1),
+            .size = width,
+            .inc  = 2,
+            .type = SMD_DMA_VRAM_TRANSFER
+        });
     }
 }

@@ -25,18 +25,11 @@
 #define SMD_DMA_H
 
 #include <stdint.h>
+#include "vdp.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct dma_transfer_t {
-    void *src;
-    uint16_t dest;
-    uint16_t size;
-    uint16_t inc;
-} dma_transfer_t;
-
 
 /**
  * \brief           Default DMA internal queue size in commands or operations
@@ -44,6 +37,26 @@ typedef struct dma_transfer_t {
 #ifndef SMD_DMA_QUEUE_SIZE
     #define SMD_DMA_QUEUE_SIZE (64)
 #endif
+
+/**
+ * \brief           DMA transfer types based on VDP's ram destination
+ */
+typedef enum smd_dma_transfer_type_t {
+    SMD_DMA_VRAM_TRANSFER  = SMD_VDP_DMA_VRAM_WRITE_CMD,    /**< Ram/Rom to VRam transfer */
+    SMD_DMA_CRAM_TRANSFER  = SMD_VDP_DMA_CRAM_WRITE_CMD,    /**< Ram/Rom to CRam transfer */
+    SMD_DMA_VSRAM_TRANSFER = SMD_VDP_DMA_VSRAM_WRITE_CMD    /**< Ram/Rom to VSRam transfer */
+} smd_dma_transfer_type_t;
+
+/**
+ * \brief           DMA transfer operation
+ */
+typedef struct smd_dma_transfer_t {
+    void *src;                      /**< Source address on Ram/Rom space */
+    uint16_t dest;                  /**< Destination address on VRam/CRam/VSRam */
+    uint16_t size;                  /**< Transfer size in words */
+    uint16_t inc;                   /**< Write position increment after each write (normally 2) */
+    smd_dma_transfer_type_t type;   /**< DMA transfer type */
+} smd_dma_transfer_t;
 
 /**
  * \brief           Initialize the DMA system
@@ -57,86 +70,6 @@ void smd_dma_init(void);
  * \brief           Wait for a running DMA copy/fill operation to finish
  */
 void smd_dma_wait(void);
-
-/**
- * \brief           Execute a DMA transfer from RAM/ROM to VRAM
- * \param[in]       src: Source address on RAM/ROM space
- * \param[in]       dest: Destination address on VRAM
- * \param[in]       size Transfer size in words
- * \param[in]       inc: Write position increment after each write (normally 2)
- * \return          true on success, false otherwise
- */
-bool smd_dma_vram_transfer(const void *restrict src, const uint16_t dest, const uint16_t size, const uint16_t inc);
-
-/**
- * \brief           Execute a DMA transfer from RAM/ROM to CRAM
- * \param[in]       src: Source address on RAM/ROM space
- * \param[in]       dest: Destination address on CRAM
- * \param[in]       size: Transfer size in words
- * \param[in]       inc: Write position increment after each write (normally 2)
- * \return          true on success, false otherwise
- */
-bool smd_dma_cram_transfer(const void *restrict src, const uint16_t dest, const uint16_t size, const uint16_t inc);
-
-/**
- * \brief           Execute a DMA transfer from RAM/ROM to VSRAM
- * \param[in]       src: Source address on RAM/ROM space
- * \param[in]       dest: Destination address on VSRAM
- * \param[in]       size: Transfer size in words
- * \param[in]       inc: Write position increment after each write (normally 2)
- * \return          true on success, false otherwise
- */
-bool smd_dma_vsram_transfer(const void *restrict src, const uint16_t dest, const uint16_t size, const uint16_t inc);
-
-/**
- * \brief           Execute a fast DMA transfer from RAM/ROM to VRAM
- * \param[in]       src: Source address on RAM/ROM space
- * \param[in]       dest: Destination address on VRAM
- * \param[in]       size: Transfer size in words
- * \param[in]       inc: Write position increment after each write (normally 2)
- * \return          true on success, false otherwise
- * \note            Parameters or 128kB boundaries are not checked, so be aware
- *                  that it is a bit unsafe if you don't know what you are doing
- */
-bool smd_dma_vram_transfer_fast(const void *restrict src, const uint16_t dest, const uint16_t size, const uint16_t inc);
-
-/**
- * \brief           Execute a fast DMA transfer from RAM/ROM to CRAM
- * \param[in]       src: Source address on RAM/ROM space
- * \param[in]       dest: Destination address on CRAM
- * \param[in]       size: Transfer size in words
- * \param[in]       inc: Write position increment after each write (normally 2)
- * \return          true on success, false otherwise
- * \note            Parameters or 128kB boundaries are not checked, so be aware
- *                  that it is a bit unsafe if you don't know what you are doing
- */
-bool smd_dma_cram_transfer_fast(const void *restrict src, const uint16_t dest, const uint16_t size, const uint16_t inc);
-
-/**
- * \brief           Execute a fast DMA transfer from RAM/ROM to VSRAM
- * \param[in]       src: Source address on RAM/ROM space
- * \param[in]       dest: Destination address on VSRAM
- * \param[in]       size: Transfer size in words
- * \param[in]       inc: Write position increment after each write (normally 2)
- * \return          true on success, false otherwise
- * \note            Parameters or 128kB boundaries are not checked, so be aware
- *                  that it is a bit unsafe if you don't know what you are doing
- */
-bool smd_dma_vsram_transfer_fast(const void *restrict src, const uint16_t dest, const uint16_t size,
-                                 const uint16_t inc);
-
-/**
- * \brief           Executes a DMA VRAM fill operation
- * \param[in]       dest: Destination address on VRAM
- * \param[in]       size: Transfer size in bytes, minimum 2
- * \param[in]       value: Value used to fill the vram
- * \param[in]       inc: Write position increment after each write (normally 1)
- * \return          true on success, false otherwise
- * \note            The DMA VRAM fill operation does not stop the m68k, so it is
- *                  a good idea to use it with smd_dma_wait() function to wait for
- *                  it to finish the fill operation.
- */
-bool smd_dma_vram_fill(const uint16_t dest, uint16_t size, const uint8_t value, const uint16_t inc);
 
 /**
  * \brief           Return the current DMA's queue size in commands
@@ -156,37 +89,42 @@ void smd_dma_queue_clear(void);
 void smd_dma_queue_flush(void);
 
 /**
- * \brief           Add a new DMA transfer from RAM/ROM to VRAM to the queue
- * \param[in]       src: Source address on RAM/ROM space
+ * \brief           Execute a DMA transfer from RAM/ROM to VRam/CRam/VSRam
+ * \param[in]       transfer: Transfer operation configuration
+ * \pre             transfer->inc must be at least 2
+ */
+void smd_dma_transfer(const smd_dma_transfer_t *restrict transfer);
+
+/**
+ * \brief           Execute a fast DMA transfer from RAM/ROM to VRam/CRam/VSRam
+ * \param[in]       transfer: Transfer operation configuration
+ * \pre             transfer->inc must be at least 2
+ * \note            Parameters or 128kB boundaries are not checked, so be aware
+ *                  that it is a bit unsafe if you don't know what you are doing
+ */
+void smd_dma_transfer_fast(const smd_dma_transfer_t *restrict transfer);
+
+/**
+ * \brief           Enqueue a new DMA transfer from RAM/ROM to VRam/CRam/VSRam
+ * \param[in]       transfer: Transfer operation configuration
+ * \pre             transfer->inc must be at least 2
+ */
+void smd_dma_transfer_enqueue(const smd_dma_transfer_t *restrict transfer);
+
+/**
+ * \brief           Executes a DMA VRAM fill operation
  * \param[in]       dest: Destination address on VRAM
- * \param[in]       size: Transfer size in words
- * \param[in]       inc: Write position increment after each write (normally 2)
- * \return          true on success, false if the queue is full
+ * \param[in]       size: Transfer size in bytes, minimum 2
+ * \param[in]       value: Value used to fill the vram
+ * \param[in]       inc: Write position increment after each write (normally 1)
+ * \return          true on success, false otherwise
+ * \pre             size must be at least 2 because of a fill operation bug that
+ *                  writes a minimum of two bytes
+ * \note            The DMA VRAM fill operation does not stop the m68k, so it is
+ *                  a good idea to use it with smd_dma_wait() function to wait for
+ *                  it to finish the fill operation.
  */
-bool smd_dma_queue_vram_transfer(const void *restrict src, const uint16_t dest, const uint16_t size,
-                                 const uint16_t inc);
-
-/**
- * \brief           Add a new DMA transfer from RAM/ROM to CRAM in the queue
- * \param[in]       src: Source address on RAM/ROM space
- * \param[in]       dest: Destination address on CRAM
- * \param[in]       size: Transfer size in words
- * \param[in]       inc: Write position increment after each write (normally 2)
- * \return          true on success, false if the queue is full
- */
-bool smd_dma_queue_cram_transfer(const void *restrict src, const uint16_t dest, const uint16_t size,
-                                 const uint16_t inc);
-
-/**
- * \brief           Add a new DMA transfer from RAM/ROM to VSRAM in the queue
- * \param[in]       src: Source address on RAM/ROM space
- * \param[in]       dest: Destination address on VSRAM
- * \param[in]       size: Transfer size in words
- * \param[in]       inc: Write position increment after each write (normally 2)
- * \return          true on success, false if the queue is full
- */
-bool smd_dma_queue_vsram_transfer(const void *restrict src, const uint16_t dest, const uint16_t size,
-                                  const uint16_t inc);
+void smd_dma_vram_fill(const uint16_t dest, uint16_t size, const uint8_t value, const uint16_t inc);
 
 #ifdef __cplusplus
 }
