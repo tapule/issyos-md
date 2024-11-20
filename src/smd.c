@@ -13,11 +13,10 @@
 
 #include "smd.h"
 
-#include "../smd/src/header.c"
+#include "../smd/src/sys.c"
+#include "../smd/src/handlers.c"
 #include "../smd/src/null_data.c"
 #include "../smd/src/xgm_drv.c"
-#include "../smd/src/handlers.c"
-#include "../smd/src/sys.c"
 #include "../smd/src/dma.c"
 #include "../smd/src/kdebug.c"
 #include "../smd/src/memory.c"

@@ -28,8 +28,13 @@
 #define SMD_VERSION_PORT_MOD_FLAG   (0b10000000)
 #define SMD_VERSION_PORT_VMOD_FLAG  (0b01000000)
 
-extern uint32_t _sdata;
-extern uint32_t _data_size;
+#if SMD_SYS_HEADER_SRAM_ENABLED > 0
+    #define _SYS_HEADER_SRAM_ENABLED "RA"
+#else
+    #define _SYS_HEADER_SRAM_ENABLED "  "
+#endif
+
+
 extern int main(void);
 
 /**
@@ -38,6 +43,31 @@ extern int main(void);
 static bool smd_ints_status_flag;
 
 static inline void smd_sys_boot(void);
+
+/**
+ * \brief           Sega Megadrive/Genesis rom header
+ */
+[[gnu::section(".text.smdheader")]]
+const smd_sys_header_t smd_sys_header = {SMD_SYS_HEADER_SYS_NAME,
+                                 SMD_SYS_HEADER_COPYRIGHT,
+                                 SMD_SYS_HEADER_DOMESTIC_NAME,
+                                 SMD_SYS_HEADER_OVERSEAS_NAME,
+                                 SMD_SYS_HEADER_SERIAL,
+                                 0,
+                                 SMD_SYS_HEADER_DEVICES,
+                                 0x00000000,
+                                 SMD_SYS_HEADER_ROM_SIZE - 1,
+                                 0x00FF0000,
+                                 0x00FFFFFF,
+                                 _SYS_HEADER_SRAM_ENABLED,
+                                 0xF820,
+                                 0x200001,
+                                 0x20FFFF,
+                                 "            ",
+                                 SMD_SYS_HEADER_NOTES,
+                                 SMD_SYS_HEADER_REGION,
+                                 "             "};
+
 
 /**
  * \brief           Sega Megadrive/Genesis m68k vector table
@@ -139,6 +169,8 @@ static void (*const volatile smd_sys_vector_table[64])(void) = {
 [[gnu::interrupt, gnu::section(".text.smdboot"), noreturn]]
 static inline void
 smd_sys_boot(void) {
+    extern uint32_t _sdata;
+    extern uint32_t _data_size;
     uint16_t *ram_addr = (uint16_t *) SMD_RAM_ADDRESS;
 
     /* Disable interrupts and set Supervisor bit */

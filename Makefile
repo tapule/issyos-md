@@ -48,16 +48,16 @@ LTO_SO   = liblto_plugin.so
 # Includes: Local + GCC (+ Newlib, uncomment to use it)
 INCS     = -Isrc -Ires
 INCS    += -I$(TOOLCHAIN)/lib/gcc/m68k-elf/$(GCC_VER)/include
-#INCS   += -I$(TOOLCHAIN)/m68k-elf/m68k-elf/include
+#INCS   += -I$(TOOLCHAIN)/m68k-elf/include
 
 # Libraries: GCC (+ Newlib, uncomment to use it)
 LIBS     = -L$(TOOLCHAIN)/lib/gcc/m68k-elf/$(GCC_VER) -lgcc
-#LIBS    += -L$(TOOLCHAIN)/m68k-elf/m68k-elf/lib -lnosys
+#LIBS    += -L$(TOOLCHAIN)/m68k-elf/lib -lnosys
 
 # Default base flags
 CCFLAGS  = -m68000 -Wall -Wextra -Wpedantic -Wno-unused-local-typedefs -std=c23 -ffreestanding
 ASFLAGS  = -m68000 --register-prefix-optional
-LDFLAGS  = -T smd/src/smd.ld -nostdlib
+LDFLAGS  = -T smd/smd.ld -nostdlib
 
 # Extra flags set by debug or release target as needed
 EXFLAGS  =
