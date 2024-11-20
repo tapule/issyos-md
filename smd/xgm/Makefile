@@ -6,16 +6,7 @@
 
 #**
 # \file             Makefile
-# \brief
-
-# SPDX-License-Identifier: MIT
-#
-# MDDev development kit
-# Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
-# Github: https://github.com/tapule/mddev
-#
-# Makefile
-# Project compiler makefile script
+# \brief            XGM driver compiler and converter makefile script
 #
 
 # Default paths for our toolchain
@@ -58,10 +49,15 @@ xgm:
 	$(BINTOC) -s obj/src/xgm/xgm_drv.o80 -d ../src -t u8
 # 	$(BINTOC) -s src/xgm/stop_xgm.bin -d src -t u8
 
+
+.PHONY: clean cleanall
+
+# Clean only compilation objects
 clean:
 	@echo "-> Cleaning project..."
 	@rm -rf obj
 
+# Clean compilation objects and bintoc generated files
 cleanall:
 	@echo "-> Cleaning XGM sound driver..."
 	@rm -rf obj

@@ -1,18 +1,18 @@
-/* SPDX-License-Identifier: MIT */
-/**
- * The Curse of Issyos MegaDrive port
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2022 
- * Github: https://github.com/tapule/issyos-md
+/*
+ * SPDX-License-Identifier: MIT
  *
- * File: game.h
- * Main game object
- *
+ * This file is part of The Curse of Issyos MegaDrive port.
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2024
+ * Github: https://github.com/tapule
  */
 
-#ifndef GAME_H
-#define GAME_H
+/**
+ * \file            game.h
+ * \brief           Main game object
+ */
 
-#include <mddev.h>
+#ifndef TCIMD_GAME_H
+#define TCIMD_GAME_H
 
 /* Game initialization */
 void game_init(void);
@@ -20,4 +20,4 @@ void game_init(void);
 /* Starts the game */
 void game_run(void);
 
-#endif /* GAME_H */
+#endif /* TCIMD_GAME_H */

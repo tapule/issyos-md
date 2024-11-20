@@ -27,6 +27,11 @@ extern "C" {
 #endif
 
 /**
+ * \brief           SMD framework version
+ */
+#define SMD_VERSION 0.1
+
+/**
  * \brief           Enable system interrupts
  *
  * The m68k provides 7 levels of interrupts were 7 has the highest priority and

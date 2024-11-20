@@ -1,57 +1,63 @@
 # SPDX-License-Identifier: MIT
 #
-# The Curse of Issyos MegaDrive port
-# Coded by: Juan Ángel Moreno Fernández (@_tapule) 2022
-# Github: https://github.com/tapule/issyos-md
-#
-# Makefile
-# Project compiler makefile script
+# This file is part of The Curse of Issyos MegaDrive port.
+# Coded by: Juan Ángel Moreno Fernández (@_tapule) 2024
+# Github: https://github.com/tapule
+
+#**
+# \file             Makefile
+# \brief            Project compiler makefile script
 #
 
-# Default paths for Marsdev
-MARSDEV  ?= toolchain
-MARSBIN  := $(MARSDEV)/bin
-TOOLSBIN := $(MARSDEV)/bin
+# Default paths for our toolchain
+TOOLCHAIN  ?= toolchain
+TOOLCHAINBIN  := $(TOOLCHAIN)/bin
+TOOLSBIN := $(TOOLCHAIN)/bin
+
+# Some ANSI terminal color codes
+COLOR_RESET      = $'\033[0m
+COLOR_RED        = $'\033[1;31;49m
+COLOR_GREEN      = $'\033[1;32;49m
+COLOR_YELLOW     = $'\033[1;33;49m
+COLOR_BLUE       = $'\033[1;34;49m
+COLOR_MAGENTA    = $'\033[1;35;49m
+COLOR_CYAN       = $'\033[1;36;49m
+COLOR_WHITE      = $'\033[1;37;49m
 
 # GCC environment
-CC   := $(MARSBIN)/m68k-elf-gcc
-AS   := $(MARSBIN)/m68k-elf-as
-LD   := $(MARSBIN)/m68k-elf-ld
-NM   := $(MARSBIN)/m68k-elf-nm
-GDB  := $(MARSBIN)/m68k-elf-gdb
-OBJC := $(MARSBIN)/m68k-elf-objcopy
-
-# Z80 Assembler to build XGM driver
-ASMZ80   = $(TOOLSBIN)/sjasm
+CC   := $(TOOLCHAINBIN)/m68k-elf-gcc
+AS   := $(TOOLCHAINBIN)/m68k-elf-as
+LD   := $(TOOLCHAINBIN)/m68k-elf-ld
+NM   := $(TOOLCHAINBIN)/m68k-elf-nm
+GDB  := $(TOOLCHAINBIN)/m68k-elf-gdb
+OBJC := $(TOOLCHAINBIN)/m68k-elf-objcopy
 
 # Tools
 # TODO: Include tools to manage resources etc.
 # BINTOS  = $(TOOLSBIN)/bintos
 BINTOC  = $(TOOLSBIN)/bintoc
-BLASTEM = $(MARSDEV)/blastem/blastem
+BLASTEM = $(TOOLCHAIN)/blastem/blastem
 
 # Some files needed are in a versioned directory
 GCC_VER := $(shell $(CC) -dumpversion)
 
 # Need the LTO plugin so NM can dump our symbol table
-PLUGIN   = $(MARSDEV)/libexec/gcc/m68k-elf/$(GCC_VER)
+PLUGIN   = $(TOOLCHAIN)/libexec/gcc/m68k-elf/$(GCC_VER)
 LTO_SO   = liblto_plugin.so
 
 # Includes: Local + GCC (+ Newlib, uncomment to use it)
-INCS     = -Isrc -Ires -Ismd/src -Ismd/src/boot
-INCS    += -I$(MARSDEV)/lib/gcc/m68k-elf/$(GCC_VER)/include
-#INCS   += -I$(MARSDEV)/m68k-elf/m68k-elf/include
+INCS     = -Isrc -Ires
+INCS    += -I$(TOOLCHAIN)/lib/gcc/m68k-elf/$(GCC_VER)/include
+#INCS   += -I$(TOOLCHAIN)/m68k-elf/m68k-elf/include
 
 # Libraries: GCC (+ Newlib, uncomment to use it)
-LIBS     = -L$(MARSDEV)/lib/gcc/m68k-elf/$(GCC_VER) -lgcc
-#LIBS    += -L$(MARSDEV)/m68k-elf/m68k-elf/lib -lnosys
+LIBS     = -L$(TOOLCHAIN)/lib/gcc/m68k-elf/$(GCC_VER) -lgcc
+#LIBS    += -L$(TOOLCHAIN)/m68k-elf/m68k-elf/lib -lnosys
 
 # Default base flags
-#CCFLAGS  = -m68000 -Wall -Wextra -Wno-unused-local-typedefss -std=c17 -ffreestanding
 CCFLAGS  = -m68000 -Wall -Wextra -Wpedantic -Wno-unused-local-typedefs -std=c23 -ffreestanding
 ASFLAGS  = -m68000 --register-prefix-optional
 LDFLAGS  = -T smd/src/smd.ld -nostdlib
-Z80FLAGS = -ismd/src/xgm
 
 # Extra flags set by debug or release target as needed
 EXFLAGS  =
@@ -60,32 +66,24 @@ EXFLAGS  =
 CSRC  = $(wildcard src/*.c)
 # CSRC += $(wildcard src/man/*.c)
 # CSRC += $(wildcard src/sys/*.c)
-CSRC += $(wildcard smd/src/*.c)
-CSRC += $(wildcard smd/src/boot/*.c)
 SSRC  = $(wildcard src/*.s)
-SSRC += $(wildcard smd/src/*.s)
-SSRC += $(wildcard smd/src/boot/*.s)
 SSRC += $(wildcard res/*.s)
-
-# Z80 source for XGM driver
-# ZSRC  = $(wildcard smd/src/smd/xgm/*.s80)
 
 # Resources
 # TODO: Include resources
 RSRC  = $(wildcard res/*.c)
 
 # Objets files
-OBJS    = $(RSRC:.c=.o)
-OBJS   += $(CSRC:.c=.o)
+OBJS    = $(CSRC:.c=.o)
 OBJS   += $(SSRC:.s=.o)
-# OBJS   += $(ZSRC:.s80=.o)
+OBJS   += $(RSRC:.c=.o)
 OUTOBJS = $(addprefix obj/, $(OBJS))
 
 # ASM listings
 ASM    = $(CSRC:.c=.lst)
 OUTASM = $(addprefix obj/, $(ASM))
 
-.PHONY: all release asm debug smd
+.PHONY: all release asm debug
 
 all: release
 
@@ -107,15 +105,15 @@ asm: EXFLAGS += -fno-unwind-tables -DNDEBUG
 asm: $(OUTASM)
 
 bin/rom.elf: $(OUTOBJS)
-	@echo "-> Building ELF..."
+	@echo "$(COLOR_GREEN)>> Building ELF...$(COLOR_RESET)"
 	@mkdir -p $(dir $@)
 	$(CC) -o $@ $(LDFLAGS) $(OUTOBJS) $(LIBS)
 
 bin/rom.bin: bin/rom.elf
-	@echo "-> Stripping ELF header..."
+	@echo "$(COLOR_GREEN)>> Stripping ELF header...$(COLOR_RESET)"
 	@mkdir -p $(dir $@)
 	@$(OBJC) -O binary $< bin/unpad.bin
-	@echo "-> Padding rom file..."
+	@echo "$(COLOR_GREEN)>> Padding rom file...$(COLOR_RESET)"
 	@dd if=bin/unpad.bin of=$@ bs=8192 conv=sync
 	@rm -f bin/unpad.bin
 
@@ -130,43 +128,31 @@ obj/%.o: %.s
 	@$(AS) $(ASFLAGS) $< -o $@
 
 obj/%.lst: %.c
-	@echo "-> Exporting ASM listings..."
+	@echo "$(COLOR_GREEN)>> Exporting ASM listings...$(COLOR_RESET)"
 	@mkdir -p $(dir $@)
 #	@$(CC) $(CCFLAGS) $(EXFLAGS) $(INCS) -S -c $< -o $@
 	@$(CC) $(CCFLAGS) $(EXFLAGS) $(INCS) -S -fverbose-asm -c $< -o $@
-
-# %.o80: %.s80
-#	$(ASMZ80) $(Z80FLAGS) $< $@ obj/z80out.lst
-#
-# %.s: %.o80
-#	$(BINTOS) $<
 
 # This generates a symbol table that is very helpful in debugging crashes,
 # even with an optimized release build!
 # Cross reference symbol.txt with the addresses displayed in the crash handler
 obj/symbol.txt: bin/rom.bin
-	@echo "-> Exporting symbol table..."
+	@echo "$(COLOR_GREEN)>> Exporting symbol table...$(COLOR_RESET)"
 	$(NM) --plugin=$(PLUGIN)/$(LTO_SO) -n bin/rom.elf > obj/symbol.txt
-
-smd:
-	@echo "-> Building smd..."
-	@make -C smd xgm
-	@make -C smd tools
 
 .PHONY: run drun clean
 
 run: release
-	@echo "-> running..."
+	@echo "$(COLOR_YELLOW)> Running...$(COLOR_RESET)"
 	@$(BLASTEM) bin/rom.bin
 
 drun: debug
-	@echo "-> running gdb"
+	@echo "$(COLOR_GREEN)> Running debugger...$(COLOR_RESET)"
 #	@$(GDB) -ex "target remote | $(BLASTEM) bin/rom.bin -D" bin/rom.elf
 #	@gdbgui --gdb-cmd="$(GDB) -ex \"target remote | $(BLASTEM) bin/rom.bin -D\" bin/rom.elf" bin/rom.elf
 	@mame megadriv -debug -cart bin/rom.bin
 
 clean:
-	@echo "-> Cleaning project..."
+	@echo "$(COLOR_MAGENTA)> Cleaning project...$(COLOR_RESET)"
 	@rm -rf obj
 	@rm -f bin/rom.elf bin/unpad.bin bin/rom.bin
-	# @make -C smd clean
