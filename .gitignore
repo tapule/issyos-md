@@ -18,7 +18,7 @@
 *.la
 *.lo
 
-# Shared objects 
+# Shared objects
 *.so
 *.so.*
 *.dylib
@@ -32,26 +32,7 @@
 # Rom files
 *.bin
 
-# VSCode project files
-*.code*
-.vscode
-
-# Symbols
-symbol.txt
-
-# Assets dir
-assets/
-
-# Object dir
-obj/
-
-# Binary dir
-bin/
-
-# Toolchain dir
-toolchain/
-
-# Other files
+# Other file types
 *.zip
 *.rar
 *.bak
@@ -60,6 +41,19 @@ toolchain/
 *.tmp
 *.lst
 *~
+
+# VSCode project files
+*.code*
+.vscode
+
+# Assets dir
+assets/
+
+# Build dir
+build/
+
+# Toolchain dir
+toolchain/
 
 # WIP data
 wip/

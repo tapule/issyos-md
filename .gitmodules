@@ -1,4 +1,0 @@
-[submodule "mddev"]
-	path = mddev
-	url = git@github.com:tapule/mddev.git
-	ignore = dirty
