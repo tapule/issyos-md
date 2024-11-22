@@ -63,25 +63,21 @@ LDFLAGS  = -T smd/smd.ld -nostdlib
 EXFLAGS  =
 
 # Sources
-CSRC  = $(wildcard src/*.c)
-# CSRC += $(wildcard src/man/*.c)
-# CSRC += $(wildcard src/sys/*.c)
-SSRC  = $(wildcard src/*.s)
-SSRC += $(wildcard res/*.s)
+CSRC  = $(shell find src/ -type f -name '*.c')
+# SSRC  = $(shell find src/ -type f -name '*.s')
 
-# Resources
-# TODO: Include resources
-RSRC  = $(wildcard res/*.c)
+# Assets
+ASSSRC  = $(shell find build/assets/ -type f -name '*.c')
 
 # Objets files
 OBJS    = $(CSRC:.c=.o)
-OBJS   += $(SSRC:.s=.o)
-OBJS   += $(RSRC:.c=.o)
-OUTOBJS = $(addprefix obj/, $(OBJS))
+#OBJS   += $(SSRC:.s=.o)
+OBJS   += $(ASSSRC:.c=.o)
+OUTOBJS = $(addprefix build/obj/, $(OBJS))
 
 # ASM listings
 ASM    = $(CSRC:.c=.lst)
-OUTASM = $(addprefix obj/, $(ASM))
+OUTASM = $(addprefix build/obj/, $(ASM))
 
 .PHONY: all release asm debug
 
@@ -92,11 +88,11 @@ release: EXFLAGS  = -O3 -fno-web -fno-gcse -fno-unit-at-a-time -fshort-enums
 release: EXFLAGS += -fomit-frame-pointer -flto -fuse-linker-plugin
 release: EXFLAGS += -fno-unwind-tables -DNDEBUG
 # release: EXFLAGS += -Wno-shift-negative-value -Wno-main -Wno-unused-parameter -fno-builtin
-release: bin/rom.bin obj/symbol.txt
+release: build/bin/rom.bin build/obj/symbol.txt
 
 # Debug target, enables GDB tracing for Blastem, GensKMod, etc.
 debug: EXFLAGS = -g -Og -DDEBUG
-debug: bin/rom.bin obj/symbol.txt
+debug: build/bin/rom.bin build/obj/symbol.txt
 
 # ASM output target. Generates asm listings
 asm: EXFLAGS  = -O3 -fno-web -fno-gcse -fno-unit-at-a-time -fshort-enums
@@ -104,30 +100,30 @@ asm: EXFLAGS += -fomit-frame-pointer -fuse-linker-plugin
 asm: EXFLAGS += -fno-unwind-tables -DNDEBUG
 asm: $(OUTASM)
 
-bin/rom.elf: $(OUTOBJS)
+build/bin/rom.elf: $(OUTOBJS)
 	@echo "$(COLOR_GREEN)>> Building ELF...$(COLOR_RESET)"
 	@mkdir -p $(dir $@)
 	$(CC) -o $@ $(LDFLAGS) $(OUTOBJS) $(LIBS)
 
-bin/rom.bin: bin/rom.elf
+build/bin/rom.bin: build/bin/rom.elf
 	@echo "$(COLOR_GREEN)>> Stripping ELF header...$(COLOR_RESET)"
 	@mkdir -p $(dir $@)
-	@$(OBJC) -O binary $< bin/unpad.bin
+	@$(OBJC) -O binary $< build/bin/unpad.bin
 	@echo "$(COLOR_GREEN)>> Padding rom file...$(COLOR_RESET)"
-	@dd if=bin/unpad.bin of=$@ bs=8192 conv=sync
-	@rm -f bin/unpad.bin
+	@dd if=build/bin/unpad.bin of=$@ bs=8192 conv=sync
+	@rm -f build/bin/unpad.bin
 
-obj/%.o: %.c
+build/obj/%.o: %.c
 	@echo "CC $<"
 	@mkdir -p $(dir $@)
 	@$(CC) $(CCFLAGS) $(EXFLAGS) $(INCS) -c $< -o $@
 
-obj/%.o: %.s
+build/obj/%.o: %.s
 	@echo "AS $<"
 	@mkdir -p $(dir $@)
 	@$(AS) $(ASFLAGS) $< -o $@
 
-obj/%.lst: %.c
+build/obj/%.lst: %.c
 	@echo "$(COLOR_GREEN)>> Exporting ASM listings...$(COLOR_RESET)"
 	@mkdir -p $(dir $@)
 #	@$(CC) $(CCFLAGS) $(EXFLAGS) $(INCS) -S -c $< -o $@
@@ -136,23 +132,23 @@ obj/%.lst: %.c
 # This generates a symbol table that is very helpful in debugging crashes,
 # even with an optimized release build!
 # Cross reference symbol.txt with the addresses displayed in the crash handler
-obj/symbol.txt: bin/rom.bin
+build/obj/symbol.txt: build/bin/rom.bin
 	@echo "$(COLOR_GREEN)>> Exporting symbol table...$(COLOR_RESET)"
-	$(NM) --plugin=$(PLUGIN)/$(LTO_SO) -n bin/rom.elf > obj/symbol.txt
+	$(NM) --plugin=$(PLUGIN)/$(LTO_SO) -n build/bin/rom.elf > build/obj/symbol.txt
 
 .PHONY: run drun clean
 
 run: release
 	@echo "$(COLOR_YELLOW)> Running...$(COLOR_RESET)"
-	@$(BLASTEM) bin/rom.bin
+	@$(BLASTEM) build/bin/rom.bin
 
 drun: debug
 	@echo "$(COLOR_GREEN)> Running debugger...$(COLOR_RESET)"
-#	@$(GDB) -ex "target remote | $(BLASTEM) bin/rom.bin -D" bin/rom.elf
-#	@gdbgui --gdb-cmd="$(GDB) -ex \"target remote | $(BLASTEM) bin/rom.bin -D\" bin/rom.elf" bin/rom.elf
-	@mame megadriv -debug -cart bin/rom.bin
+#	@$(GDB) -ex "target remote | $(BLASTEM) build/bin/rom.bin -D" build/bin/rom.elf
+#	@gdbgui --gdb-cmd="$(GDB) -ex \"target remote | $(BLASTEM) build/bin/rom.bin -D\" build/bin/rom.elf" build/bin/rom.elf
+	@mame megadriv -debug -cart build/bin/rom.bin
 
 clean:
 	@echo "$(COLOR_MAGENTA)> Cleaning project...$(COLOR_RESET)"
-	@rm -rf obj
-	@rm -f bin/rom.elf bin/unpad.bin bin/rom.bin
+	@rm -rf build/obj
+	@rm -f build/bin/rom.elf build/bin/unpad.bin build/bin/rom.bin

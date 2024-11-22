@@ -14,7 +14,7 @@
 #include "game.h"
 #include "smd.h"
 #include "vram.h"
-#include "../res/res.h"
+#include "../build/assets/res.h"
 
 void game_load_resources(void)
 {
