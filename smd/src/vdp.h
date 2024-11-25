@@ -104,13 +104,13 @@ extern "C" {
  * \brief           Default planes start address in VRAM
  */
 #ifndef SMD_VDP_PLANE_A_ADDR
-#define SMD_VDP_PLANE_A_ADDR (0xC000)
+    #define SMD_VDP_PLANE_A_ADDR (0xC000)
 #endif
 #ifndef SMD_VDP_PLANE_B_ADDR
-#define SMD_VDP_PLANE_B_ADDR (0xE000)
+    #define SMD_VDP_PLANE_B_ADDR (0xE000)
 #endif
 #ifndef SMD_VDP_PLANE_W_ADDR
-#define SMD_VDP_PLANE_W_ADDR (0xD000)
+    #define SMD_VDP_PLANE_W_ADDR (0xD000)
 #endif
 #define SMD_PLANE_A SMD_VDP_PLANE_A_ADDR
 #define SMD_PLANE_B SMD_VDP_PLANE_B_ADDR
@@ -120,17 +120,17 @@ extern "C" {
  * \brief           Default sprite and horizontal scroll tables address in VRAM
  */
 #ifndef SMD_VDP_SPRITE_TABLE_ADDR
-#define SMD_VDP_SPRITE_TABLE_ADDR   (0xFC00)
+    #define SMD_VDP_SPRITE_TABLE_ADDR   (0xFC00)
 #endif
 #ifndef SMD_VDP_HSCROLL_TABLE_ADDR
-#define SMD_VDP_HSCROLL_TABLE_ADDR  (0xF800)
+    #define SMD_VDP_HSCROLL_TABLE_ADDR  (0xF800)
 #endif
 
 /**
  * \brief           Default plane sizes in tiles
  */
 #ifndef SMD_VDP_PLANE_SIZE
-#define SMD_VDP_PLANE_SIZE SMD_VDP_PLANE_SIZE_64X32
+    #define SMD_VDP_PLANE_SIZE SMD_VDP_PLANE_SIZE_64X32
 #endif
 #define SMD_VDP_PLANE_WIDTH  (((SMD_VDP_PLANE_SIZE & 0x03) << 5) + 32)
 #define SMD_VDP_PLANE_HEIGTH (((SMD_VDP_PLANE_SIZE & 0x30) << 1) + 32)
@@ -140,10 +140,10 @@ extern "C" {
  * \brief           Default horizontal and vertical planes scroll mode
  */
 #ifndef SMD_VDP_HSCROLL_MODE
-#define SMD_VDP_HSCROLL_MODE SMD_VDP_HSCROLL_TILE
+    #define SMD_VDP_HSCROLL_MODE SMD_VDP_HSCROLL_TILE
 #endif
 #ifndef SMD_VDP_VSCROLL_MODE
-#define SMD_VDP_VSCROLL_MODE SMD_VDP_VSCROLL_PLANE
+    #define SMD_VDP_VSCROLL_MODE SMD_VDP_VSCROLL_PLANE
 #endif
 
 /**

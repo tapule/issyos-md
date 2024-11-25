@@ -32,7 +32,6 @@ extern "C" {
  * Controls the initialisation process of the z80 CPU. It reset the z80 and
  * performs an internal RAM clear.
  *
- * CHECKME: Esta anotación tiene sentido en esta versión?
  * \note            This function is called from the boot process so maybe you
  *                  don't need to call it anymore.
  */
@@ -83,13 +82,6 @@ bool smd_z80_is_bus_free(void);
  * is a bit unsafe if you don't manage the bus request/release in advance.
  */
 void smd_z80_data_load(const uint8_t *restrict src, const uint16_t dest, uint16_t size);
-
-/**
- * \brief           Load a new program on the z80 and start running it.
- * \param[in]       src: Pointer to the source program data.
- * \param[in]       size: Size in bytes of our program data.
- */
-// void smd_z80_program_load(const uint8_t *restrict src, uint16_t size);
 
 #ifdef __cplusplus
 }

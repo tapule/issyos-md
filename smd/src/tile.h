@@ -22,8 +22,6 @@
  * https://blog.bigevilcorporation.co.uk/2012/03/23/sega-megadrive-4-hello-world
  */
 
-/* CHECKME: ¿Porqué no hay funciones que usen la cola dma o un parámetro defer? */
-
 #ifndef SMD_TILE_H
 #define SMD_TILE_H
 
@@ -50,6 +48,14 @@ void smd_tile_load(const void *restrict src, const uint16_t index, const uint16_
  *                  use it from ROM, make sure to check 128kB boundaries.
  */
 void smd_tile_load_fast(const void *restrict src, const uint16_t index, const uint16_t count);
+
+/**
+ * \brief           Enqueue a DMA tiles load operation to VRAM
+ * \param[in]       src: Source tiles address on RAM/ROM space
+ * \param[in]       index: Destination tile index on VRAM
+ * \param[in]       count: Amount of tiles to load to VRAM
+ */
+void smd_tile_load_enqueue(const void *restrict src, const uint16_t index, const uint16_t count);
 
 #ifdef __cplusplus
 }

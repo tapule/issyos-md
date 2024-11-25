@@ -59,6 +59,11 @@ typedef struct smd_dma_transfer_t {
 } smd_dma_transfer_t;
 
 /**
+ * \brief           Convenient alias for DMA transfer functions
+ */
+typedef void (*smd_dma_transfer_ft)(const smd_dma_transfer_t *restrict transfer);
+
+/**
  * \brief           Initialize the DMA system
  * \note            This function is called from the boot process so maybe you
  *                  don't need to call it anymore unless you want to reset the

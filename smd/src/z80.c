@@ -92,14 +92,3 @@ smd_z80_data_load(const uint8_t *restrict src, const uint16_t dest, uint16_t siz
         --size;
     }
 }
-
-// void smd_z80_program_load(const uint8_t *restrict src, uint16_t size)
-// {
-//     smd_z80_bus_request();
-
-//     /* Copy program to the start of z80 internal RAM */
-//     smd_z80_data_load(src, 0, size);
-
-//     smd_z80_reset();
-//     smd_z80_bus_release();
-// }

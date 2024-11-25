@@ -33,7 +33,6 @@ extern "C" {
 
 /**
  * \brief           Initialise the sound system using the XGM driver
- * CHECKME: Esta anotación tiene sentido en esta versión?
  * \note            This function is called from the boot process so maybe you
  *                  don't need to call it anymore.
  */

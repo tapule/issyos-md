@@ -35,13 +35,9 @@ extern "C" {
 #endif
 
 /**
- * \brief           Initialises the YM2612 sound hardware.
- *
- * Controls the initialisation process of the YM2612.
- *
- * CHECKME: Esta anotación tiene sentido en esta versión?
+ * \brief           Controls the initialisation process of the YM2612 sound hardware.
  * \note            This function is called from the boot process so maybe you
- * don't need to call it anymore.
+ *                  don't need to call it anymore.
  */
 void smd_ym2612_init(void);
 
