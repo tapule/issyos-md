@@ -38,30 +38,29 @@ smd_text_font_set(const uint16_t tileset_index) {
 }
 
 inline void
-smd_text_pal_set(const uint16_t palette) {
-    /* Sets to 0 the palette bits */
-    /* CHECKME: Si palette fuera un enum no sería necesario hacer 0 en estos bits */
-    smd_text_base_cell &= ~(0x03 << 13);
+smd_text_pal_set(const smd_pal_id_t pal_id) {
     /* Move new palette bits to its positions */
-    smd_text_base_cell |= (0x03 & palette) << 13;
+    smd_text_base_cell |= pal_id << 13;
 }
 
 inline void
-smd_text_priority_set(const uint16_t priority) {
-    /* Sets to 0 the priority bit */
+smd_text_priority_enable(void) {
+    smd_text_base_cell |= (0x01 << 15);
+}
+
+inline void
+smd_text_priority_disable(void) {
     smd_text_base_cell &= ~(0x01 << 15);
-    /* Move new priority bit to its position */
-    smd_text_base_cell |= (0x01 & priority) << 15;
 }
 
 uint16_t
-smd_text_render(const char *restrict str, uint16_t *restrict dest) {
+smd_text_write(const char *restrict str, uint16_t *restrict buf) {
     uint16_t count;
 
     count = 0;
     while (*str != '\0') {
-        *dest = smd_text_base_cell + (smd_text_tileset_index + *str - 32);
-        ++dest;
+        *buf = smd_text_base_cell + (smd_text_tileset_index + (*str - 32));
+        ++buf;
         ++str;
         ++count;
     }
@@ -70,13 +69,13 @@ smd_text_render(const char *restrict str, uint16_t *restrict dest) {
 }
 
 uint16_t
-smd_text_nrender(const char *restrict str, uint16_t *restrict dest, const uint16_t count) {
+smd_text_nwrite(const char *restrict str, uint16_t *restrict buf, const uint16_t count) {
     uint16_t i;
 
     i = count;
     while ((*str != '\0') && (i > 0)) {
-        *dest = smd_text_base_cell + (smd_text_tileset_index + (*str - 32));
-        ++dest;
+        *buf = smd_text_base_cell + (smd_text_tileset_index + (*str - 32));
+        ++buf;
         ++str;
         --i;
     }

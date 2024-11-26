@@ -71,19 +71,19 @@ void game_run(void)
             case 0:
                 ++sfx;
                 smd_kdebug_alert("Boton A: Start sound 0");
-                size = smd_text_render("SOUND 0 PLAYING", text);
+                size = smd_text_write("SOUND 0 PLAYING", text);
                 smd_xgm_sfx_play_auto(64, 15);
                 break;
             case 1:
                 ++sfx;
                 smd_kdebug_alert("Boton A: Start sound 1");
-                size = smd_text_render("SOUND 1 PLAYING", text);
+                size = smd_text_write("SOUND 1 PLAYING", text);
                 smd_xgm_sfx_play_auto(65, 15);
                 break;
             case 2:
                 sfx = 0;
                 smd_kdebug_alert("Boton A: Start sound 0");
-                size = smd_text_render("SOUND 2 PLAYING", text);
+                size = smd_text_write("SOUND 2 PLAYING", text);
                 smd_xgm_sfx_play_auto(66, 15);
                 break;
             }
@@ -97,13 +97,13 @@ void game_run(void)
             {
             // Pause
             case 0:
-                size = smd_text_render("MUSIC PAUSE   ", text);
+                size = smd_text_write("MUSIC PAUSE   ", text);
                 smd_xgm_music_pause();
                 status = 1;
                 break;
             // Resume
             case 1:
-                size = smd_text_render("MUSIC RESUME   ", text);
+                size = smd_text_write("MUSIC RESUME   ", text);
                 smd_xgm_music_resume();
                 status = 0;
                 break;
@@ -112,15 +112,15 @@ void game_run(void)
                 switch (song)
                 {
                 case 0:
-                    size = smd_text_render("MUSIC SONG 0", text);
+                    size = smd_text_write("MUSIC SONG 0", text);
                     smd_xgm_music_play(mus_credits);
                     break;
                 case 1:
-                    size = smd_text_render("MUSIC SONG 1", text);
+                    size = smd_text_write("MUSIC SONG 1", text);
                     smd_xgm_music_play(mus_demo);
                     break;
                 case 2:
-                    size = smd_text_render("MUSIC SONG 2", text);
+                    size = smd_text_write("MUSIC SONG 2", text);
                     smd_xgm_music_play(mus_caves);
                     break;
                 }
@@ -138,7 +138,7 @@ void game_run(void)
             {
                 song = 0;
             }
-            size = smd_text_render("MUSIC STOP  ", text);
+            size = smd_text_write("MUSIC STOP  ", text);
             smd_plane_hline_draw( SMD_PLANE_A, text, 2, 6, size, false);
         }
 

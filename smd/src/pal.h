@@ -39,18 +39,20 @@ extern "C" {
 /**
  * \brief           Palette identifiers
  */
-#define SMD_PAL_0       (0) /* Palette 0 - Colors 0..15 */
-#define SMD_PAL_1       (1) /* Palette 1 - Colors 16..31 */
-#define SMD_PAL_2       (2) /* Palette 2 - Colors 32..47 */
-#define SMD_PAL_3       (3) /* Palette 3 - Colors 48..64 */
+typedef enum smd_pal_id_t {
+    SMD_PAL_0 = 0,              /**< Palette 0 - Colors 0..15 */
+    SMD_PAL_1 = 1,              /**< Palette 1 - Colors 16..31 */
+    SMD_PAL_2 = 2,              /**< Palette 2 - Colors 32..47 */
+    SMD_PAL_3 = 3               /**< Palette 3 - Colors 48..64 */
+} smd_pal_id_t;
 
 /**
  * \brief            Palettes CRAM starting indexes
  */
-#define SMD_PAL_0_INDEX (0)  /* Colors 0..15 */
-#define SMD_PAL_1_INDEX (16) /* Colors 16..31 */
-#define SMD_PAL_2_INDEX (32) /* Colors 32..47 */
-#define SMD_PAL_3_INDEX (48) /* Colors 48..64 */
+#define SMD_PAL_0_INDEX (0)     /* Colors 0..15 */
+#define SMD_PAL_1_INDEX (16)    /* Colors 16..31 */
+#define SMD_PAL_2_INDEX (32)    /* Colors 32..47 */
+#define SMD_PAL_3_INDEX (48)    /* Colors 48..64 */
 
 /**
  * \brief           Initialize the palette system

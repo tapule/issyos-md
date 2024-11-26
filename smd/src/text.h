@@ -6,8 +6,6 @@
  * Github: https://github.com/tapule
  */
 
-/* TODO: Esta API debería ser revisada y mejorada. La idea es buena, pero no se ha diseñado del todo bien */
-
 /**
  * \file            text.h
  * \brief           Text rendering functions
@@ -25,6 +23,7 @@
 #define SMD_TEXT_H
 
 #include <stdint.h>
+#include "pal.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,48 +37,42 @@ void smd_text_font_set(const uint16_t tileset_index);
 
 /**
  * \brief           Set the palette to use for text rendering
- * \param[in]       palette: CRam palette index (0..3) to use
- * FIXME: Esto debería ser un enum definido en pal.h
+ * \param[in]       pal_id: CRam palette index (0..3) to use
  */
-void smd_text_pal_set(const uint16_t palette);
+void smd_text_pal_set(const smd_pal_id_t pal_id);
 
 /**
- * \brief           Set the drawing priority to use for text rendering
- * \param           priority: Drawing priority (0 low priority, 1 high priority)
+ * \brief           Enable the high text rendering drawing priority
  */
-/*
- * CHECKME: La prioridad solamente puede ser alta o baja, no tiene sentido declarar
- * la función de esta manera. Seguramente sería mejor declarar:
- *  smd_text_priority_enable(void)
- *  smd_text_priority_disable(void)
- * O algo similar.
+void smd_text_priority_enable(void);
+
+/**
+ * \brief           Disable the high text rendering drawing priority
  */
-void smd_text_priority_set(const uint16_t priority);
+void smd_text_priority_disable(void);
 
 /**
  * \brief           Writes an ASCII string as font tiles in a buffer using the
  *                  current text configuration.
  * \param           str: Source ASCII string
- * \param           dest: Destination buffer
+ * \param           buf: Destination buffer
  * \return          Total written cells (glyphs) in the buffer
  * \note            Destination buffer must have enough space. It writes until
  *                  the null character ('\0') is found in the source string.
  */
-/* CHECKME: Render?? No renderiza nada */
-uint16_t smd_text_render(const char *restrict str, uint16_t *restrict dest);
+uint16_t smd_text_write(const char *restrict str, uint16_t *restrict buf);
 
 /**
  * \brief           Writes up to count ASCII characters from source string as
  *                  font tiles in a buffer using the current text configuration.
  * \param           str: Source ASCII string
- * \param           dest: Destination buffer
+ * \param           buf: Destination buffer
  * \param           count: Number of characters to wirte
  * \return          Total written cells (glyphs) in the buffer
  * \note            Destination buffer must have enough space. It writes until
  *                  the null character ('\0') is found in the source string.
  */
-/* CHECKME: Render?? No renderiza nada */
-uint16_t smd_text_nrender(const char *restrict str, uint16_t *restrict dest, const uint16_t count);
+uint16_t smd_text_nwrite(const char *restrict str, uint16_t *restrict buf, const uint16_t count);
 
 #ifdef __cplusplus
 }
