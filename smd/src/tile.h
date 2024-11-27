@@ -31,6 +31,20 @@
 extern "C" {
 #endif
 
+/*
+    CHECKME: Maybe we can simplify more this unit using IoC
+        typedef struct smd_tile_operation {
+            void *src;
+            uint16_t index;
+            uint16_t count;
+        }
+        void smd_tile_load(const smd_dma_transfer_ft transfer_fn, const smd_tile_operation *restrict operation );
+    Where transfer_fns are defined in the dma unit:
+        smd_dma_transfer
+        smd_dma_transfer_fast
+        smd_dma_transfer_enqueue
+*/
+
 /**
  * \brief           Load tiles to VRAM using DMA
  * \param[in]       src: Source tiles address on RAM/ROM space

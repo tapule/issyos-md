@@ -45,7 +45,7 @@ extern "C" {
  *          smd_plane_hline_draw_fast(plane, *tiles, x, y, length);
  *          -> smd_plane_row_draw(smd_dma_func, plane, *tiles, x, y, length);
  * CHECKME: Maybe we can use an struct in drawing functions instead of so much params
- *          struct primitive {
+ *          struct smd_plane_operation {
  *              plane
  *              *tiles
  *              point (vect2d_t)
@@ -55,9 +55,9 @@ extern "C" {
  *              }
  *              height
  *          }
- *          -> smd_plane_row_draw(smd_dma_func, *primitive);
+ *          -> smd_plane_row_draw(smd_dma_func, *smd_plane_operation);
  *              smd_plane_hline_draw(SMD_PLANE_A, text, 2, 4, size, false);
- *              smd_plane_row_draw(smd_dma_vram_transfer, &(primitive) {
+ *              smd_plane_row_draw(smd_dma_vram_transfer, &(smd_plane_operation) {
  *                  .plane = SMD_PLANE_A,
  *                  .tiles = text,
  *                  .point.x = 2,

@@ -154,18 +154,18 @@ extern const smd_sys_header_t smd_sys_header;
  *  Level 2: External interrupt
  * This function enables all of them
  */
-void smd_ints_enable(void);
+void smd_sys_ints_enable(void);
 
 /**
  * \brief           Disable system interrupts
  */
-void smd_ints_disable(void);
+void smd_sys_ints_disable(void);
 
 /**
  * \brief           Get interrupts status
  * \return          true if interrupts are enabled, false otherwise
  */
-bool smd_ints_status(void);
+bool smd_sys_ints_status(void);
 
 /**
  * \brief           Check if the system is using PAL or NTSC video mode
@@ -175,7 +175,7 @@ bool smd_ints_status(void);
  *
  * \return          true if the system is in PAL mode, otherwise it is in NTSC
  */
-bool smd_is_pal(void);
+bool smd_sys_is_pal(void);
 
 /**
  * \brief           Check if the system is running in Japanese (Domestic) mode
@@ -186,7 +186,7 @@ bool smd_is_pal(void);
  * \return          true if the system is running in Japanese mode, otherwise it
  *                  is in US/European mode
  */
-bool smd_is_japanese(void);
+bool smd_sys_is_japanese(void);
 
 #ifdef __cplusplus
 }

@@ -41,10 +41,10 @@ void game_load_resources(void)
 
 void game_init(void)
 {
-    smd_ints_disable();
+    smd_sys_ints_disable();
     game_load_resources();
     smd_vdp_display_enable();
-    smd_ints_enable();
+    smd_sys_ints_enable();
 }
 
 void game_run(void)

@@ -40,7 +40,7 @@ extern int main(void);
 /**
  * \brief           Current status of interrups (true: enabled, false: disabled)
  */
-static bool smd_ints_status_flag;
+static bool smd_sys_ints_status_flag;
 
 static inline void smd_sys_boot(void);
 
@@ -262,7 +262,7 @@ smd_sys_boot(void) {
 }
 
 inline void
-smd_ints_enable(void) {
+smd_sys_ints_enable(void) {
     /*
      * The three least significant bits of the high byte of sr (Status register)
      * are used as interrupt mask:
@@ -275,26 +275,26 @@ smd_ints_enable(void) {
      *      higher that level 2 (3 to 7) for example.
      */
     __asm__ volatile("\tandi.w	#0xF8FF, %sr\n");
-    smd_ints_status_flag = true;
+    smd_sys_ints_status_flag = true;
 }
 
 inline void
-smd_ints_disable(void) {
+smd_sys_ints_disable(void) {
     __asm__ volatile("\tori.w	#0x700, %sr\n");
-    smd_ints_status_flag = false;
+    smd_sys_ints_status_flag = false;
 }
 
 inline bool
-smd_ints_status(void) {
-    return smd_ints_status_flag;
+smd_sys_ints_status(void) {
+    return smd_sys_ints_status_flag;
 }
 
 inline bool
-smd_is_pal(void) {
+smd_sys_is_pal(void) {
     return *SMD_VERSION_PORT & SMD_VERSION_PORT_VMOD_FLAG;
 }
 
 inline bool
-smd_is_japanese(void) {
+smd_sys_is_japanese(void) {
     return !(*SMD_VERSION_PORT & SMD_VERSION_PORT_MOD_FLAG);
 }

@@ -54,6 +54,21 @@ uint16_t smd_rnd_seed_get(void);
  */
 uint16_t smd_rnd_get(void);
 
+/*
+    TODO: With rng there are some utility functions that we can implement
+    uint16_t rnd_get_max(uint16_t max): Get a random number in the range [0..max) (rnd_get() % max)
+    uint16_t rnd_get_range(uint16_t min, max): Get a random number in the range [min..max] (min + rnd_get(max - min))
+    bool rnd_get_bool(): Get a random boolean ((rnd_get() & 1) == 1)
+    int16_t rnd_get_sign(): Get a random signt (rnd_get_bool() ? 1 : -1)
+    uint16_t rnd_choose2(uint16_t a, b): Choose between a and b randomly (rnd_get(2) ? b : a)
+    uint16_t rnd_choose3(uint16_t a, b, c): (switch rnd_get(3) { 0: a, 1: b, 3: default: c})
+        rnd_choose4(uint16_t a, b, c, d), rnd_choose5(uint16_t a, b, c, d, e), etc.
+    bool rnd_chance(uint8_t percent): Get a random number with a percent probability (???)
+    ------------------
+    fix32_t rnd_get_fix32(): Generate a random fixed num??
+    fix16_t rnd_get_fix16(): Generate a random fixed num??
+*/
+
 #ifdef __cplusplus
 }
 #endif
