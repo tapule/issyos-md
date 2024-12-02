@@ -29,16 +29,13 @@
 #define SMD_PLANE_H
 
 #include <stdint.h>
+#include "vdp.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /*
- * CHECKME: Why there is no enum for planes in this unit???
- * CHECKME: Why there is no typedef for cells??
- * CHECKME: Some of these functions should draw cells instead of tiles. This will
- *          allow us to use from simple tile indexes to full configured cells
  * CHECKME: Maybe we can do IOC in draw functions using a dma concrete function
  *          instead of having one function for each case, for example:
  *          smd_plane_hline_draw(plane, *tiles, x, y, length, defer);
@@ -47,7 +44,10 @@ extern "C" {
  * CHECKME: Maybe we can use an struct in drawing functions instead of so much params
  *          struct smd_plane_operation {
  *              plane
- *              *tiles
+ *              union {
+ *                  cell
+ *                  *cells
+ *              }
  *              point (vect2d_t)
  *              union {
  *                  length
@@ -67,6 +67,27 @@ extern "C" {
  */
 
 /**
+ * \brief           Availables planes in the VDP
+ * \note            Map each plane with its starting address in VRAM which let us
+ *                  write directly in each plane
+ */
+typedef enum smd_plane_t {
+    SMD_PLANE_A = SMD_VDP_PLANE_A_ADDR,
+    SMD_PLANE_B = SMD_VDP_PLANE_B_ADDR,
+    SMD_PLANE_W = SMD_VDP_PLANE_W_ADDR
+} smd_plane_t;
+
+typedef uint16_t smd_plane_cell;
+
+typedef struct smd_plane_cell_desc_t {
+    uint16_t tile_index;
+    uint8_t palette;
+    uint8_t h_flip;
+    uint8_t v_flip;
+    uint8_t priority;
+} smd_plane_cell_desc_t;
+
+/**
  * \brief           Configure a plane cell tile with all its draw properties
  * \param[in]       tile_index: VRam index of tile to drawn
  * \param[in]       palette: CRam palette index (0..3)
@@ -75,8 +96,10 @@ extern "C" {
  * \param[in]       priority: Drawing priority (0 low priority, 1 high priority)
  * \return          Plane cell with all the properties configured in
  */
-uint16_t smd_plane_cell_config(const uint16_t tile_index, const uint16_t palette, const uint16_t h_flip,
-                           const uint16_t v_flip, const uint16_t priority);
+//uint16_t smd_plane_cell_config(const uint16_t tile_index, const uint16_t palette, const uint16_t h_flip,
+//                           const uint16_t v_flip, const uint16_t priority);
+smd_plane_cell smd_plane_cell_make(const smd_plane_cell_desc_t *restrict cell_desc);
+
 
 /**
  * \brief           Clear an entire VDP plane
@@ -85,22 +108,7 @@ uint16_t smd_plane_cell_config(const uint16_t tile_index, const uint16_t palette
  *                  with the display off or in the vertical blank, otherwise you
  *                  can get some glitches.
  */
-void smd_plane_clear(const uint16_t plane);
-
-/**
- * \brief           Draw a rectangle of tiles in a concrete position of a plane
- * \param[in]       plane: Destination plane where tiles should be drawn
- * \param[in]       tile: Tile index or a full cell tile config to use as fill value
- * \param[in]       x: Plane horizontal position in cells
- * \param[in]       y: Plane vertical position in cells
- * \param[in]       width: Rectangle width in tiles
- * \param[in]       height: Rectangle height in tiles
- * \note            This function draws the plane immediately. Use it wisely
- *                  with the display off or in the vertical blank, otherwise you
- *                  can get some glitches.
- */
-void smd_plane_rect_fill(const uint16_t plane, const uint16_t tile, const uint16_t x, const uint16_t y,
-                     const uint16_t width, const uint16_t height);
+void smd_plane_clear(const smd_plane_t plane);
 
 /**
  * \brief           Draw a tile in a concrete position of a plane
@@ -112,7 +120,7 @@ void smd_plane_rect_fill(const uint16_t plane, const uint16_t tile, const uint16
  *                  the display off or in the vertical blank, otherwise you can
  *                  get some glitches.
  */
-void smd_plane_tile_draw(const uint16_t plane, const uint16_t tile, const uint16_t x, const uint16_t y);
+void smd_plane_cell_draw(const smd_plane_t plane, const smd_plane_cell cell, const uint16_t x, const uint16_t y);
 
 /**
  * \brief           Draw a horizontal line of tiles in a concrete position of a plane
@@ -123,8 +131,7 @@ void smd_plane_tile_draw(const uint16_t plane, const uint16_t tile, const uint16
  * \param[in]       length: Line of tiles length
  * \param[in]       defer: True to enqueue the operation, false to do it directly
  */
-/* CHECKME: smd_plane_hline_draw -> smd_plane_row_draw */
-void smd_plane_hline_draw(const uint16_t plane, const uint16_t *restrict tiles, const uint16_t x, const uint16_t y,
+void smd_plane_row_draw(const smd_plane_t plane, const smd_plane_cell *restrict cells, const uint16_t x, const uint16_t y,
                       const uint16_t length, const bool defer);
 
 /**
@@ -140,7 +147,7 @@ void smd_plane_hline_draw(const uint16_t plane, const uint16_t *restrict tiles, 
  *                  off or in the vertical blank, otherwise you will get some
  *                  glitches.
  */
-void smd_plane_hline_draw_fast(const uint16_t plane, const uint16_t *restrict tiles, const uint16_t x, const uint16_t y,
+void smd_plane_row_draw_fast(const smd_plane_t plane, const smd_plane_cell *restrict cells, const uint16_t x, const uint16_t y,
                            const uint16_t length);
 
 /**
@@ -152,8 +159,7 @@ void smd_plane_hline_draw_fast(const uint16_t plane, const uint16_t *restrict ti
  * \param[in]       length: Line of tiles length
  * \param[in]       defer: True to enqueue the operation, false to do it directly
  */
-/* CHECKME: smd_plane_vline_draw -> smd_plane_column_draw */
-void smd_plane_vline_draw(const uint16_t plane, const uint16_t *restrict tiles, const uint16_t x, const uint16_t y,
+void smd_plane_column_draw(const smd_plane_t plane, const smd_plane_cell *restrict cells, const uint16_t x, const uint16_t y,
                       const uint16_t length, const bool defer);
 
 /**
@@ -169,7 +175,7 @@ void smd_plane_vline_draw(const uint16_t plane, const uint16_t *restrict tiles, 
  *                  off or in the vertical blank, otherwise you will get some
  *                  glitches.
  */
-void smd_plane_vline_draw_fast(const uint16_t plane, const uint16_t *restrict tiles, const uint16_t x, const uint16_t y,
+void smd_plane_column_draw_fast(const smd_plane_t plane, const smd_plane_cell *restrict cells, const uint16_t x, const uint16_t y,
                            const uint16_t length);
 
 /**
@@ -182,7 +188,7 @@ void smd_plane_vline_draw_fast(const uint16_t plane, const uint16_t *restrict ti
  * \param[in]       height: Rectangle height in tiles
  * \param[in]       defer: True to enqueue the operation, false to do it directly
  */
-void smd_plane_rect_draw(const uint16_t plane, const uint16_t *restrict tiles, const uint16_t x, const uint16_t y,
+void smd_plane_rect_draw(const smd_plane_t plane, const smd_plane_cell *restrict cells, const uint16_t x, const uint16_t y,
                      const uint16_t width, const uint16_t height, const bool defer);
 
 /**
@@ -199,8 +205,24 @@ void smd_plane_rect_draw(const uint16_t plane, const uint16_t *restrict tiles, c
  *                  off or in the vertical blank, otherwise you will get some
  *                  glitches.
  */
-void smd_plane_rect_draw_fast(const uint16_t plane, const uint16_t *restrict tiles, const uint16_t x, const uint16_t y,
+void smd_plane_rect_draw_fast(const smd_plane_t plane, const smd_plane_cell *restrict cells, const uint16_t x, const uint16_t y,
                           const uint16_t width, const uint16_t height);
+
+/**
+ * \brief           Draw a rectangle of tiles in a concrete position of a plane
+ * \param[in]       plane: Destination plane where tiles should be drawn
+ * \param[in]       tile: Tile index or a full cell tile config to use as fill value
+ * \param[in]       x: Plane horizontal position in cells
+ * \param[in]       y: Plane vertical position in cells
+ * \param[in]       width: Rectangle width in tiles
+ * \param[in]       height: Rectangle height in tiles
+ * \note            This function draws the plane immediately. Use it wisely
+ *                  with the display off or in the vertical blank, otherwise you
+ *                  can get some glitches.
+ */
+void smd_plane_rect_fill(const smd_plane_t plane, const smd_plane_cell cell, const uint16_t x, const uint16_t y,
+                     const uint16_t width, const uint16_t height);
+
 
 #ifdef __cplusplus
 }

@@ -26,7 +26,7 @@ void game_load_resources(void)
     smd_pal_primary_set(SMD_PAL_1_INDEX, RES_PAL_COLLECTIBLES_SIZE, res_pal_collectibles);
 
     /* System font */
-    smd_tile_load_fast(res_font_sys, VRAM_INDEX_FONT, RES_FONT_SYS_SIZE);
+    smd_tile_load(smd_dma_transfer_fast, res_font_sys, VRAM_INDEX_FONT, RES_FONT_SYS_SIZE);
     smd_text_font_set(VRAM_INDEX_FONT);
     smd_text_pal_set(SMD_PAL_0);
 
@@ -87,7 +87,7 @@ void game_run(void)
                 smd_xgm_sfx_play_auto(66, 15);
                 break;
             }
-            smd_plane_hline_draw(SMD_PLANE_A, text, 2, 4, size, false);
+            smd_plane_row_draw(SMD_PLANE_A, text, 2, 4, size, false);
         }
         /* Check press button  */
         if (smd_pad_btn_pressed(SMD_PAD_1, SMD_PAD_BTN_B))
@@ -127,7 +127,7 @@ void game_run(void)
                 status = 0;
                 break;
             }
-            smd_plane_hline_draw( SMD_PLANE_A, text, 2, 6, size, false);
+            smd_plane_row_draw( SMD_PLANE_A, text, 2, 6, size, false);
         }
         if (smd_pad_btn_pressed(SMD_PAD_1, SMD_PAD_BTN_C))
         {
@@ -139,7 +139,7 @@ void game_run(void)
                 song = 0;
             }
             size = smd_text_write("MUSIC STOP  ", text);
-            smd_plane_hline_draw( SMD_PLANE_A, text, 2, 6, size, false);
+            smd_plane_row_draw( SMD_PLANE_A, text, 2, 6, size, false);
         }
 
         /* Main game body goes here */

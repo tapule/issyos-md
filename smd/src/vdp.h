@@ -112,9 +112,6 @@ extern "C" {
 #ifndef SMD_VDP_PLANE_W_ADDR
     #define SMD_VDP_PLANE_W_ADDR (0xD000)
 #endif
-#define SMD_PLANE_A SMD_VDP_PLANE_A_ADDR
-#define SMD_PLANE_B SMD_VDP_PLANE_B_ADDR
-#define SMD_PLANE_W SMD_VDP_PLANE_W_ADDR
 
 /**
  * \brief           Default sprite and horizontal scroll tables address in VRAM

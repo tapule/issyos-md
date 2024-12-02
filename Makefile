@@ -126,8 +126,8 @@ build/obj/%.o: %.s
 build/obj/%.lst: %.c
 	@echo "$(COLOR_GREEN)>> Exporting ASM listings...$(COLOR_RESET)"
 	@mkdir -p $(dir $@)
-#	@$(CC) $(CCFLAGS) $(EXFLAGS) $(INCS) -S -c $< -o $@
-	@$(CC) $(CCFLAGS) $(EXFLAGS) $(INCS) -S -fverbose-asm -c $< -o $@
+	@$(CC) $(CCFLAGS) $(EXFLAGS) $(INCS) -S -c $< -o $@
+#	@$(CC) $(CCFLAGS) $(EXFLAGS) $(INCS) -S -fverbose-asm -c $< -o $@
 
 # This generates a symbol table that is very helpful in debugging crashes,
 # even with an optimized release build!

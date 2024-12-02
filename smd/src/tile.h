@@ -26,50 +26,33 @@
 #define SMD_TILE_H
 
 #include <stdint.h>
+#include "dma.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /*
-    CHECKME: Maybe we can simplify more this unit using IoC
-        typedef struct smd_tile_operation {
+    CHECKME: Maybe we can simplify more this unit using a struct for tile load operations
+        typedef struct smd_tile_load_desc {
             void *src;
             uint16_t index;
             uint16_t count;
-        }
-        void smd_tile_load(const smd_dma_transfer_ft transfer_fn, const smd_tile_operation *restrict operation );
-    Where transfer_fns are defined in the dma unit:
-        smd_dma_transfer
-        smd_dma_transfer_fast
-        smd_dma_transfer_enqueue
+        } smd_tile_load_desc;
+        void smd_tile_load(const smd_dma_transfer_ft transfer_fn, const smd_tile_operation *restrict op );
 */
 
 /**
  * \brief           Load tiles to VRAM using DMA
+ * \param[in]       dma_func: DMA function to use in the transaction. It must be one of
+ *                      smd_dma_transfer
+ *                      smd_dma_transfer_fast
+ *                      smd_dma_transfer_enqueue
  * \param[in]       src: Source tiles address on RAM/ROM space
  * \param[in]       index: Destination tile index on VRAM
  * \param[in]       count: Amount of tiles to load to VRAM
  */
-void smd_tile_load(const void *restrict src, const uint16_t index, const uint16_t count);
-
-/**
- * \brief           Load tiles to VRAM using DMA without checks
- * \param[in]       src: Source tiles address on RAM/ROM space
- * \param[in]       index: Destination tile index on VRAM
- * \param[in]       count: Amount of tiles to load to VRAM
- * \note            This function is meant to use RAM as tile's data source. To
- *                  use it from ROM, make sure to check 128kB boundaries.
- */
-void smd_tile_load_fast(const void *restrict src, const uint16_t index, const uint16_t count);
-
-/**
- * \brief           Enqueue a DMA tiles load operation to VRAM
- * \param[in]       src: Source tiles address on RAM/ROM space
- * \param[in]       index: Destination tile index on VRAM
- * \param[in]       count: Amount of tiles to load to VRAM
- */
-void smd_tile_load_enqueue(const void *restrict src, const uint16_t index, const uint16_t count);
+void smd_tile_load(const smd_dma_transfer_ft dma_func, const void *restrict src, const uint16_t index, const uint16_t count);
 
 #ifdef __cplusplus
 }
