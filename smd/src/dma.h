@@ -15,6 +15,10 @@
  * of memory (graphics) directly without the CPU's help.
  * DMA operations are faster during the vertical blanking or when the display is
  * disabled.
+ * A DMA transfer queue is provided to group operations and delay them until the
+ * vertical blanking period. When a transfer is queued, no memory copy is
+ * performed, only pointers are saved. Therefore, be aware that you must retain
+ * memory buffers until the queue flush operation is performed.
  *
  * More info:
  * https://www.plutiedev.com/dma-transfer

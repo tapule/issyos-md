@@ -30,45 +30,15 @@
 
 #include <stdint.h>
 #include "vdp.h"
+#include "dma.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*
- * CHECKME: Maybe we can do IOC in draw functions using a dma concrete function
- *          instead of having one function for each case, for example:
- *          smd_plane_hline_draw(plane, *tiles, x, y, length, defer);
- *          smd_plane_hline_draw_fast(plane, *tiles, x, y, length);
- *          -> smd_plane_row_draw(smd_dma_func, plane, *tiles, x, y, length);
- * CHECKME: Maybe we can use an struct in drawing functions instead of so much params
- *          struct smd_plane_operation {
- *              plane
- *              union {
- *                  cell
- *                  *cells
- *              }
- *              point (vect2d_t)
- *              union {
- *                  length
- *                  width
- *              }
- *              height
- *          }
- *          -> smd_plane_row_draw(smd_dma_func, *smd_plane_operation);
- *              smd_plane_hline_draw(SMD_PLANE_A, text, 2, 4, size, false);
- *              smd_plane_row_draw(smd_dma_vram_transfer, &(smd_plane_operation) {
- *                  .plane = SMD_PLANE_A,
- *                  .tiles = text,
- *                  .point.x = 2,
- *                  .point.y = 4,
- *                  .length = size
- *              });
- */
-
 /**
  * \brief           Availables planes in the VDP
- * \note            Map each plane with its starting address in VRAM which let us
+ * \note            Map each plane with its starting address in VRAM which lets us
  *                  write directly in each plane
  */
 typedef enum smd_plane_t {
@@ -77,32 +47,60 @@ typedef enum smd_plane_t {
     SMD_PLANE_W = SMD_VDP_PLANE_W_ADDR
 } smd_plane_t;
 
+/**
+ * \brief           Convenient alias for a complete plane cell
+ */
 typedef uint16_t smd_plane_cell;
 
+/**
+ * \brief           Plane cell drawing properties description
+ */
 typedef struct smd_plane_cell_desc_t {
-    uint16_t tile_index;
-    uint8_t palette;
-    uint8_t h_flip;
-    uint8_t v_flip;
-    uint8_t priority;
+    uint16_t tile_index;        /**< Tile index in VRam to drawn */
+    uint8_t palette;            /**< Palete select */
+    uint8_t h_flip;             /**< Horizontal flip flag */
+    uint8_t v_flip;             /**< Vertical flip flag */
+    uint8_t priority;           /**< Priority flag */
 } smd_plane_cell_desc_t;
 
 /**
- * \brief           Configure a plane cell tile with all its draw properties
- * \param[in]       tile_index: VRam index of tile to drawn
- * \param[in]       palette: CRam palette index (0..3)
- * \param[in]       h_flip: Horizontal flip property (0 no flip, 1 flip horizontally)
- * \param[in]       v_flip: Vertical flip property (0 no flip, 1 flip vertically)
- * \param[in]       priority: Drawing priority (0 low priority, 1 high priority)
- * \return          Plane cell with all the properties configured in
+ * \brief           Plane drawing operation description
  */
-//uint16_t smd_plane_cell_config(const uint16_t tile_index, const uint16_t palette, const uint16_t h_flip,
-//                           const uint16_t v_flip, const uint16_t priority);
-smd_plane_cell smd_plane_cell_make(const smd_plane_cell_desc_t *restrict cell_desc);
-
+typedef struct smd_plane_draw_desc_t {
+    smd_plane_t plane;          /**< Destination drawing plane */
+    /**
+     * \brief           Cell or cells buffer to draw depending on the function
+     */
+    union {
+        smd_plane_cell cell;    /**< Unique cell used in cell_draw and rect_fill */
+        smd_plane_cell *cells;  /**< Cells buffer to draw by other functions */
+    };
+    uint16_t x;                 /**< Plane horizontal drawing position in cells */
+    uint16_t y;                 /**< Plane vertical drawing position in cells */
+    /**
+     * \brief           Sizes of drawing operation
+     */
+    union {
+        uint16_t length;        /**< Row or column drawing length */
+        /**
+         * \brief       Rect drawing dimensions
+         */
+        struct {
+            uint16_t width;     /**< Rect drawing width */
+            uint16_t height;    /**< Rect drawing height */
+        };
+    };
+} smd_plane_draw_desc_t;
 
 /**
- * \brief           Clear an entire VDP plane
+ * \brief           Build a plane cell with all its drawing properties
+ * \param[in]       cell_desc: Cell description data
+ * \return          Plane cell with all the properties configured in
+ */
+smd_plane_cell smd_plane_cell_make(const smd_plane_cell_desc_t *restrict cell_desc);
+
+/**
+ * \brief           Clear an entire VDP plane using DMA
  * \param[in]       plane: Plane to clear
  * \note            This function clears the plane immediately. Use it wisely
  *                  with the display off or in the vertical blank, otherwise you
@@ -111,118 +109,53 @@ smd_plane_cell smd_plane_cell_make(const smd_plane_cell_desc_t *restrict cell_de
 void smd_plane_clear(const smd_plane_t plane);
 
 /**
- * \brief           Draw a tile in a concrete position of a plane
- * \param           plane: Destination plane where the tile should be drawn
- * \param           tile: Tile index or a full cell tile config
- * \param           x: Plane horizontal position in cells
- * \param           y: Plane vertical position in cells
- * \note            This function draws the tile immediately. Use it wisely with
- *                  the display off or in the vertical blank, otherwise you can
- *                  get some glitches.
+ * \brief           Draw a cell in a concrete plane position
+ * \param[in]       draw_desc: Cell drawing operation description
+ * \note            This function draws the cell immediately whitouth dma. Use
+ *                  it wisely with the display off or in the vertical blank,
+ *                  otherwise you can get some glitches.
  */
-void smd_plane_cell_draw(const smd_plane_t plane, const smd_plane_cell cell, const uint16_t x, const uint16_t y);
+void smd_plane_cell_draw(const smd_plane_draw_desc_t *restrict draw_desc);
 
 /**
- * \brief           Draw a horizontal line of tiles in a concrete position of a plane
- * \param[in]       plane: Destination plane where tiles should be drawn
- * \param[in]       tiles: Source tiles indexes or full cells tiles configurations
- * \param[in]       x: Plane horizontal position in cells
- * \param[in]       y: Plane vertical position in cells
- * \param[in]       length: Line of tiles length
- * \param[in]       defer: True to enqueue the operation, false to do it directly
+ * \brief           Draw a row of cells in a concrete plane position using DMA
+ * \param[in]       dma_func: DMA function to use in the operation. It must be one of
+ *                      smd_dma_transfer
+ *                      smd_dma_transfer_fast
+ *                      smd_dma_transfer_enqueue
+ * \param[in]       draw_desc: Row drawing operation description
  */
-void smd_plane_row_draw(const smd_plane_t plane, const smd_plane_cell *restrict cells, const uint16_t x, const uint16_t y,
-                      const uint16_t length, const bool defer);
+void smd_plane_row_draw(const smd_dma_transfer_ft dma_func, const smd_plane_draw_desc_t *restrict draw_desc);
 
 /**
- * \brief           Draws faster a horizontal line of tiles in a position of a plane
- * \param[in]       plane: Destination plane where tiles should be drawn
- * \param[in]       tiles: Source tiles indexes or full cells tiles configurations
- * \param[in]       x: Plane horizontal position in cells
- * \param[in]       y: Plane vertical position in cells
- * \param[in]       length: Line of tiles length
- * \note            This function is meant to use RAM as tile's data source. To
- *                  use it from ROM, make sure to check 128kB boundaries. It also
- *                  draws the line immediately. Use it wisely with the display
- *                  off or in the vertical blank, otherwise you will get some
- *                  glitches.
+ * \brief           Draw a column of cells in a concrete plane position using DMA
+ * \param[in]       dma_func: DMA function to use in the operation. It must be one of
+ *                      smd_dma_transfer
+ *                      smd_dma_transfer_fast
+ *                      smd_dma_transfer_enqueue
+ * \param[in]       draw_desc: Column drawing operation description
  */
-void smd_plane_row_draw_fast(const smd_plane_t plane, const smd_plane_cell *restrict cells, const uint16_t x, const uint16_t y,
-                           const uint16_t length);
+void smd_plane_column_draw(const smd_dma_transfer_ft dma_func, const smd_plane_draw_desc_t *restrict draw_desc);
 
 /**
- * \brief           Draw a vertical line of tiles in a concrete position of a plane
- * \param[in]       plane: Destination plane where tiles should be drawn
- * \param[in]       tiles: Source tiles indexes or full cells tiles configurations
- * \param[in]       x: Plane horizontal position in cells
- * \param[in]       y: Plane vertical position in cells
- * \param[in]       length: Line of tiles length
- * \param[in]       defer: True to enqueue the operation, false to do it directly
+ * \brief           Draw a rect of cells in a concrete plane position using DMA
+ * \param[in]       dma_func: DMA function to use in the operation. It must be one of
+ *                      smd_dma_transfer
+ *                      smd_dma_transfer_fast
+ *                      smd_dma_transfer_enqueue
+ * \param[in]       draw_desc: Rect drawing operation description
  */
-void smd_plane_column_draw(const smd_plane_t plane, const smd_plane_cell *restrict cells, const uint16_t x, const uint16_t y,
-                      const uint16_t length, const bool defer);
+void smd_plane_rect_draw(const smd_dma_transfer_ft dma_func, const smd_plane_draw_desc_t *restrict draw_desc);
 
 /**
- * \brief           Draw faster a vertical line of tiles in a position of a plane
- * \param[in]       plane: Destination plane where tiles should be drawn
- * \param[in]       tiles: Source tiles indexes or full cells tiles configurations
- * \param[in]       x: Plane horizontal position in cells
- * \param[in]       y: Plane vertical position in cells
- * \param[in]       length: Line of tiles length
- * \note            This function is meant to use RAM as tile's data source. To
- *                  use it from ROM, make sure to check 128kB boundaries. It also
- *                  draws the line immediately. Use it wisely with the display
- *                  off or in the vertical blank, otherwise you will get some
- *                  glitches.
- */
-void smd_plane_column_draw_fast(const smd_plane_t plane, const smd_plane_cell *restrict cells, const uint16_t x, const uint16_t y,
-                           const uint16_t length);
-
-/**
- * \brief           Draw a rectangle of tiles in a concrete position of a plane
- * \param[in]       plane: Destination plane where tiles should be drawn
- * \param[in]       tiles: Source tiles indexes or full cells tiles configurations
- * \param[in]       x: Plane horizontal position in cells
- * \param[in]       y: Plane vertical position in cells
- * \param[in]       width: Rectangle width in tiles
- * \param[in]       height: Rectangle height in tiles
- * \param[in]       defer: True to enqueue the operation, false to do it directly
- */
-void smd_plane_rect_draw(const smd_plane_t plane, const smd_plane_cell *restrict cells, const uint16_t x, const uint16_t y,
-                     const uint16_t width, const uint16_t height, const bool defer);
-
-/**
- * \brief           Draw faster a rectangle of tiles in a concrete position of a plane
- * \param[in]       plane: Destination plane where tiles should be drawn
- * \param[in]       tiles: Source tiles indexes or full cells tiles configurations
- * \param[in]       x: Plane horizontal position in cells
- * \param[in]       y: Plane vertical position in cells
- * \param[in]       width: Rectangle width in tiles
- * \param[in]       height: Rectangle height in tiles
- * \note            This function is meant to use RAM as tile's data source. To
- *                  use it from ROM, make sure to check 128kB boundaries. It also
- *                  draws the line immediately. Use it wisely with the display
- *                  off or in the vertical blank, otherwise you will get some
- *                  glitches.
- */
-void smd_plane_rect_draw_fast(const smd_plane_t plane, const smd_plane_cell *restrict cells, const uint16_t x, const uint16_t y,
-                          const uint16_t width, const uint16_t height);
-
-/**
- * \brief           Draw a rectangle of tiles in a concrete position of a plane
- * \param[in]       plane: Destination plane where tiles should be drawn
- * \param[in]       tile: Tile index or a full cell tile config to use as fill value
- * \param[in]       x: Plane horizontal position in cells
- * \param[in]       y: Plane vertical position in cells
- * \param[in]       width: Rectangle width in tiles
- * \param[in]       height: Rectangle height in tiles
+ * \brief           Fill a rectangle with a cell in a concrete plane position using DMA
+ * \param[in]       draw_desc: Fill drawing operation description
  * \note            This function draws the plane immediately. Use it wisely
  *                  with the display off or in the vertical blank, otherwise you
  *                  can get some glitches.
  */
-void smd_plane_rect_fill(const smd_plane_t plane, const smd_plane_cell cell, const uint16_t x, const uint16_t y,
-                     const uint16_t width, const uint16_t height);
-
+/* CHECKME: This function uses an internal buffer, so we can't do dma enqueue here. I don't really like this */
+void smd_plane_rect_fill(const smd_plane_draw_desc_t *restrict draw_desc);
 
 #ifdef __cplusplus
 }

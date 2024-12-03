@@ -87,7 +87,50 @@ void game_run(void)
                 smd_xgm_sfx_play_auto(66, 15);
                 break;
             }
-            smd_plane_row_draw(SMD_PLANE_A, text, 2, 4, size, false);
+            //smd_plane_row_draw(SMD_PLANE_A, text, 2, 4, size, false);
+            smd_plane_row_draw(smd_dma_transfer, &(smd_plane_draw_desc_t) {
+                .plane = SMD_PLANE_A,
+                .cells = text,
+                .x = 2,
+                .y = 4,
+                .length = size
+            });
+
+            smd_plane_cell_draw(&(smd_plane_draw_desc_t) {
+                .plane = SMD_PLANE_B,
+                .cell = *text,
+                .x = 0,
+                .y = 0
+            });
+
+            smd_plane_column_draw(smd_dma_transfer, &(smd_plane_draw_desc_t) {
+                .plane = SMD_PLANE_A,
+                .cells = text,
+                .x = 1,
+                .y = 8,
+                .length = size
+            });
+
+           smd_plane_rect_draw(smd_dma_transfer, &(smd_plane_draw_desc_t) {
+                .plane = SMD_PLANE_A,
+                .cells = text,
+                .x = 3,
+                .y = 8,
+                .width = 4,
+                .height = 4
+            });
+
+           smd_plane_rect_fill(&(smd_plane_draw_desc_t) {
+                .plane = SMD_PLANE_A,
+                .cell = *text,
+                .x = 9,
+                .y = 8,
+                .width = 5,
+                .height = 5
+            });
+
+
+
         }
         /* Check press button  */
         if (smd_pad_btn_pressed(SMD_PAD_1, SMD_PAD_BTN_B))
@@ -127,7 +170,15 @@ void game_run(void)
                 status = 0;
                 break;
             }
-            smd_plane_row_draw( SMD_PLANE_A, text, 2, 6, size, false);
+            // smd_plane_row_draw( SMD_PLANE_A, text, 2, 6, size, false);
+            smd_plane_row_draw(smd_dma_transfer, &(smd_plane_draw_desc_t) {
+                .plane = SMD_PLANE_A,
+                .cells = text,
+                .x = 2,
+                .y = 6,
+                .length = size
+            });
+
         }
         if (smd_pad_btn_pressed(SMD_PAD_1, SMD_PAD_BTN_C))
         {
@@ -139,7 +190,14 @@ void game_run(void)
                 song = 0;
             }
             size = smd_text_write("MUSIC STOP  ", text);
-            smd_plane_row_draw( SMD_PLANE_A, text, 2, 6, size, false);
+            // smd_plane_row_draw( SMD_PLANE_A, text, 2, 6, size, false);
+            smd_plane_row_draw(smd_dma_transfer, &(smd_plane_draw_desc_t) {
+                .plane = SMD_PLANE_A,
+                .cells = text,
+                .x = 2,
+                .y = 6,
+                .length = size
+            });
         }
 
         /* Main game body goes here */
