@@ -87,7 +87,6 @@ void game_run(void)
                 smd_xgm_sfx_play_auto(66, 15);
                 break;
             }
-            //smd_plane_row_draw(SMD_PLANE_A, text, 2, 4, size, false);
             smd_plane_row_draw(smd_dma_transfer, &(smd_plane_draw_desc_t) {
                 .plane = SMD_PLANE_A,
                 .cells = text,
@@ -170,7 +169,6 @@ void game_run(void)
                 status = 0;
                 break;
             }
-            // smd_plane_row_draw( SMD_PLANE_A, text, 2, 6, size, false);
             smd_plane_row_draw(smd_dma_transfer, &(smd_plane_draw_desc_t) {
                 .plane = SMD_PLANE_A,
                 .cells = text,
@@ -178,7 +176,6 @@ void game_run(void)
                 .y = 6,
                 .length = size
             });
-
         }
         if (smd_pad_btn_pressed(SMD_PAD_1, SMD_PAD_BTN_C))
         {
@@ -190,7 +187,6 @@ void game_run(void)
                 song = 0;
             }
             size = smd_text_write("MUSIC STOP  ", text);
-            // smd_plane_row_draw( SMD_PLANE_A, text, 2, 6, size, false);
             smd_plane_row_draw(smd_dma_transfer, &(smd_plane_draw_desc_t) {
                 .plane = SMD_PLANE_A,
                 .cells = text,
@@ -198,6 +194,9 @@ void game_run(void)
                 .y = 6,
                 .length = size
             });
+            smd_kdebug_warning_if(smd_pad_type(SMD_PAD_1) == SMD_PAD_TYPE_3BTN, "PAD 1 3botones");
+            smd_kdebug_warning_if(!smd_pad_is_plugged(SMD_PAD_2), "PAD 2 DESCONECTADO");
+
         }
 
         /* Main game body goes here */

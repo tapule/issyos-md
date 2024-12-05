@@ -25,48 +25,64 @@
 extern "C" {
 #endif
 
+#define smd_kdebug_stringify(x) #x
+#define smd_kdebug_to_string(x) smd_kdebug_stringify(x)
+
 /* Debugging disabled so do not evaluate kdebug functions. */
 #ifdef NDEBUG
 
-#define smd_kdebug_halt() ((void)0)
-#define smd_kdebug_alert(x) ((void)0)
-#define smd_kdebug_timer_start() ((void)0)
-#define smd_kdebug_timer_stop() ((void)0)
-#define smd_kdebug_timer_output() ((void)0)
+#define smd_kdebug_halt()               ((void)0)
+#define smd_kdebug_alert(x)             ((void)0)
+#define smd_kdebug_timer_start()        ((void)0)
+#define smd_kdebug_timer_stop()         ((void)0)
+#define smd_kdebug_timer_output()       ((void)0)
+#define smd_kdebug_warning_if(test, msg) ((void)0)
+#define smd_kdebug_error_if(test, msg)  ((void)0)
 
 #else
 
-#define smd_kdebug_halt() __smd_kdebug_halt()
-#define smd_kdebug_alert(x) __smd_kdebug_alert(x)
-#define smd_kdebug_timer_start() __smd_kdebug_timer_start()
-#define smd_kdebug_timer_stop() __smd_kdebug_timer_stop()
-#define smd_kdebug_timer_output() __smd_kdebug_timer_output()
+#define smd_kdebug_halt()         smd_kdebug_halt_imp()
+#define smd_kdebug_alert(x)       smd_kdebug_alert_imp(x)
+#define smd_kdebug_timer_start()  smd_kdebug_timer_start_imp()
+#define smd_kdebug_timer_stop()   smd_kdebug_timer_stop_imp()
+#define smd_kdebug_timer_output() smd_kdebug_timer_output_imp()
+/* CHECKME: Should I move this macros to a unit like utils.h or similar? */
+#define smd_kdebug_warning_if(test, msg)                                                                               \
+    if (test) {                                                                                                        \
+        smd_kdebug_alert(                                                                                              \
+            "Warning at " smd_kdebug_to_string(__FILE__) " line " smd_kdebug_to_string(__LINE__) ": " msg);            \
+    }
+#define smd_kdebug_error_if(test, msg)                                                                                 \
+    if (test) {                                                                                                        \
+        smd_kdebug_alert("Error at " smd_kdebug_to_string(__FILE__) " line " smd_kdebug_to_string(__LINE__) ": " msg); \
+        while (true) {}                                                                                                \
+    }
 
 /**
  * \brief           Pause rom emulation
  */
-void __smd_kdebug_halt(void);
+void smd_kdebug_halt_imp(void);
 
 /**
  * \brief           Output a message string on the emulator's Message window
  * \param[in]       str: Text string to output
  */
-void __smd_kdebug_alert(const char *restrict str);
+void smd_kdebug_alert_imp(const char *restrict str);
 
 /**
  * \brief           Start an internal emulator timer counter based on m68k cycles
  */
-void __smd_kdebug_timer_start(void);
+void smd_kdebug_timer_start_imp(void);
 
 /**
  * \brief           Stop the internal emulator timer and output its value
  */
-void __smd_kdebug_timer_stop(void);
+void smd_kdebug_timer_stop_imp(void);
 
 /**
  * \brief           Output current internal emulator timer value
  */
-void __smd_kdebug_timer_output(void);
+void smd_kdebug_timer_output_imp(void);
 
 #endif
 

@@ -34,40 +34,41 @@ extern "C" {
 /**
  * \brief           Gamepad identifiers
  */
-#define SMD_PAD_1            (0x0000)
-#define SMD_PAD_2            (0x0001)
-#define SMD_PAD_COUNT        (0x0002)
+typedef enum smd_pad_id_t /* : uint8_t*/ {
+    SMD_PAD_1 = 0,
+    SMD_PAD_2 = 1
+} smd_pad_id_t;
 
 /**
  * \brief            Gamepad types
  */
-/* CHECKME: The gamepad type should be a enum type */
-#define SMD_PAD_TYPE_3BTN    (0x00) /**< 3-buttons gamepad type */
-#define SMD_PAD_TYPE_6BTN    (0x01) /**< 6-buttons gamepad type */
-#define SMD_PAD_TYPE_UNKNOWN (0x0F) /**< Unknown or not connected gamepad */
+typedef enum smd_pad_type_t /* : uint8_t */ {
+    SMD_PAD_TYPE_UNKNOWN    = 0x00, /**< Unknown gamepad, not initialized */
+    SMD_PAD_TYPE_3BTN       = 0x01, /**< 3-buttons gamepad type */
+    SMD_PAD_TYPE_6BTN       = 0x02, /**< 6-buttons gamepad type */
+    SMD_PAD_TYPE_UNPLUGGED  = 0x04  /**< Gamepad not connected  */
+} smd_pad_type_t;
 
 /**
  * \brief            Gamepad buttons identifiers
  */
-#define SMD_PAD_BTN_UP       (0x0001)
-#define SMD_PAD_BTN_DOWN     (0x0002)
-#define SMD_PAD_BTN_LEFT     (0x0004)
-#define SMD_PAD_BTN_RIGHT    (0x0008)
-#define SMD_PAD_BTN_B        (0x0010)
-#define SMD_PAD_BTN_C        (0x0020)
-#define SMD_PAD_BTN_A        (0x0040)
-#define SMD_PAD_BTN_START    (0x0080)
-#define SMD_PAD_BTN_Z        (0x0100)
-#define SMD_PAD_BTN_Y        (0x0200)
-#define SMD_PAD_BTN_X        (0x0400)
-#define SMD_PAD_BTN_MODE     (0x0800)
+enum {
+    SMD_PAD_BTN_UP      = (1 << 0),
+    SMD_PAD_BTN_DOWN    = (1 << 1),
+    SMD_PAD_BTN_LEFT    = (1 << 2),
+    SMD_PAD_BTN_RIGHT   = (1 << 3),
+    SMD_PAD_BTN_B       = (1 << 4),
+    SMD_PAD_BTN_C       = (1 << 5),
+    SMD_PAD_BTN_A       = (1 << 6),
+    SMD_PAD_BTN_START   = (1 << 7),
+    SMD_PAD_BTN_Z       = (1 << 8),
+    SMD_PAD_BTN_Y       = (1 << 9),
+    SMD_PAD_BTN_X       = (1 << 10),
+    SMD_PAD_BTN_MODE    = (1 << 11)
+};
 
 /**
  * \brief           Initialize the gamepad ports
- *
- * Before using the gamepads, we must setup them first. This function controls
- * the detection and initialisation process of gamepads.
- *
  * \note            This function is called from the boot process so maybe you
  *                  don't need to call it anymore unless you want to reset the
  *                  devices.
@@ -76,47 +77,50 @@ void smd_pad_init(void);
 
 /**
  * \brief           Update the gamepads state
- *
- * Each frame we must update the internal state of gamepads' buttons to control
- * the user's actions
- *
- * \note            This function must be called on each frame
+ * \note            This function must be called on each frame to control user's
+ *                  actions
  */
 void smd_pad_update(void);
 
 /**
  * \brief           Get the type for the specified gamepad id
- * \param[in]       pad: Gamepad id to query
- * \return          Type of queried gamepad id
+ * \param[in]       pad_id: Gamepad id to query
+ * \return          Type of the queried gamepad id
  */
-/* CHECKME: The gamepad type should be a enum type */
-uint8_t smd_pad_type(const uint16_t pad);
+smd_pad_type_t smd_pad_type(const smd_pad_id_t pad_id);
+
+/**
+ * \brief           Check if the specified gamepad id is plugged
+ * \param[in]       pad_id: Gamepad id to query
+ * \return          true if the queried gamepad id is plugged, false otherwise
+ */
+bool smd_pad_is_plugged(const smd_pad_id_t pad_id);
 
 /**
  * \brief           Check if a set of buttons on a gamepad are currently pressed
- * \param[in]       pad: Gamepad id to query
+ * \param[in]       pad_id: Gamepad id to query
  * \param[in]       buttons: Set of buttons to query
  * \return          true if the set of buttons are currently pressed, false otherwise
  */
-bool smd_pad_btn_state(const uint16_t pad, const uint16_t buttons);
+bool smd_pad_btn_state(const smd_pad_id_t pad_id, const uint16_t buttons);
 
 /**
  * \brief           Check if a set of buttons on a gamepad were just pressed in
  *                  the current frame.
- * \param[in]       pad: Gamepad id to query
+ * \param[in]       pad_id: Gamepad id to query
  * \param[in]       buttons: Set of buttons to query
- * \return          true If the set of buttons were currently pressed, false otherwise
+ * \return          true if the set of buttons were currently pressed, false otherwise
  */
-bool smd_pad_btn_pressed(const uint16_t pad, const uint16_t buttons);
+bool smd_pad_btn_pressed(const smd_pad_id_t pad_id, const uint16_t buttons);
 
 /**
  * \brief           Check if a set of buttons on a gamepad were just released in
  *                  the current frame.
- * \param[in]       pad: Gamepad id to query
+ * \param[in]       pad_id: Gamepad id to query
  * \param[in]       buttons: Set of buttons to query
- * \return          true If the set of buttons were currently released, false otherwise
+ * \return          true if the set of buttons were currently released, false otherwise
  */
-bool smd_pad_btn_released(const uint16_t pad, const uint16_t buttons);
+bool smd_pad_btn_released(const smd_pad_id_t pad_id, const uint16_t buttons);
 
 #ifdef __cplusplus
 }
