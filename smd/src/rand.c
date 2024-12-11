@@ -23,7 +23,6 @@ void
 smd_rnd_init(void) {
     uint16_t smd_rnd_var;
 
-    /* CHECKME: Seems that this is not so random */
     /* Mix a random generated value with the MegaDrive HV counter */
     smd_rnd_var = (uint16_t) 0xCE52 ^ (uint16_t) (0xCE52 << 9);
     smd_rnd_seed = *SMD_VDP_HV_COUNTER_PORT ^ (*SMD_VDP_HV_COUNTER_PORT >> 7);

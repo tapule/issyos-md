@@ -25,19 +25,22 @@
 extern "C" {
 #endif
 
+/**
+ * \brief           Stringify utility macros
+ */
 #define smd_kdebug_stringify(x) #x
 #define smd_kdebug_to_string(x) smd_kdebug_stringify(x)
 
 /* Debugging disabled so do not evaluate kdebug functions. */
 #ifdef NDEBUG
 
-#define smd_kdebug_halt()               ((void)0)
-#define smd_kdebug_alert(x)             ((void)0)
-#define smd_kdebug_timer_start()        ((void)0)
-#define smd_kdebug_timer_stop()         ((void)0)
-#define smd_kdebug_timer_output()       ((void)0)
-#define smd_kdebug_warning_if(test, msg) ((void)0)
-#define smd_kdebug_error_if(test, msg)  ((void)0)
+#define smd_kdebug_halt()                ((void) 0)
+#define smd_kdebug_alert(x)              ((void) 0)
+#define smd_kdebug_timer_start()         ((void) 0)
+#define smd_kdebug_timer_stop()          ((void) 0)
+#define smd_kdebug_timer_output()        ((void) 0)
+#define smd_kdebug_warning_if(test, msg) ((void) 0)
+#define smd_kdebug_error_if(test, msg)   ((void) 0)
 
 #else
 

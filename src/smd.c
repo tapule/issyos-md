@@ -32,3 +32,4 @@
 #include "../smd/src/xgm.c"
 #include "../smd/src/ym2612.c"
 #include "../smd/src/z80.c"
+#include "../smd/src/vram_arena.c"

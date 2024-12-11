@@ -55,6 +55,7 @@ typedef enum smd_dma_transfer_type_t {
  * \brief           DMA transfer operation
  */
 typedef struct smd_dma_transfer_t {
+    /* CHECKME: porqué void* en lugar de uint8_t* o uint16_t*?? */
     void *src;                      /**< Source address on Ram/Rom space */
     uint16_t dest;                  /**< Destination address on VRam/CRam/VSRam */
     uint16_t size;                  /**< Transfer size in words */

@@ -29,7 +29,6 @@
 #ifndef SMD_PAL_H
 #define SMD_PAL_H
 
-#include <stdbool.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -49,10 +48,12 @@ typedef enum smd_pal_id_t {
 /**
  * \brief            Palettes CRAM starting indexes
  */
-#define SMD_PAL_0_INDEX (0)     /* Colors 0..15 */
-#define SMD_PAL_1_INDEX (16)    /* Colors 16..31 */
-#define SMD_PAL_2_INDEX (32)    /* Colors 32..47 */
-#define SMD_PAL_3_INDEX (48)    /* Colors 48..64 */
+enum {
+    SMD_PAL_0_INDEX = 0,        /**< Colors 0..15 */
+    SMD_PAL_1_INDEX = 16,       /**< Colors 16..31 */
+    SMD_PAL_2_INDEX = 32,       /**< Colors 32..47 */
+    SMD_PAL_3_INDEX = 48        /**< Colors 48..64 */
+};
 
 /**
  * \brief           Initialize the palette system

@@ -33,6 +33,7 @@
 #define SMD_SYS_HEADER_SRAM_ENABLED 0
 #define SMD_SYS_HEADER_NOTES "https://github.com/tapule/issyos-md     "
 #define SMD_SYS_HEADER_REGION "JUE"
+
 /* VDP configuration */
 #define SMD_VDP_PLANE_A_ADDR 0xC000
 #define SMD_VDP_PLANE_B_ADDR 0xE000
@@ -42,6 +43,9 @@
 #define SMD_VDP_PLANE_SIZE SMD_VDP_PLANE_SIZE_64X32
 #define SMD_VDP_HSCROLL_MODE SMD_VDP_HSCROLL_TILE
 #define SMD_VDP_VSCROLL_MODE SMD_VDP_VSCROLL_PLANE
+
+/* VRAM arena allocator */
+#define SMD_VRAM_ARENA_SIZE 1536
 
 #include "../smd/src/memory_map.h"
 #include "../smd/src/sys.h"
@@ -64,5 +68,6 @@
 #include "../smd/src/xgm.h"
 #include "../smd/src/ym2612.h"
 #include "../smd/src/z80.h"
+#include "../smd/src/vram_arena.h"
 
 #endif /* TCIMD_SMD_H */

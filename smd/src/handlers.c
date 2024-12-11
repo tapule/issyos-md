@@ -1,3 +1,16 @@
+/*
+ * SPDX-License-Identifier: MIT
+ *
+ * This file is part of The Curse of Issyos MegaDrive port.
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2024
+ * Github: https://github.com/tapule
+ */
+
+/**
+ * \file            handlers.h
+ * \brief           Response handlers for exceptions and interrupts on the SMD
+ */
+
 #include "handlers.h"
 #include "xgm.h"
 #include "vdp.h"

@@ -12,8 +12,8 @@
  */
 
 #include "game.h"
-#include "smd.h"
 #include "vram.h"
+#include "smd.h"
 #include "../build/assets/res.h"
 
 void game_load_resources(void)
@@ -24,6 +24,27 @@ void game_load_resources(void)
     /* Palettes */
     smd_pal_primary_set(SMD_PAL_0_INDEX, RES_PAL_PLAYER_SIZE, res_pal_player);
     smd_pal_primary_set(SMD_PAL_1_INDEX, RES_PAL_COLLECTIBLES_SIZE, res_pal_collectibles);
+
+    uint16_t idx = smd_vram_arena_alloc(SMD_VRAM_ARENA_SIZE - 1);
+    uint16_t siz = smd_vram_arena_available();
+    idx = smd_vram_arena_alloc(siz);
+    smd_tile_load(smd_dma_transfer_fast, res_til_1tile, idx, siz);
+    smd_vram_arena_reset();
+    idx = smd_vram_arena_alloc(1);
+    smd_tile_load(smd_dma_transfer_fast, res_til_1tile, idx, RES_TIL_1TILE_SIZE);
+#if 0
+
+    smd_vram_arena_mark_t mark = smd_vram_arena_mark_get();
+    idx = smd_vram_arena_alloc(1);
+    idx = smd_vram_arena_alloc(1);
+    smd_tile_load(smd_dma_transfer_fast, res_til_1tile, idx, RES_TIL_1TILE_SIZE);
+    idx = smd_vram_arena_alloc(1);
+    idx = smd_vram_arena_alloc(1);
+    smd_tile_load(smd_dma_transfer_fast, res_til_1tile, idx, RES_TIL_1TILE_SIZE);
+    smd_vram_arena_reset_to(mark);
+    idx = smd_vram_arena_alloc(1);
+    smd_tile_load(smd_dma_transfer_fast, res_til_1tile, idx, RES_TIL_1TILE_SIZE);
+#endif
 
     /* System font */
     smd_tile_load(smd_dma_transfer_fast, res_font_sys, VRAM_INDEX_FONT, RES_FONT_SYS_SIZE);

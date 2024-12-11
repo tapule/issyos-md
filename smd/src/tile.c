@@ -1,11 +1,14 @@
-/* SPDX-License-Identifier: MIT */
-/**
- * MDDev development kit
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2021
- * Github: https://github.com/tapule/mddev
+/*
+ * SPDX-License-Identifier: MIT
  *
- * File: tile.c
- * Functions to manage tiles in VRAM
+ * This file is part of The Curse of Issyos MegaDrive port.
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2024
+ * Github: https://github.com/tapule
+ */
+
+/**
+ * \file            tile.h
+ * \brief           Functions to manage tiles in VRAM
  */
 
 #include "tile.h"
