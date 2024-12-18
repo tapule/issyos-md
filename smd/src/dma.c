@@ -12,7 +12,7 @@
  */
 
 #include "dma.h"
-#include "memory_map.h"
+#include "mem_map.h"
 #include "vdp.h"
 #include "z80.h"
 

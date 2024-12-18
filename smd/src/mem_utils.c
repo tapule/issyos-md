@@ -7,14 +7,14 @@
  */
 
 /**
- * \file            memory.c
+ * \file            mem_utils.c
  * \brief           Basic memory utilities
  */
 
-#include "memory.h"
+#include "mem_utils.h"
 
 void
-mem_set(void *dest, const uint8_t value, uint16_t size) {
+smd_mem_set(void *dest, const uint8_t value, uint16_t size) {
     uint8_t *p = (uint8_t *) dest;
 
     while (size) {
@@ -25,7 +25,7 @@ mem_set(void *dest, const uint8_t value, uint16_t size) {
 }
 
 void
-mem_copy(void *dest, const void *src, uint16_t size) {
+smd_mem_copy(void *dest, const void *src, uint16_t size) {
     uint8_t *d = (uint8_t *) dest;
     const uint8_t *s = (const uint8_t *) src;
 

@@ -12,7 +12,7 @@
  */
 
 #include "kdebug.h"
-#include "memory_map.h"
+#include "mem_map.h"
 #include "vdp.h"
 
 #define SMD_KMOD_CONTROL_PAUSE_CMD (0x00)

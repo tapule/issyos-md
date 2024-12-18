@@ -13,7 +13,7 @@
 
 #include "pad.h"
 #include "kdebug.h"
-#include "memory_map.h"
+#include "mem_map.h"
 #include "z80.h"
 
 /**

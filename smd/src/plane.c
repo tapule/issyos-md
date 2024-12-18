@@ -13,7 +13,7 @@
 
 #include "plane.h"
 #include "dma.h"
-#include "memory_map.h"
+#include "mem_map.h"
 #include "vdp.h"
 
 inline smd_plane_cell

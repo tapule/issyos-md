@@ -12,7 +12,7 @@
  */
 
 #include "sys.h"
-#include "memory_map.h"
+#include "mem_map.h"
 #include "handlers.h"
 #include "dma.h"
 #include "pad.h"
@@ -169,7 +169,7 @@ static void (*const volatile smd_sys_vector_table[64])(void) = {
 [[gnu::interrupt, gnu::section(".text.smdboot"), noreturn]]
 static inline void
 smd_sys_boot(void) {
-    extern uint32_t _sdata;
+    extern uint32_t _text_size;
     extern uint32_t _data_size;
     uint16_t *ram_addr = (uint16_t *) SMD_RAM_ADDRESS;
 
@@ -212,7 +212,7 @@ smd_sys_boot(void) {
     /* Copy initialised global and static data from ROM to work RAM */
     {
         /* Start of initialised data in ROM */
-        uint16_t *data_addr = (uint16_t *) &_sdata;
+        uint16_t *data_addr = (uint16_t *) &_text_size;
         /* Size of data to copy in bytes */
         uint16_t data_size = (uint16_t) ((uint32_t) (&_data_size));
 

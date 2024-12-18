@@ -12,7 +12,7 @@
  */
 
 #include "rand.h"
-#include "memory_map.h"
+#include "mem_map.h"
 
 /**
  * \brief           Stores the lastest (current) calculated seed

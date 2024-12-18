@@ -44,10 +44,15 @@
 #define SMD_VDP_HSCROLL_MODE SMD_VDP_HSCROLL_TILE
 #define SMD_VDP_VSCROLL_MODE SMD_VDP_VSCROLL_PLANE
 
-/* VRAM arena allocator */
+/* VRAM arena allocator size in tiles */
 #define SMD_VRAM_ARENA_SIZE 1536
 
-#include "../smd/src/memory_map.h"
+/* RAM memory arena allocator size in bytes */
+//#define SMD_MEM_ARENA_SIZE (5 * 1024)
+#define SMD_MEM_ARENA_SIZE (10)
+
+
+#include "../smd/src/mem_map.h"
 #include "../smd/src/sys.h"
 #include "../smd/src/handlers.h"
 #include "../smd/src/null_data.h"
@@ -55,7 +60,7 @@
 #include "../smd/src/dma.h"
 #include "../smd/src/fix32.h"
 #include "../smd/src/kdebug.h"
-#include "../smd/src/memory.h"
+#include "../smd/src/mem_utils.h"
 #include "../smd/src/pad.h"
 #include "../smd/src/pal.h"
 #include "../smd/src/plane.h"
@@ -69,5 +74,6 @@
 #include "../smd/src/ym2612.h"
 #include "../smd/src/z80.h"
 #include "../smd/src/vram_arena.h"
+#include "../smd/src/mem_arena.h"
 
 #endif /* TCIMD_SMD_H */

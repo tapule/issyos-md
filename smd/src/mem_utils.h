@@ -7,7 +7,7 @@
  */
 
 /**
- * \file            memory.h
+ * \file            mem_utils.h
  * \brief           Basic memory utilities
  */
 
@@ -26,7 +26,7 @@ extern "C" {
  * \param[in]       value: Value used to fill the memory area
  * \param[in]       size: Amount of bytes to fill
  */
-void mem_set(void *dest, const uint8_t value, uint16_t size);
+void smd_mem_set(void *dest, const uint8_t value, uint16_t size);
 
 /**
  * \brief           Copy a memory area from src to dest
@@ -34,7 +34,7 @@ void mem_set(void *dest, const uint8_t value, uint16_t size);
  * \param[in]       src: Source data
  * \param[in]       size: Amount of bytes to copy
  */
-void mem_copy(void *dest, const void *src, uint16_t size);
+void smd_mem_copy(void *dest, const void *src, uint16_t size);
 
 #ifdef __cplusplus
 }

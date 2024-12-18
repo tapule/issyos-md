@@ -12,7 +12,7 @@
  */
 
 #include "vdp.h"
-#include "memory_map.h"
+#include "mem_map.h"
 
 /**
  * \brief           Stores if the console is working in PAL mode

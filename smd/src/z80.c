@@ -12,7 +12,7 @@
  */
 
 #include "z80.h"
-#include "memory_map.h"
+#include "mem_map.h"
 
 /**
  * \brief           Estimated reset wait time borrowed from Sik z80 tutorial.

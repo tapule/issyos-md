@@ -19,7 +19,7 @@
 #include "../smd/src/xgm_drv.c"
 #include "../smd/src/dma.c"
 #include "../smd/src/kdebug.c"
-#include "../smd/src/memory.c"
+#include "../smd/src/mem_utils.c"
 #include "../smd/src/pad.c"
 #include "../smd/src/pal.c"
 #include "../smd/src/plane.c"
@@ -33,3 +33,4 @@
 #include "../smd/src/ym2612.c"
 #include "../smd/src/z80.c"
 #include "../smd/src/vram_arena.c"
+#include "../smd/src/mem_arena.c"

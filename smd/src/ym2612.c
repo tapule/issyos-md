@@ -14,7 +14,7 @@
 
 #include <stdint.h>
 #include "ym2612.h"
-#include "memory_map.h"
+#include "mem_map.h"
 #include "z80.h"
 
 /**

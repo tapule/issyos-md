@@ -7,7 +7,7 @@
  */
 
 /**
- * \file            memory_map.h
+ * \file            mem_map.h
  * \brief           Sega Megadrive/Genesis memory map I/O definitions
  *
  * The m68k interacts with the VDP, Pads, z80, ROM cartridge, etc. through the

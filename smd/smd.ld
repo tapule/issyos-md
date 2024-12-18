@@ -65,7 +65,7 @@ MEMORY
 }
 
 /* Allocate the stack to be at the top of memory, since the stack grows down */
-PROVIDE (__stack = 0x01000000);
+PROVIDE(__stack = 0x01000000);
 
 /*
  * Section definitions: What part of a program should go where, that is,
@@ -102,7 +102,7 @@ SECTIONS
         *(.rodata .rodata.*)
         _erodata = .;
     } > rom
-    _text_size = SIZEOF (.text);
+    _text_size = SIZEOF(.text);
 
     /*
      * .data output section: Read-write initialised global and static data
@@ -113,7 +113,7 @@ SECTIONS
      * This data has to be copied from rom to ram at boot time!!
      */
     .data 0xFF0000 :
-    AT ( ADDR (.text) + SIZEOF (.text) + SIZEOF(.rodata) )
+    AT ( ADDR(.text) + SIZEOF(.text) )
     {
         _sdata = .;
         *(.got.plt) *(.got)
@@ -121,14 +121,14 @@ SECTIONS
         *(.data .data.*)
         _edata = .;
     } > ram
-    _data_size = SIZEOF (.data);
+    _data_size = SIZEOF(.data);
 
     /*
      * .bss output section: Read-write Uninitialised data
      * It would be placed at runtime just after .data section.
      * This data has to be initialised to zero at boot time!!
      */
-    .bss 0xFF0000 + SIZEOF (.data) :
+    .bss 0xFF0000 + SIZEOF(.data) :
     {
         _sbss = . ;
         /* Statically-allocated variables represented solely by zero-valued bits initially */
@@ -137,7 +137,7 @@ SECTIONS
         *(COMMON)
         _ebss = . ;
     } > ram
-    _bss_size = SIZEOF (.bss);
+    _bss_size = SIZEOF(.bss);
 
     /*
      * Debugging information encapsulated in stab assembler directives.
