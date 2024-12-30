@@ -34,3 +34,4 @@
 #include "../smd/src/z80.c"
 #include "../smd/src/vram_arena.c"
 #include "../smd/src/mem_arena.c"
+#include "../smd/src/string.c"

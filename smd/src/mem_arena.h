@@ -39,7 +39,7 @@ extern "C" {
 /**
  * \brief           Allocate count elements of a type in the memory arena
  * \param[in]       type: Type of elements to allocate
- * \param[in        count: Amount of elements to allocate
+ * \param[in]       count: Amount of elements to allocate
  * \return          Pointer to the reserved memory
  */
 #define smd_mem_arena_alloc_type(type, count) \
@@ -49,7 +49,7 @@ extern "C" {
  * \brief           Allocate count elements of a type in the memory arena and
  *                  initialize them to 0
  * \param[in]       type: Type of elements to allocate
- * \param[in        count: Amount of elements to allocate
+ * \param[in]       count: Amount of elements to allocate
  * \return          Pointer to the reserved memory
  */
 #define smd_mem_arena_alloc_type_zero(type, count) \

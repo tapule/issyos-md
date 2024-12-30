@@ -75,5 +75,6 @@
 #include "../smd/src/z80.h"
 #include "../smd/src/vram_arena.h"
 #include "../smd/src/mem_arena.h"
+#include "../smd/src/string.h"
 
 #endif /* TCIMD_SMD_H */
