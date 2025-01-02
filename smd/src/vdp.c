@@ -21,7 +21,7 @@ static uint8_t smd_vdp_smd_pal_mode_flag;
 
 /* This flag is set when the vertical blank starts */
 volatile uint8_t smd_vdp_vblank_flag;
-
+volatile uint8_t smd_int_counter = 0;
 void
 smd_vdp_init(void) {
     /*

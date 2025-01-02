@@ -179,6 +179,7 @@ typedef enum smd_vdp_plane_size_t {
  * \brief           This flag is set when the vertical blank starts
  */
 extern volatile uint8_t smd_vdp_vblank_flag;
+extern volatile uint8_t smd_int_counter;
 
 /**
  * \brief           Initialises the VDP

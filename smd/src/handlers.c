@@ -60,6 +60,7 @@ void smd_int_vblank(void)
 {
     smd_xgm_update();
     smd_vdp_vblank_flag = 1;
+    ++smd_int_counter;
 }
 
 [[gnu::interrupt]]

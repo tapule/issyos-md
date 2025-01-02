@@ -71,7 +71,7 @@ ASSSRC  = $(shell find build/assets/ -type f -name '*.c')
 
 # Objets files
 OBJS    = $(CSRC:.c=.o)
-#OBJS   += $(SSRC:.s=.o)
+# OBJS   += $(SSRC:.s=.o)
 OBJS   += $(ASSSRC:.c=.o)
 OUTOBJS = $(addprefix build/obj/, $(OBJS))
 
@@ -114,14 +114,15 @@ build/bin/rom.bin: build/bin/rom.elf
 	@rm -f build/bin/unpad.bin
 
 build/obj/%.o: %.c
+#	@echo "$(OBJS)"
 	@echo "CC $<"
 	@mkdir -p $(dir $@)
 	@$(CC) $(CCFLAGS) $(EXFLAGS) $(INCS) -c $< -o $@
 
-build/obj/%.o: %.s
-	@echo "AS $<"
-	@mkdir -p $(dir $@)
-	@$(AS) $(ASFLAGS) $< -o $@
+# build/obj/%.o: %.s
+#	@echo "AS $<"
+#	@mkdir -p $(dir $@)
+#	@$(AS) $(ASFLAGS) $< -o $@
 
 build/obj/%.lst: %.c
 	@echo "$(COLOR_GREEN)>> Exporting ASM listings...$(COLOR_RESET)"

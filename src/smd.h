@@ -48,8 +48,8 @@
 #define SMD_VRAM_ARENA_SIZE 1536
 
 /* RAM memory arena allocator size in bytes */
-//#define SMD_MEM_ARENA_SIZE (5 * 1024)
-#define SMD_MEM_ARENA_SIZE (10)
+#define SMD_MEM_ARENA_SIZE (30 * 1024)
+//#define SMD_MEM_ARENA_SIZE (10)
 
 
 #include "../smd/src/mem_map.h"
@@ -76,5 +76,6 @@
 #include "../smd/src/vram_arena.h"
 #include "../smd/src/mem_arena.h"
 #include "../smd/src/string.h"
+#include "../smd/src/unpack.h"
 
 #endif /* TCIMD_SMD_H */
