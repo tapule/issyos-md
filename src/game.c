@@ -56,13 +56,11 @@ void game_run(void)
 
     buff = smd_mem_arena_alloc(30000);
 
-    smd_vdp_display_disable();
+    smd_vdp_vsync_wait();
     smd_sys_ints_disable();
     smd_int_counter = 0;
     smd_sys_ints_enable();
-    smd_vdp_display_enable();
-
-    for (uint16_t i = 0; i < 25; ++i){
+    for (uint16_t i = 0; i < 1; ++i){
         smd_unpack_slz(dat_font_slz, (uint8_t *)buff);
     }
     result = smd_int_counter;
@@ -77,11 +75,12 @@ void game_run(void)
         .length = size
     });
 
+    smd_vdp_vsync_wait();
     smd_sys_ints_disable();
     smd_int_counter = 0;
     smd_sys_ints_enable();
-    for (uint16_t i = 0; i < 25; ++i){
-        smd_unpack_zx0(dat_font_salv, (uint8_t *)buff);
+    for (uint16_t i = 0; i < 1; ++i){
+        smd_unpack_slz(dat_ingame_slz, (uint8_t *)buff);
     }
     result = smd_int_counter;
     smd_vdp_vsync_wait();
@@ -94,12 +93,14 @@ void game_run(void)
         .y = 4,
         .length = size
     });
+    // smd_tile_load(smd_dma_transfer_fast, buff, 0, 783);
 
+    smd_vdp_vsync_wait();
     smd_sys_ints_disable();
     smd_int_counter = 0;
     smd_sys_ints_enable();
-    for (uint16_t i = 0; i < 25; ++i){
-        smd_unpack_slz(dat_ingame_slz, (uint8_t *)buff);
+    for (uint16_t i = 0; i < 1; ++i){
+        smd_unpack_slz(dat_colmap_slz, (uint8_t *)buff);
     }
     result = smd_int_counter;
     smd_vdp_vsync_wait();
@@ -113,10 +114,32 @@ void game_run(void)
         .length = size
     });
 
+
+
+    smd_vdp_vsync_wait();
     smd_sys_ints_disable();
     smd_int_counter = 0;
     smd_sys_ints_enable();
-    for (uint16_t i = 0; i < 25; ++i){
+    for (uint16_t i = 0; i < 1; ++i){
+        smd_unpack_zx0(dat_font_salv, (uint8_t *)buff);
+    }
+    result = smd_int_counter;
+    smd_vdp_vsync_wait();
+    smd_str_from_uint(result, string, 0);
+    size = smd_text_write(string, text);
+    smd_plane_row_draw(smd_dma_transfer, &(smd_plane_draw_desc_t) {
+        .plane = SMD_PLANE_A,
+        .cells = text,
+        .x = 15,
+        .y = 2,
+        .length = size
+    });
+
+    smd_vdp_vsync_wait();
+    smd_sys_ints_disable();
+    smd_int_counter = 0;
+    smd_sys_ints_enable();
+    for (uint16_t i = 0; i < 1; ++i){
         smd_unpack_zx0(dat_ingame_salv, (uint8_t *)buff);
     }
     result = smd_int_counter;
@@ -126,33 +149,16 @@ void game_run(void)
     smd_plane_row_draw(smd_dma_transfer, &(smd_plane_draw_desc_t) {
         .plane = SMD_PLANE_A,
         .cells = text,
-        .x = 2,
-        .y = 8,
+        .x = 15,
+        .y = 4,
         .length = size
     });
 
-    smd_sys_ints_disable();
-    smd_int_counter = 0;
-    smd_sys_ints_enable();
-    for (uint16_t i = 0; i < 25; ++i){
-        smd_unpack_slz(dat_colmap_slz, (uint8_t *)buff);
-    }
-    result = smd_int_counter;
     smd_vdp_vsync_wait();
-    smd_str_from_uint(result, string, 0);
-    size = smd_text_write(string, text);
-    smd_plane_row_draw(smd_dma_transfer, &(smd_plane_draw_desc_t) {
-        .plane = SMD_PLANE_A,
-        .cells = text,
-        .x = 2,
-        .y = 10,
-        .length = size
-    });
-
     smd_sys_ints_disable();
     smd_int_counter = 0;
     smd_sys_ints_enable();
-    for (uint16_t i = 0; i < 25; ++i){
+    for (uint16_t i = 0; i < 1; ++i){
         smd_unpack_zx0(dat_colmap_salv, (uint8_t *)buff);
     }
     result = smd_int_counter;
@@ -162,8 +168,8 @@ void game_run(void)
     smd_plane_row_draw(smd_dma_transfer, &(smd_plane_draw_desc_t) {
         .plane = SMD_PLANE_A,
         .cells = text,
-        .x = 2,
-        .y = 12,
+        .x = 15,
+        .y = 6,
         .length = size
     });
 

@@ -2,13 +2,13 @@
  * SPDX-License-Identifier: MIT
  *
  * This file is part of The Curse of Issyos MegaDrive port.
- * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2024
+ * Coded by: Juan Ángel Moreno Fernández (@_tapule) 2025
  * Github: https://github.com/tapule
  */
 
 /**
- * \file            unpack.c
- * \brief           Decompressors for 68000
+ * \file            unpack.h
+ * \brief           SLZ and ZX0 decompression functions
  */
 
 #include "unpack.h"
